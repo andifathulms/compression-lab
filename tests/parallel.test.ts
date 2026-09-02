@@ -50,9 +50,18 @@ describe('the samples', () => {
     expect(lz.result.modelBits).toBe(0);
   });
 
-  it('the parallel corpus is parallel: four texts of comparable length', () => {
-    const lengths = PARALLEL_SAMPLES.map((s) => s.text.length);
+  it('the parallel corpus is parallel: four texts, thirty articles each', () => {
+    // Structural, not empirical. What the margins turn out to be is a finding
+    // and belongs in the interface; that the four texts say the same thing is
+    // a precondition for the comparison meaning anything at all.
     expect(PARALLEL_SAMPLES.length).toBe(4);
+    const lengths = PARALLEL_SAMPLES.map((s) => s.text.length);
     expect(Math.max(...lengths) / Math.min(...lengths)).toBeLessThan(1.5);
+    for (const sample of PARALLEL_SAMPLES) {
+      const headings = sample.text.match(
+        /^(Article \d+|Pasal \d+|Artikel \d+|\d+\. artikla\.?)$/gm,
+      );
+      expect(headings?.length, sample.id).toBe(30);
+    }
   });
 });

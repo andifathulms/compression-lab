@@ -11,6 +11,12 @@
  * so that a user who tries all of them cannot keep a single-floor intuition.
  */
 
+// The four Declaration files are the official translations, articles 1 to 30
+// and nothing else, so the four are strictly parallel. English, Indonesian and
+// Finnish come from Wikisource; German from the German Wikipedia article,
+// which carries the official joint translation. One editor's addition to the
+// Indonesian article 30 was removed, since these are labelled as the official
+// text.
 import literary from './literary.txt?raw';
 import source from './source.txt?raw';
 import repetitive from './repetitive.txt?raw';
@@ -65,28 +71,28 @@ export const SAMPLES: Sample[] = [
   {
     id: 'udhr-en',
     name: 'Declaration, English',
-    note: 'Universal Declaration of Human Rights, articles 1 and 3 to 5. Public domain.',
+    note: 'Universal Declaration of Human Rights, all thirty articles. The reference text for the three translations below.',
     text: udhrEn,
     language: 'English',
   },
   {
     id: 'udhr-id',
     name: 'Declaration, Indonesian',
-    note: 'The same articles. Affix-heavy morphology: more substring redundancy than the character-level entropy shows.',
+    note: 'The same thirty articles. Affix-heavy morphology: prefixes and suffixes recur, which LZ77 can use and a character model cannot.',
     text: udhrId,
     language: 'Indonesian',
   },
   {
     id: 'udhr-de',
     name: 'Declaration, German',
-    note: 'The same articles. Compounding lengthens words without adding character-level surprise.',
+    note: 'The same thirty articles. Compounding lengthens words without adding character-level surprise.',
     text: udhrDe,
     language: 'German',
   },
   {
     id: 'udhr-fi',
     name: 'Declaration, Finnish',
-    note: 'The same articles. Agglutinative: long words built from repeated suffixes.',
+    note: 'The same thirty articles. Agglutinative: long words built from stacked suffixes.',
     text: udhrFi,
     language: 'Finnish',
   },

@@ -58,9 +58,9 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
         <span className="label">bits per symbol</span>
       </div>
       <p className="note">
-        The same articles of the Universal Declaration of Human Rights. Character-level entropy
-        and LZ77 measure different kinds of redundancy, and the gap between them is not the same
-        in every language.
+        All thirty articles of the Universal Declaration of Human Rights, in four official
+        translations. Character-level entropy and LZ77 measure different kinds of redundancy, and
+        the gap between them is not the same in every language.
       </p>
       <table>
         <caption className="visually-hidden">
@@ -99,11 +99,14 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
         </tbody>
       </table>
       <p className="assumption">
-        LZ77 has no model description, so its total is its code stream. These texts are short —
-        around {Math.round(rows[0]?.symbols ?? 0)} characters — and at that length a static model
-        costs more to describe than it saves, which is why the staircase&apos;s minimum sits at a
-        low order for all four. The margin is the figure that carries the claim; the entropies are
-        there so it can be read against something.
+        LZ77 has no model description, so its total is its code stream, and a positive margin
+        means it landed below the order-0 entropy of the same text — which looks impossible if
+        you believe in a single floor. The claim this row was built to test is that affix-heavy
+        and agglutinative languages carry more substring redundancy than character-level entropy
+        reveals. Indonesian bears it out: its margin is the widest, and its order-0 entropy is the
+        lowest. Finnish does not, despite being the most agglutinative of the four — its margin is
+        the narrowest. Four texts of nine thousand characters is not enough to settle that, and
+        the app is not going to pretend otherwise.
       </p>
     </section>
   );

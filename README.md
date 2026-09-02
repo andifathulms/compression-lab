@@ -107,23 +107,31 @@ token encoding, and the model serialisation format.
   `src/styles/tokens.css`. Nothing else changes, and nothing is fetched over
   the network either way.
 
-- **The parallel corpus is short.** It carries articles 1 and 3 to 5 of the
-  Universal Declaration of Human Rights in four languages — around 500
-  characters each, which is enough for the comparison row and not enough to
-  move the staircase's minimum. See below before publishing.
+## The parallel corpus
 
-## Before publishing: the parallel corpus
+`src/samples/udhr-*.txt` are the official translations of the Universal
+Declaration of Human Rights, articles 1 to 30 and nothing else, so the four
+files are strictly parallel. English, Indonesian and Finnish come from
+Wikisource; German from the German Wikipedia article, which carries the
+official joint German translation. One editor's addition to the Indonesian
+article 30 was removed, since the sample is labelled as the official text.
 
-`src/samples/udhr-*.txt` were written without network access and are a
-reproduction from memory, not a copy of the official text. The English and
-German are reliable; the Indonesian and Finnish should be checked. Replace all
-four with the official translations from <https://www.un.org/en/about-us/universal-declaration-of-human-rights>
-before this goes anywhere public — longer files will also make the comparison
-row more convincing, since 500 characters is short enough that model cost
-dominates every order.
+The row exists to test one claim: that affix-heavy and agglutinative languages
+carry more substring redundancy than character-level entropy reveals, so LZ77
+should beat the order-0 prediction by a wider margin on the Indonesian text
+than on the English one. Measured, at a 4,096-byte window:
 
-Nothing else in the repository depends on their content: drop in new files at
-the same paths and `npm test` will re-verify the round trips.
+| Language   | H0    | LZ77  | H0 − LZ77 |
+|------------|-------|-------|-----------|
+| English    | 4.35  | 3.72  | 0.636     |
+| Indonesian | 4.17  | 3.32  | **0.851** |
+| German     | 4.50  | 3.81  | 0.690     |
+| Finnish    | 4.25  | 3.91  | 0.340     |
+
+Indonesian bears the claim out — widest margin, lowest order-0 entropy.
+Finnish does not, despite being the most agglutinative of the four. The
+interface says both. Four texts of nine thousand characters do not settle it,
+and the app does not pretend they do.
 
 ## Deployment
 
