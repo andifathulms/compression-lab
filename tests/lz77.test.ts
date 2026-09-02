@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   lz77Encode,
-  lz77Decode,
   lz77EncodeText,
   lz77DecodeText,
   tokenWidths,

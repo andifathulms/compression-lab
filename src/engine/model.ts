@@ -35,6 +35,11 @@ export function contextText(key: string): string {
   return key.slice(key.indexOf(SEP) + 1);
 }
 
+/** The symbol length a context key carries in its prefix. */
+export function contextLength(key: string): number {
+  return Number(key.slice(0, key.indexOf(SEP)));
+}
+
 /** Split text into code-point symbols. */
 export function toSymbols(text: string): string[] {
   return Array.from(text);
@@ -69,6 +74,12 @@ export interface Model {
 
 export class FrequencyModel implements Model {
   readonly counts: Map<string, Map<string, number>>;
+  /**
+   * Symbols in the text this model describes. Not a property of the
+   * distribution, but the decoder needs it to know when to stop, so it rides
+   * along in the model description and is counted in the model cost.
+   */
+  symbolCount = 0;
   private readonly index: Map<string, number>;
   private readonly totals: Map<string, number>;
 
@@ -171,6 +182,7 @@ export function buildModels(
       models[k].observe(contextAt(symbols, i, k), symbol);
     }
   }
+  for (const model of models) model.symbolCount = symbols.length;
   return models;
 }
 
@@ -180,6 +192,7 @@ export function buildModel(symbols: readonly string[], order: Order): FrequencyM
   for (let i = 0; i < symbols.length; i++) {
     model.observe(contextAt(symbols, i, order), symbols[i]);
   }
+  model.symbolCount = symbols.length;
   return model;
 }
 
