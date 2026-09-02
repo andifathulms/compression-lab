@@ -18,6 +18,7 @@ import { useMemo } from 'react';
 import type { CoderResult, Order, TextAnalysis } from '../../engine/index.ts';
 import { ORDERS } from '../../engine/index.ts';
 import type { CoderChoice } from '../../state/appState.ts';
+import { bytes, ratio } from '../../ui/format.ts';
 import './Staircase.css';
 
 interface Props {
@@ -30,9 +31,9 @@ interface Props {
   onOrder: (order: Order) => void;
 }
 
-const WIDTH = 560;
-const HEIGHT = 300;
-const PAD = { top: 18, right: 116, bottom: 34, left: 46 };
+const WIDTH = 620;
+const HEIGHT = 320;
+const PAD = { top: 20, right: 128, bottom: 38, left: 50 };
 
 export function Staircase({
   analysis,
@@ -81,6 +82,7 @@ export function Staircase({
     ORDERS.map((o) => `${o === 0 ? 'M' : 'L'} ${centre(o)} ${y(pick(o))}`).join(' ');
 
   const best = analysis.optimalOrder;
+  const current = pickResult(coder, huffman, arithmetic, lz77);
   const ticks = useMemo(() => {
     const step = maxBits > 8 ? 2 : maxBits > 4 ? 1 : 0.5;
     const out: number[] = [];
@@ -121,12 +123,13 @@ export function Staircase({
       ) : (
         <>
           <p className="stair-headline">
-            <span className="display">order {best}</span>{' '}
+            <span className="display">order {best}</span>
             <span className="unit">
               lowest total for this text, at {rows[best].totalBits.toFixed(2)} bits per symbol
             </span>
           </p>
 
+          <div className="stair-plot">
           <svg
             className="stair-svg"
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -156,8 +159,25 @@ export function Staircase({
               y={PAD.top}
               width={stepW}
               height={plotH}
-              fill="var(--page-edge)"
+              className="stair-band"
             />
+
+            {/* The chart is the control. Clicking a column picks that order,
+                which is the gesture a reader tries first; the H0 to H5 buttons
+                below are the same thing on the keyboard path. */}
+            {ORDERS.map((o) => (
+              <rect
+                key={`hit${o}`}
+                x={x(o)}
+                y={PAD.top}
+                width={stepW}
+                height={plotH}
+                className="stair-hit"
+                onClick={() => onOrder(o)}
+              >
+                <title>{`Order ${o}: ${rows[o].totalBits.toFixed(3)} bits per symbol in total`}</title>
+              </rect>
+            ))}
 
             <path d={stepPath((o) => rows[o].entropyBits)} className="stair-entropy" />
             <path d={linePath((o) => rows[o].modelBits)} className="stair-model" />
@@ -218,7 +238,13 @@ export function Staircase({
                       strokeDasharray="5 3"
                     />
                   ) : (
-                    <circle cx={px} cy={py} r={5} fill={p.colour} />
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r={5}
+                      fill={p.colour}
+                      className="stair-point"
+                    />
                   )}
                   <line
                     x1={px}
@@ -280,12 +306,14 @@ export function Staircase({
               model order
             </text>
           </svg>
+          </div>
 
-          <div className="stair-orders" role="group" aria-label="Model order">
+          <div className="stair-orders segmented" role="group" aria-label="Model order">
             {ORDERS.map((o) => (
               <button
                 key={o}
                 type="button"
+                className="segmented-item"
                 aria-pressed={o === order}
                 onClick={() => onOrder(o)}
                 title={`H${o} — conditional on ${o} previous ${
@@ -297,18 +325,27 @@ export function Staircase({
             ))}
           </div>
 
-          <p className="stair-split data">
-            code {bytes(pickResult(coder, huffman, arithmetic, lz77).codeBits)} · model{' '}
-            {bytes(pickResult(coder, huffman, arithmetic, lz77).modelBits)} · total{' '}
-            {bytes(pickResult(coder, huffman, arithmetic, lz77).totalBits)} · ratio{' '}
-            {(
-              pickResult(coder, huffman, arithmetic, lz77).totalBits /
-              (analysis.byteCount * 8 || 1)
-            ).toFixed(3)}{' '}
-            of the UTF-8 original
-          </p>
+          <dl className="stair-split">
+            <div>
+              <dt>code stream</dt>
+              <dd>{bytes(current.codeBits)}</dd>
+            </div>
+            <div>
+              <dt>model description</dt>
+              <dd>{bytes(current.modelBits)}</dd>
+            </div>
+            <div>
+              <dt>total</dt>
+              <dd>{bytes(current.totalBits)}</dd>
+            </div>
+            <div>
+              <dt>of the utf-8 original</dt>
+              <dd>{ratio(current.totalBits, analysis.byteCount)}</dd>
+            </div>
+          </dl>
 
-          <table className="stair-table">
+          <div className="stair-table scroll-box">
+          <table>
             <caption className="visually-hidden">
               Conditional entropy, model description and total, by model order
             </caption>
@@ -335,6 +372,7 @@ export function Staircase({
               ))}
             </tbody>
           </table>
+          </div>
 
           <p className="assumption">
             H{order} is the entropy of this text conditional on the {order} previous{' '}
@@ -359,10 +397,4 @@ function pickResult(
   if (coder === 'arithmetic') return arithmetic;
   if (coder === 'lz77') return lz77;
   return huffman;
-}
-
-function bytes(bits: number): string {
-  const b = bits / 8;
-  if (b < 1024) return `${b.toFixed(0)} B`;
-  return `${(b / 1024).toFixed(2)} kB`;
 }

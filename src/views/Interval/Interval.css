@@ -2,19 +2,21 @@
   display: flex;
   gap: var(--s-3);
   align-items: flex-start;
+  flex-wrap: wrap;
   margin: var(--s-2) 0;
 }
 
 .interval-svg {
-  width: 120px;
-  height: 320px;
+  width: 132px;
+  height: 340px;
   flex: 0 0 auto;
   border: 1px solid var(--rule);
-  background: var(--page);
+  border-radius: var(--r-2);
+  background: var(--surface);
 }
 
 .interval-band {
-  fill: var(--page);
+  fill: var(--surface);
   stroke: var(--rule);
   stroke-width: 0.5;
 }
@@ -22,7 +24,7 @@
 /* The selected band, in the arithmetic coder's colour. It is the only thing
  * in this view that carries the coder's identity. */
 .interval-band-on {
-  fill: var(--page-edge);
+  fill: var(--arithmetic-tint);
   stroke: var(--arithmetic);
   stroke-width: 1.5;
 }
@@ -30,19 +32,33 @@
 .interval-label {
   font-family: var(--font-data);
   font-size: 9px;
+  font-variant-numeric: tabular-nums;
   fill: var(--ink-mid);
+}
+
+.interval-readout {
+  flex: 1 1 18rem;
+  min-width: 0;
 }
 
 .interval-readout p {
   margin: 0 0 var(--s-1);
   font-size: var(--t-data);
+  color: var(--ink-mid);
 }
 
 .interval-renorm {
   border-top: 1px solid var(--rule);
   padding-top: var(--s-2);
+  margin-top: var(--s-2);
 }
 
+/*
+ * The integer state. It is long, it is meant to be read digit by digit against
+ * the row above it, and it is the bridge between the idealised interval on the
+ * left and what the engine actually did — so it is set in a bordered block
+ * rather than run into the prose.
+ */
 .interval-integers {
   display: grid;
   gap: 2px;
@@ -51,29 +67,33 @@
 }
 
 .interval-integers dt {
-  color: var(--ink-mid);
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 .interval-integers dd {
   margin: 0 0 var(--s-1);
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
   word-break: break-all;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .interval-controls {
   display: flex;
   align-items: center;
-  gap: var(--s-1);
+  gap: var(--s-2);
   flex-wrap: wrap;
   margin-top: var(--s-2);
-}
-
-.interval-controls input[type='range'] {
-  accent-color: var(--ink);
 }
 
 /* The scrubber is a continuous control: it follows the pointer exactly. */
 .interval-scrub {
   flex: 1 1 12rem;
   min-width: 8rem;
+  max-width: 24rem;
 }

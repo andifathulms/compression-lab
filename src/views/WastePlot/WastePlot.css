@@ -2,17 +2,25 @@
   margin-top: var(--s-3);
 }
 
+.waste-plot {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  padding: var(--s-1) var(--s-1) 0;
+  max-width: 44rem;
+}
+
 .waste-svg {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 40rem;
 }
 
-/* The filled area is the entire argument for arithmetic coding. */
+/* The filled area is the entire argument for arithmetic coding: it is the
+ * rounding, drawn. */
 .waste-area {
   fill: var(--huffman);
-  fill-opacity: 0.18;
+  fill-opacity: 0.16;
   stroke: none;
 }
 
@@ -26,32 +34,29 @@
 .waste-code {
   fill: none;
   stroke: var(--huffman);
-  stroke-width: 1.5;
+  stroke-width: 1.75;
 }
 
 .waste-dot {
   fill: var(--huffman);
+  stroke: var(--surface);
+  stroke-width: 1.5;
 }
 
 .waste-axis {
   font-family: var(--font-data);
   font-size: 10px;
+  font-variant-numeric: tabular-nums;
   fill: var(--ink-faint);
 }
 
 .waste-total {
-  margin: var(--s-1) 0 var(--s-2);
-  max-width: 40rem;
+  margin: var(--s-2) 0;
+  max-width: 44rem;
 }
 
 .waste-table {
   max-width: 34rem;
-  display: block;
-  max-height: 16rem;
-  overflow-y: auto;
-}
-
-.waste-table tbody tr[aria-current='true'] th,
-.waste-table tbody tr[aria-current='true'] td {
-  background: var(--page-edge);
+  max-height: 15rem;
+  margin-top: var(--s-2);
 }

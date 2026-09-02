@@ -2,34 +2,48 @@
   margin-top: var(--s-2);
 }
 
+/*
+ * The strip is the one place in the app where the text is set in the
+ * instrument voice rather than the prose voice. That is deliberate: here it is
+ * not being read, it is being indexed — distances and lengths are counted off
+ * it, and a monospaced grid is what makes a distance of nine legible as nine.
+ */
 .sw-strip {
   font-family: var(--font-data);
   font-size: var(--t-data);
-  line-height: 1.9;
+  line-height: 2;
   word-break: break-all;
   border: 1px solid var(--rule);
-  padding: var(--s-1);
-  background: var(--page);
-  max-width: 40rem;
+  border-radius: var(--r-2);
+  padding: var(--s-2);
+  background: var(--surface);
+  max-width: 44rem;
+  color: var(--ink-mid);
 }
 
 .sw-b {
-  padding: 1px 0;
+  padding: 2px 0;
   /* The window slide is 180 ms linear, and it is a discrete step. */
   transition: background var(--d-window) linear;
 }
 
 .sw-out {
   color: var(--ink-faint);
+  opacity: 0.5;
 }
 
+/* The search buffer is where a match may be found; the look-ahead is what is
+ * being matched. The first is shaded, the second is left on the ground and
+ * given the ink, so the two are told apart by presence rather than by two
+ * competing tints. */
 .sw-search {
-  background: var(--page-edge);
+  background: color-mix(in srgb, var(--lz77) 12%, transparent);
 }
 
 .sw-ahead {
   background: transparent;
   color: var(--ink);
+  font-weight: var(--weight-medium);
 }
 
 /* The match, outlined in both places simultaneously. */
@@ -40,15 +54,20 @@
 }
 
 .sw-target {
-  background: var(--page-edge);
+  background: color-mix(in srgb, var(--match) 14%, transparent);
 }
 
 .sw-legend {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--s-0);
   flex-wrap: wrap;
-  margin: var(--s-1) 0;
+  margin: var(--s-2) 0;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 .sw-key {
@@ -56,16 +75,17 @@
   width: 14px;
   height: 10px;
   border: 1px solid var(--rule);
-  margin-left: var(--s-1);
+  border-radius: 2px;
+  margin-left: var(--s-2);
 }
 
 .sw-key-search {
-  background: var(--page-edge);
+  background: color-mix(in srgb, var(--lz77) 12%, transparent);
   margin-left: 0;
 }
 
 .sw-key-ahead {
-  background: var(--page);
+  background: var(--surface);
 }
 
 .sw-key-match {
@@ -74,32 +94,40 @@
 
 .sw-token {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 2px var(--s-2);
-  font-size: var(--t-data);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--s-1) var(--s-3);
   margin: var(--s-2) 0;
-  max-width: 40rem;
+  max-width: 44rem;
 }
 
 .sw-token dt {
-  color: var(--ink-mid);
-  font-size: var(--t-small);
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 .sw-token dd {
-  margin: 0;
+  margin: 2px 0 0;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 .sw-controls {
   display: flex;
   align-items: center;
-  gap: var(--s-1);
+  gap: var(--s-2);
   flex-wrap: wrap;
+  margin: var(--s-2) 0;
 }
 
 .sw-controls input[type='range'] {
   flex: 1 1 10rem;
-  accent-color: var(--ink);
+  max-width: 20rem;
 }
 
 .sw-sliders {
@@ -113,23 +141,15 @@
 .sw-slider {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   flex: 1 1 12rem;
-}
-
-.sw-slider input[type='range'] {
-  accent-color: var(--ink);
+  max-width: 20rem;
 }
 
 .sw-table {
-  max-width: 40rem;
-  display: block;
-  max-height: 16rem;
-  overflow-y: auto;
-}
-
-.sw-table tbody tr[aria-current='true'] td {
-  background: var(--page-edge);
+  max-width: 44rem;
+  max-height: 15rem;
+  margin-top: var(--s-2);
 }
 
 @media (prefers-reduced-motion: reduce) {

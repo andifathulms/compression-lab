@@ -208,7 +208,8 @@ export function SlidingWindow({
         </label>
       </div>
 
-      <table className="sw-table">
+      <div className="sw-table scroll-box">
+      <table>
         <caption className="visually-hidden">Every token the encoder emitted</caption>
         <thead>
           <tr>
@@ -242,6 +243,7 @@ export function SlidingWindow({
           ))}
         </tbody>
       </table>
+      </div>
       {steps.length > 400 ? (
         <p className="assumption">
           The table lists the first 400 of {steps.length.toLocaleString()} tokens. The scrubber

@@ -63,6 +63,7 @@ export function WastePlot({
 
   return (
     <div className="waste">
+      <div className="waste-plot">
       <svg
         className="waste-svg"
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -79,7 +80,7 @@ export function WastePlot({
               y={PAD.top}
               width={step}
               height={plotH}
-              fill={e.symbol === selected ? 'var(--page-edge)' : 'transparent'}
+              fill={e.symbol === selected ? 'var(--huffman-tint)' : 'transparent'}
             />
             <circle cx={x(i)} cy={y(e.codeBits)} r={2} className="waste-dot" />
           </g>
@@ -93,6 +94,7 @@ export function WastePlot({
           symbols, most frequent first
         </text>
       </svg>
+      </div>
 
       <p className="waste-total">
         <span className="figure">{(wasteBits / 8).toFixed(0)} B</span>{' '}
@@ -102,7 +104,8 @@ export function WastePlot({
         </span>
       </p>
 
-      <table className="waste-table">
+      <div className="waste-table scroll-box">
+      <table>
         <caption className="visually-hidden">
           Ideal cost and assigned code length for every symbol that occurs
         </caption>
@@ -136,6 +139,7 @@ export function WastePlot({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

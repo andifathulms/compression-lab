@@ -1,20 +1,64 @@
+/**
+ * The staircase. The app's centre, and the only instrument that is always on
+ * screen.
+ *
+ * It sits in a framed plot on the raised surface rather than loose on the
+ * bench, because it is pinned and everything else scrolls underneath it: the
+ * frame is what stops a panel sliding past from looking like part of the
+ * chart.
+ */
+
 .stair {
   border-top: 0;
+  padding-top: var(--s-2);
 }
 
 .stair-headline {
   display: flex;
   align-items: baseline;
-  gap: var(--s-1);
+  gap: var(--s-2);
   flex-wrap: wrap;
-  margin: var(--s-2) 0 var(--s-1);
+  margin: var(--s-1) 0 var(--s-2);
+}
+
+.stair-headline .display {
+  color: var(--ink);
+}
+
+.stair-headline .unit {
+  max-width: 22rem;
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.stair-plot {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  padding: var(--s-1) var(--s-1) 0;
+  max-width: 44rem;
 }
 
 .stair-svg {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 40rem;
+}
+
+/* The order in view. A marker, not a highlight: the slider is a continuous
+ * control and this follows it on the same frame, with no transition. */
+.stair-band {
+  fill: var(--sunk);
+}
+
+.stair-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.stair-hit:hover {
+  fill: color-mix(in srgb, var(--ink) 4%, transparent);
 }
 
 /* The entropy steps are ink-mid, not a coder colour. They are not a coder's
@@ -23,58 +67,100 @@
   fill: none;
   stroke: var(--ink-mid);
   stroke-width: 2;
+  stroke-linejoin: round;
 }
 
 .stair-model {
   fill: none;
   stroke: var(--model-cost);
   stroke-width: 1.5;
+  stroke-dasharray: 5 3;
 }
 
 .stair-total {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1.5;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* A coder's point sits on a gridline as often as not, so it carries a ring of
+ * the plot ground to lift it off one. */
+.stair-point {
+  stroke: var(--surface);
+  stroke-width: 2;
 }
 
 .stair-axis {
   font-family: var(--font-data);
   font-size: 10px;
+  font-variant-numeric: tabular-nums;
   fill: var(--ink-faint);
 }
 
 .stair-axis-on {
   fill: var(--ink);
+  font-weight: 600;
 }
 
 .stair-key {
   font-family: var(--font-data);
   font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .stair-annotation {
   font-family: var(--font-data);
   font-size: 10px;
+  font-weight: 500;
   fill: var(--ink);
 }
 
 .stair-orders {
-  display: flex;
-  gap: 0;
-  margin: var(--s-1) 0;
+  margin: var(--s-2) 0;
 }
 
-.stair-orders button + button {
-  border-left: 0;
+.stair-orders .segmented-item {
+  min-width: 2.6rem;
+  text-align: center;
+  justify-content: center;
 }
 
+.stair-orders .segmented-item[aria-pressed='true'] {
+  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--ink);
+}
+
+/* The split, as figures rather than as a sentence of numbers separated by
+ * middots. Four quantities in a row read as four quantities; the same four in
+ * a line of prose read as one long string. */
 .stair-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-2) 0;
+  max-width: 44rem;
+}
+
+.stair-split dt {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.stair-split dd {
+  margin: 2px 0 0;
+  font-family: var(--font-data);
   font-size: var(--t-data);
-  color: var(--ink-mid);
-  margin: var(--s-1) 0;
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 .stair-table {
   margin: var(--s-2) 0;
-  max-width: 40rem;
+  max-width: 44rem;
+  max-height: 15rem;
 }

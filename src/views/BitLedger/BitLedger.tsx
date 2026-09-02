@@ -36,7 +36,7 @@ export function BitLedger({ steps, cursor, onSelect }: Props): JSX.Element {
           {steps.length.toLocaleString()} symbols traced
         </span>
       </div>
-      <div className="ledger-scroll">
+      <div className="ledger-scroll scroll-box">
         <table>
           <caption className="visually-hidden">
             Each coded symbol, its probability under the model, its cost in bits, the bits it put

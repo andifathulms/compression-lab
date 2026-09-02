@@ -223,7 +223,8 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         </span>
       </div>
 
-      <table className="ht-table">
+      <div className="ht-table scroll-box">
+      <table>
         <caption className="visually-hidden">
           Every symbol, its smoothed weight and its canonical code
         </caption>
@@ -255,6 +256,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

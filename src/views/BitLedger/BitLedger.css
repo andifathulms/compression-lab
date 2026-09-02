@@ -1,27 +1,10 @@
 .ledger {
-  margin-top: var(--s-2);
+  margin-top: var(--s-3);
 }
 
 .ledger-scroll {
-  max-height: 20rem;
-  overflow-y: auto;
-  overflow-x: auto;
-  border-top: 1px solid var(--rule);
-}
-
-.ledger table {
-  max-width: 34rem;
-}
-
-.ledger thead th {
-  position: sticky;
-  top: 0;
-  background: var(--page);
-}
-
-.ledger tbody tr[aria-current='true'] td,
-.ledger tbody tr[aria-current='true'] th {
-  background: var(--page-edge);
+  max-height: 19rem;
+  max-width: 40rem;
 }
 
 .ledger-symbol {
@@ -30,8 +13,16 @@
 
 .ledger-bits {
   text-align: left;
-  color: var(--ink-mid);
+  font-family: var(--font-data);
+  color: var(--arithmetic);
   max-width: 12rem;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* A row that emitted nothing is not a gap in the ledger, it is a symbol the
+ * coder absorbed without resolving a bit. It gets a mark rather than a blank. */
+.ledger-bits:empty::after {
+  content: '·';
+  color: var(--ink-faint);
 }
