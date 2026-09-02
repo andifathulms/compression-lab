@@ -41,7 +41,7 @@ src/
 │  └─ trace.ts       what the views render
 ├─ views/        one directory per instrument
 ├─ state/        app state, URL serialisation, the analysis hook
-├─ ui/           control bar and the surprisal ramp
+├─ ui/           masthead, instrument rail, theme, the surprisal ramp
 ├─ styles/       tokens and base
 └─ samples/      bundled texts, plain .txt, imported with ?raw
 tests/
@@ -106,13 +106,23 @@ token encoding, and the model serialisation format.
   there, and becomes a regression guard. **Run `npm test` locally to check the
   criterion itself**; the run prints p50, p90 and the maximum either way.
 
-- **Literata and Iosevka are not bundled.** No woff2 files ship here, so the
-  faces fall back to Georgia and the platform monospace — both chosen for the
-  properties the design relies on, a large x-height that survives being tinted
-  toward the page colour and tabular figures. To use the real faces, drop the
-  woff2 files into `src/styles/fonts/` and add `@font-face` rules at the top of
-  `src/styles/tokens.css`. Nothing else changes, and nothing is fetched over
-  the network either way.
+- **The faces are bundled.** Literata for prose and JetBrains Mono for every
+  figure, both as variable woff2 subsetted to Latin and Latin Extended, which
+  is what the corpus needs — English, German, Finnish, Indonesian. Five files,
+  about 200 kB, in `src/styles/fonts/`, declared in `src/styles/fonts.css`.
+  Nothing is fetched over the network; the fallback stack in `tokens.css`
+  carries the first paint.
+
+  Iosevka was the original specification for the instrument voice and is not
+  used: it has no variable webfont worth vendoring at this subset size.
+  JetBrains Mono has the tabular figures and the open apertures the slot was
+  for.
+
+- **Two grounds.** Paper and bench, chosen by the reader — the control is in
+  the masthead, the choice is stored locally and is deliberately not in the
+  URL, and "system" keeps following the operating system after load. The
+  surprisal ramp is defined once per ground: on paper it runs toward ink, on
+  the bench toward a warm near-white. See DESIGN.md §2.
 
 ## The parallel corpus
 
