@@ -81,10 +81,6 @@
   overflow-y: auto;
 }
 
-.ht-table tbody tr {
-  cursor: pointer;
-}
-
 .ht-table tbody tr[aria-current='true'] th,
 .ht-table tbody tr[aria-current='true'] td {
   background: var(--page-edge);

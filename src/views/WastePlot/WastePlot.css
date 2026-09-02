@@ -51,10 +51,6 @@
   overflow-y: auto;
 }
 
-.waste-table tbody tr {
-  cursor: pointer;
-}
-
 .waste-table tbody tr[aria-current='true'] th,
 .waste-table tbody tr[aria-current='true'] td {
   background: var(--page-edge);

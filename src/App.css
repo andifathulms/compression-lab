@@ -29,12 +29,31 @@
   /* The text column is fixed at its measure; the instruments take the rest.
    * The text is the specimen, the instruments are the apparatus. */
   grid-template-columns: var(--measure) minmax(0, 1fr);
+  grid-template-areas:
+    'text stair'
+    'text bay';
+  grid-template-rows: auto 1fr;
   gap: 0 var(--s-4);
   padding: 0 var(--s-3) var(--s-4);
   align-items: start;
 }
 
+.app-stair {
+  grid-area: stair;
+  /* Pinned, because every other instrument is an elaboration of it. */
+  position: sticky;
+  top: 0;
+  background: var(--page);
+  z-index: 1;
+}
+
+.app-bay {
+  grid-area: bay;
+  min-width: 0;
+}
+
 .app-text {
+  grid-area: text;
   border-top: 1px solid var(--rule);
   position: sticky;
   top: 0;
@@ -57,10 +76,6 @@
   font-size: var(--t-body);
 }
 
-.app-instruments {
-  min-width: 0;
-}
-
 .app-footer {
   position: sticky;
   bottom: 0;
@@ -68,17 +83,35 @@
 }
 
 @media (max-width: 860px) {
+  /* Staircase first, then the text surface, then the coder bay. */
   .app-main {
-    /* Staircase first, then the text surface, then the coder bay. */
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'stair'
+      'text'
+      'bay';
+    grid-template-rows: auto auto auto;
   }
   .app-text {
     position: static;
     max-height: none;
-    order: 2;
   }
-  .app-instruments {
-    order: 1;
+  .app-stair {
+    /* Sticky at reduced height, so the anchor is still an anchor. */
+    max-height: 46vh;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-header,
+  .app-main {
+    padding-left: var(--s-2);
+    padding-right: var(--s-2);
+  }
+  .app-stair {
+    position: static;
+    max-height: none;
   }
 }
 

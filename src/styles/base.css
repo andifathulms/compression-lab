@@ -168,6 +168,26 @@ th {
   font-weight: 400;
 }
 
+/* Table rows carry a real button rather than a click handler on the row, so
+ * every selection in the app is on the keyboard path. */
+.row-button {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  font-family: var(--font-data);
+  color: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+
+.row-button[aria-pressed='true'] {
+  background: none;
+  text-decoration-color: var(--ink);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

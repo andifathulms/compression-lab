@@ -117,12 +117,17 @@ export function WastePlot({
         </thead>
         <tbody>
           {shown.map((e) => (
-            <tr
-              key={e.symbol}
-              aria-current={e.symbol === selected ? 'true' : undefined}
-              onClick={() => onSelect(selected === e.symbol ? null : e.symbol)}
-            >
-              <th scope="row">{display(e.symbol)}</th>
+            <tr key={e.symbol} aria-current={e.symbol === selected ? 'true' : undefined}>
+              <th scope="row">
+                <button
+                  type="button"
+                  className="row-button"
+                  aria-pressed={e.symbol === selected}
+                  onClick={() => onSelect(selected === e.symbol ? null : e.symbol)}
+                >
+                  {display(e.symbol)}
+                </button>
+              </th>
               <td>{e.frequency.toLocaleString()}</td>
               <td>{e.idealBits.toFixed(3)}</td>
               <td>{e.codeBits}</td>

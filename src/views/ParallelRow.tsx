@@ -78,13 +78,17 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr
-              key={row.id}
-              aria-current={row.id === currentSampleId ? 'true' : undefined}
-              onClick={() => onChoose(row.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <th scope="row">{row.language}</th>
+            <tr key={row.id} aria-current={row.id === currentSampleId ? 'true' : undefined}>
+              <th scope="row">
+                <button
+                  type="button"
+                  className="row-button"
+                  aria-pressed={row.id === currentSampleId}
+                  onClick={() => onChoose(row.id)}
+                >
+                  {row.language}
+                </button>
+              </th>
               <td>{row.symbols.toLocaleString()}</td>
               <td>{row.h0.toFixed(3)}</td>
               <td>{row.h2.toFixed(3)}</td>

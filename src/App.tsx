@@ -102,6 +102,18 @@ export function App(): JSX.Element {
       </header>
 
       <main className="app-main">
+        <div className="app-stair">
+          <Staircase
+            analysis={analysis}
+            order={state.order}
+            coder={state.coder}
+            huffman={huffman.result}
+            arithmetic={arithmetic.result}
+            lz77={lz77.result}
+            onOrder={(order) => set('order', order)}
+          />
+        </div>
+
         <section className="app-text panel" aria-label="The text surface">
           <div className="panel-heading">
             <h2>The text</h2>
@@ -158,6 +170,7 @@ export function App(): JSX.Element {
             onChange={(text) => setText(text, null)}
             onHover={setHover}
             hoverPosition={hover}
+            onCaret={setHover}
             highlightSymbol={huffmanSymbol}
             highlightRange={windowRanges.lookahead}
             matchRange={windowRanges.match}
@@ -166,16 +179,7 @@ export function App(): JSX.Element {
           />
         </section>
 
-        <section className="app-instruments" aria-label="Instruments">
-          <Staircase
-            analysis={analysis}
-            order={state.order}
-            coder={state.coder}
-            huffman={huffman.result}
-            arithmetic={arithmetic.result}
-            lz77={lz77.result}
-            onOrder={(order) => set('order', order)}
-          />
+        <section className="app-bay" aria-label="The coder bay">
           <CoderBay
             analysis={analysis}
             state={state}

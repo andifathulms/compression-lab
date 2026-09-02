@@ -154,6 +154,24 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
                   isSelected ? 'ht-node ht-node-on' : inMerge ? 'ht-node ht-node-merge' : 'ht-node'
                 }
                 onClick={isLeaf ? () => toggle(p.node.symbol!) : undefined}
+                onKeyDown={
+                  isLeaf
+                    ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          toggle(p.node.symbol!);
+                        }
+                      }
+                    : undefined
+                }
+                tabIndex={isLeaf ? 0 : undefined}
+                role={isLeaf ? 'button' : undefined}
+                aria-pressed={isLeaf ? isSelected : undefined}
+                aria-label={
+                  isLeaf
+                    ? `${display(p.node.symbol!)}, code ${trace.codes.get(p.node.symbol!) ?? ''}`
+                    : undefined
+                }
               />
               {isLeaf ? (
                 <text x={px(p)} y={py(p) + 16} className="ht-leaf" textAnchor="middle">
@@ -219,12 +237,17 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         </thead>
         <tbody>
           {codes.map((row) => (
-            <tr
-              key={row.symbol}
-              aria-current={row.symbol === selected ? 'true' : undefined}
-              onClick={() => toggle(row.symbol)}
-            >
-              <th scope="row">{display(row.symbol)}</th>
+            <tr key={row.symbol} aria-current={row.symbol === selected ? 'true' : undefined}>
+              <th scope="row">
+                <button
+                  type="button"
+                  className="row-button"
+                  aria-pressed={row.symbol === selected}
+                  onClick={() => toggle(row.symbol)}
+                >
+                  {display(row.symbol)}
+                </button>
+              </th>
               <td>{formatWeight(row.weight)}</td>
               <td className="ht-code">{row.code}</td>
               <td>{row.code.length}</td>

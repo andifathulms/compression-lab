@@ -52,12 +52,17 @@ export function BitLedger({ steps, cursor, onSelect }: Props): JSX.Element {
           </thead>
           <tbody ref={bodyRef}>
             {steps.map((step) => (
-              <tr
-                key={step.index}
-                aria-current={step.index === cursor ? 'true' : undefined}
-                onClick={() => onSelect(step.index)}
-              >
-                <td>{step.index}</td>
+              <tr key={step.index} aria-current={step.index === cursor ? 'true' : undefined}>
+                <td>
+                  <button
+                    type="button"
+                    className="row-button"
+                    aria-pressed={step.index === cursor}
+                    onClick={() => onSelect(step.index)}
+                  >
+                    {step.index}
+                  </button>
+                </td>
                 <td className="ledger-symbol">{display(step.symbol)}</td>
                 <td>{step.probability.toFixed(4)}</td>
                 <td>{step.costBits.toFixed(2)}</td>

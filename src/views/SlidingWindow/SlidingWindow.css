@@ -128,10 +128,6 @@
   overflow-y: auto;
 }
 
-.sw-table tbody tr {
-  cursor: pointer;
-}
-
 .sw-table tbody tr[aria-current='true'] td {
   background: var(--page-edge);
 }

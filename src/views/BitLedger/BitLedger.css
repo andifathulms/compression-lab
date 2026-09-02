@@ -19,10 +19,6 @@
   background: var(--page);
 }
 
-.ledger tbody tr {
-  cursor: pointer;
-}
-
 .ledger tbody tr[aria-current='true'] td,
 .ledger tbody tr[aria-current='true'] th {
   background: var(--page-edge);

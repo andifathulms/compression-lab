@@ -41,6 +41,8 @@ interface Props {
   charOffsets: Int32Array;
   onChange: (text: string) => void;
   onHover: (position: number | null) => void;
+  /** The caret moved. The readout is a query, so it follows the keyboard too. */
+  onCaret: (position: number | null) => void;
   /** Every occurrence of this symbol is outlined, from the Huffman tree view. */
   highlightSymbol: string | null;
   /** Symbol range to outline, from the sliding window view. */
@@ -81,6 +83,7 @@ export function TextSurface({
   charOffsets,
   onChange,
   onHover,
+  onCaret,
   highlightSymbol,
   highlightRange,
   matchRange,
@@ -263,6 +266,20 @@ export function TextSurface({
           placeholder={placeholder}
           aria-label="The text being measured. Type or paste to replace it."
           onChange={(e) => onChange(e.target.value)}
+          onSelect={(e) => {
+            // The caret is the keyboard's pointer. Without this the readout
+            // would be reachable only with a mouse.
+            const at = e.currentTarget.selectionStart;
+            let lo = 0;
+            let hi = symbols.length;
+            while (lo < hi) {
+              const mid = (lo + hi) >> 1;
+              if (charOffsets[mid] < at) lo = mid + 1;
+              else hi = mid;
+            }
+            const position = charOffsets[lo] === at ? lo : Math.max(0, lo - 1);
+            onCaret(position < symbols.length ? position : null);
+          }}
         />
       </div>
     </div>

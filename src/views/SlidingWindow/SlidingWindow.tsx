@@ -222,12 +222,17 @@ export function SlidingWindow({
         </thead>
         <tbody>
           {steps.slice(0, 400).map((s, i) => (
-            <tr
-              key={s.position}
-              aria-current={i === cursor ? 'true' : undefined}
-              onClick={() => setCursor(i)}
-            >
-              <td>{i}</td>
+            <tr key={s.position} aria-current={i === cursor ? 'true' : undefined}>
+              <td>
+                <button
+                  type="button"
+                  className="row-button"
+                  aria-pressed={i === cursor}
+                  onClick={() => setCursor(i)}
+                >
+                  {i}
+                </button>
+              </td>
               <td>{s.position}</td>
               <td>{s.emitted.kind}</td>
               <td>{s.emitted.kind === 'match' ? s.emitted.distance : '·'}</td>
