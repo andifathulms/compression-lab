@@ -28,13 +28,7 @@
  * count, and those are in the figure, because they are really transmitted.
  */
 
-import {
-  FrequencyModel,
-  contextKey,
-  contextLength,
-  contextText,
-  type Order,
-} from './model.ts';
+import { FrequencyModel, type Order } from './model.ts';
 
 const MAGIC = [0x43, 0x4c, 0x4d, 0x31]; // 'CLM1'
 
@@ -86,18 +80,31 @@ class ByteReader {
   }
 }
 
+interface Row {
+  context: string[];
+  entries: Array<readonly [number, number]>;
+}
+
 /**
  * Contexts in a canonical order - by length, then by the context text - so
  * that two models built from the same text serialise identically and the
- * measured size is reproducible.
+ * measured size is reproducible. Interning gives contexts ids in first-seen
+ * order, which depends on where in the text they appear; that would still
+ * round-trip, but it would make the measured size depend on nothing the reader
+ * can see.
  */
-function canonicalContexts(model: FrequencyModel): string[] {
-  return Array.from(model.counts.keys()).sort((a, b) => {
-    const la = contextLength(a);
-    const lb = contextLength(b);
-    if (la !== lb) return la - lb;
-    const ta = contextText(a);
-    const tb = contextText(b);
+function canonicalRows(model: FrequencyModel): Row[] {
+  const rows: Row[] = [];
+  model.forEachContext((_id, context, row) => {
+    rows.push({
+      context,
+      entries: Array.from(row.entries()).sort((a, b) => a[0] - b[0]),
+    });
+  });
+  return rows.sort((a, b) => {
+    if (a.context.length !== b.context.length) return a.context.length - b.context.length;
+    const ta = a.context.join('');
+    const tb = b.context.join('');
     return ta < tb ? -1 : ta > tb ? 1 : 0;
   });
 }
@@ -123,17 +130,12 @@ export function serialiseModel(model: FrequencyModel): Uint8Array {
     return w.finish();
   }
 
-  const contexts = canonicalContexts(model);
-  w.varint(contexts.length);
-  for (const key of contexts) {
-    const symbols = Array.from(contextText(key));
-    w.varint(symbols.length);
-    for (const s of symbols) w.varint(index.get(s)!);
+  const rows = canonicalRows(model);
+  w.varint(rows.length);
+  for (const { context, entries } of rows) {
+    w.varint(context.length);
+    for (const s of context) w.varint(index.get(s)!);
 
-    const row = model.counts.get(key)!;
-    const entries = Array.from(row.entries())
-      .map(([symbol, count]) => [index.get(symbol)!, count] as const)
-      .sort((a, b) => a[0] - b[0]);
     w.varint(entries.length);
     let last = 0;
     for (const [i, count] of entries) {
@@ -163,23 +165,21 @@ export function deserialiseModel(bytes: Uint8Array): FrequencyModel {
     alphabet.push(String.fromCodePoint(point));
   }
 
-  const counts = new Map<string, Map<string, number>>();
+  const model = new FrequencyModel(order, adaptive, alphabet);
   const contextCount = r.varint();
   for (let c = 0; c < contextCount; c++) {
     const length = r.varint();
     const symbols: string[] = [];
     for (let i = 0; i < length; i++) symbols.push(alphabet[r.varint()]);
     const rowSize = r.varint();
-    const row = new Map<string, number>();
+    const entries: Array<readonly [number, number]> = [];
     let last = 0;
     for (let i = 0; i < rowSize; i++) {
       last += r.varint();
-      row.set(alphabet[last], r.varint());
+      entries.push([last, r.varint()] as const);
     }
-    counts.set(contextKey(symbols), row);
+    model.loadRow(symbols, entries);
   }
-
-  const model = new FrequencyModel(order, adaptive, alphabet, counts);
   model.symbolCount = symbolCount;
   return model;
 }
@@ -205,7 +205,7 @@ export function modelCosts(models: readonly FrequencyModel[]): ModelCost[] {
       order: model.order,
       bytes: bits / 8,
       bits,
-      contexts: model.adaptive ? 0 : model.counts.size,
+      contexts: model.adaptive ? 0 : model.contextCount,
       bitsPerSymbol: model.symbolCount > 0 ? bits / model.symbolCount : 0,
     };
   });

@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { buildModels, toSymbols, alphabetOf, contextAt, ALPHA } from '../src/engine/model.ts';
+import {
+  buildModelsFromIndex,
+  indexText,
+  toSymbols,
+  alphabetOf,
+  contextAt,
+  ALPHA,
+} from '../src/engine/model.ts';
 import {
   conditionalEntropy,
   entropyStaircase,
@@ -40,10 +47,10 @@ describe('bit i/o', () => {
 describe('entropy', () => {
   it('H0 from the model matches a direct frequency calculation', () => {
     for (const { name, text } of CORPUS) {
-      const symbols = toSymbols(text);
-      const models = buildModels(symbols);
-      expect(conditionalEntropy(symbols, models[0]), name).toBeCloseTo(
-        order0Entropy(symbols),
+      const index = indexText(toSymbols(text));
+      const models = buildModelsFromIndex(index);
+      expect(conditionalEntropy(index, models[0]), name).toBeCloseTo(
+        order0Entropy(index.symbols),
         10,
       );
     }
@@ -51,8 +58,8 @@ describe('entropy', () => {
 
   it('conditional entropies are non-increasing in the order', () => {
     for (const { name, text } of CORPUS) {
-      const symbols = toSymbols(text);
-      const steps = entropyStaircase(symbols, buildModels(symbols));
+      const index = indexText(toSymbols(text));
+      const steps = entropyStaircase(index, buildModelsFromIndex(index));
       for (let k = 1; k < steps.length; k++) {
         expect(steps[k].bits, `${name} H${k} <= H${k - 1}`).toBeLessThanOrEqual(
           steps[k - 1].bits + 1e-9,
@@ -67,8 +74,8 @@ describe('entropy', () => {
   });
 
   it('a single repeated symbol has zero entropy at every order', () => {
-    const symbols = toSymbols('x'.repeat(200));
-    for (const step of entropyStaircase(symbols, buildModels(symbols))) {
+    const index = indexText(toSymbols('x'.repeat(200)));
+    for (const step of entropyStaircase(index, buildModelsFromIndex(index))) {
       expect(step.bits).toBeCloseTo(0, 12);
     }
   });
@@ -77,7 +84,7 @@ describe('entropy', () => {
 describe('model', () => {
   it('probabilities under one context sum to one', () => {
     const symbols = toSymbols(CORPUS[6].text);
-    const models = buildModels(symbols);
+    const models = buildModelsFromIndex(indexText(symbols));
     for (const model of models) {
       const context = contextAt(symbols, 10, model.order);
       const total = model.alphabet.reduce((s, sym) => s + model.probability(context, sym), 0);
@@ -87,7 +94,7 @@ describe('model', () => {
 
   it('smoothing gives an unseen context a uniform distribution', () => {
     const symbols = toSymbols('abcabcabc');
-    const model = buildModels(symbols)[2];
+    const model = buildModelsFromIndex(indexText(symbols))[2];
     const p = model.probability(['z', 'z'], 'a');
     expect(p).toBeCloseTo(ALPHA / (ALPHA * model.alphabet.length), 12);
   });
@@ -100,12 +107,12 @@ describe('model', () => {
   it('surprisal is finite everywhere and averages above the entropy', () => {
     for (const { name, text } of CORPUS) {
       if (text.length === 0) continue;
-      const symbols = toSymbols(text);
-      const models = buildModels(symbols);
-      const s = surprisals(symbols, models[2]);
+      const index = indexText(toSymbols(text));
+      const models = buildModelsFromIndex(index);
+      const s = surprisals(index, models[2]);
       const mean = s.reduce((a, b) => a + b, 0) / s.length;
       expect(Number.isFinite(mean), name).toBe(true);
-      expect(mean, name).toBeGreaterThanOrEqual(conditionalEntropy(symbols, models[2]) - 1e-9);
+      expect(mean, name).toBeGreaterThanOrEqual(conditionalEntropy(index, models[2]) - 1e-9);
     }
   });
 });

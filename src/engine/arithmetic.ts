@@ -16,7 +16,7 @@
  */
 
 import { BitWriter, BitReader } from './bitio.ts';
-import { contextAt, type FrequencyModel } from './model.ts';
+import { contextAt, type FrequencyModel, type TextIndex } from './model.ts';
 import type { ArithmeticStep, ArithmeticTrace } from './trace.ts';
 
 export const PRECISION = 48n;
@@ -28,18 +28,58 @@ const THREE_QUARTERS = QUARTER * 3n;
 /** Largest frequency total the coder can carve without the interval collapsing. */
 export const MAX_TOTAL = 1n << (PRECISION - 2n);
 
-interface Cumulative {
-  /** cum[i] is the total frequency of alphabet positions below i. */
-  cum: Float64Array;
-  freqs: number[];
-  total: number;
-}
+/**
+ * Running totals of the smoothed frequencies for one context, held as bigints
+ * because that is what the interval arithmetic consumes.
+ *
+ * A static model's counts do not change while coding, so a context's table is
+ * built once and kept. That removes both the per-symbol refill and the
+ * per-symbol BigInt conversion, which together were most of the coder's time.
+ * An adaptive model's counts change under it, so it rebuilds every symbol.
+ */
+const CACHE_LIMIT = 50_000;
 
-function cumulative(model: FrequencyModel, context: readonly string[]): Cumulative {
-  const { freqs, total } = model.frequencies(context);
-  const cum = new Float64Array(freqs.length + 1);
-  for (let i = 0; i < freqs.length; i++) cum[i + 1] = cum[i] + freqs[i];
-  return { cum, freqs, total };
+class Cumulative {
+  /** cum[i] is the total frequency of alphabet positions below i. */
+  cum: BigInt64Array;
+  total = 0n;
+  private readonly scratch: BigInt64Array;
+  private readonly cache: Array<BigInt64Array | undefined> | null;
+
+  constructor(private readonly model: FrequencyModel) {
+    const width = model.alphabet.length + 1;
+    this.scratch = new BigInt64Array(width);
+    this.cum = this.scratch;
+    // Caching a table per context is only worth its memory while the contexts
+    // are countable; above the limit the coder rebuilds each time.
+    this.cache = model.adaptive || model.index.size > CACHE_LIMIT ? null : [];
+  }
+
+  at(contextId: number): this {
+    const hit = this.cache?.[contextId];
+    if (hit !== undefined) {
+      this.cum = hit;
+      this.total = hit[hit.length - 1];
+      return this;
+    }
+    const target = this.cache ? new BigInt64Array(this.scratch.length) : this.scratch;
+    const { freqs } = this.model.fill(contextId);
+    let running = 0n;
+    target[0] = 0n;
+    for (let i = 0; i < freqs.length; i++) {
+      running += BigInt(freqs[i]);
+      target[i + 1] = running;
+    }
+    if (this.cache) this.cache[contextId] = target;
+    this.cum = target;
+    this.total = running;
+    return this;
+  }
+
+  /** p(symbol), from the band widths rather than a second frequency lookup. */
+  probability(symbolId: number): number {
+    return Number(this.cum[symbolId + 1] - this.cum[symbolId]) / Number(this.total);
+  }
 }
 
 export interface ArithmeticEncoded {
@@ -55,10 +95,13 @@ export interface ArithmeticEncoded {
  *   coding does.
  */
 export function arithmeticEncode(
-  symbols: readonly string[],
+  index: TextIndex,
   model: FrequencyModel,
   traceLimit = 512,
 ): ArithmeticEncoded {
+  const symbols = index.symbols;
+  const contextIds = index.contexts[model.order].positionIds!;
+  const table = new Cumulative(model);
   const writer = new BitWriter();
   let low = 0n;
   let high = TOP;
@@ -79,20 +122,18 @@ export function arithmeticEncode(
   };
 
   for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    const { cum, freqs, total } = cumulative(model, context);
-    const index = model.indexOf(symbols[i]);
-    if (index < 0) throw new Error(`symbol ${JSON.stringify(symbols[i])} is not in the alphabet`);
-    if (BigInt(total) > MAX_TOTAL) throw new Error('frequency total exceeds the coder precision');
+    const contextId = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    const { cum, total } = table.at(contextId);
+    if (total > MAX_TOTAL) throw new Error('frequency total exceeds the coder precision');
 
     const lowBefore = low;
     const highBefore = high;
     const range = high - low + 1n;
-    const t = BigInt(total);
-    high = low + (range * BigInt(cum[index + 1])) / t - 1n;
-    low = low + (range * BigInt(cum[index])) / t;
+    high = low + (range * cum[symbolId + 1]) / total - 1n;
+    low = low + (range * cum[symbolId]) / total;
 
-    const probability = freqs[index] / total;
+    const probability = table.probability(symbolId);
     const costBits = -Math.log2(probability);
     widthLog2 -= costBits;
 
@@ -121,13 +162,13 @@ export function arithmeticEncode(
       steps.push({
         index: i,
         symbol: symbols[i],
-        context: context.join(''),
+        context: contextAt(symbols, i, model.order).join(''),
         lowBefore,
         highBefore,
         lowAfter: low,
         highAfter: high,
-        idealLow: cum[index] / total,
-        idealHigh: cum[index + 1] / total,
+        idealLow: Number(cum[symbolId]) / Number(total),
+        idealHigh: Number(cum[symbolId + 1]) / Number(total),
         bitsEmitted: emitted.join(''),
         underflowCount: pending,
         costBits,
@@ -137,7 +178,7 @@ export function arithmeticEncode(
       });
     }
 
-    if (model.adaptive) model.observe(context, symbols[i]);
+    if (model.adaptive) model.observeAt(contextId, symbolId);
   }
 
   // Flush: one more bit distinguishes the interval, and the pending bits go
@@ -165,6 +206,7 @@ export function arithmeticDecode(
 ): string {
   if (symbolCount === 0) return '';
   const reader = new BitReader(bytes);
+  const table = new Cumulative(model);
   let low = 0n;
   let high = TOP;
   let value = 0n;
@@ -172,24 +214,23 @@ export function arithmeticDecode(
 
   const out: string[] = [];
   for (let i = 0; i < symbolCount; i++) {
-    const context = contextAt(out, i, model.order);
-    const { cum, total } = cumulative(model, context);
-    const t = BigInt(total);
+    const contextId = model.index.idFor(contextAt(out, i, model.order));
+    const { cum, total } = table.at(contextId);
     const range = high - low + 1n;
-    const scaled = ((value - low + 1n) * t - 1n) / range;
+    const scaled = ((value - low + 1n) * total - 1n) / range;
 
     // Binary search for the band containing `scaled`.
     let lo = 0;
     let hi = model.alphabet.length - 1;
     while (lo < hi) {
       const mid = (lo + hi) >> 1;
-      if (BigInt(cum[mid + 1]) <= scaled) lo = mid + 1;
+      if (cum[mid + 1] <= scaled) lo = mid + 1;
       else hi = mid;
     }
     const index = lo;
 
-    high = low + (range * BigInt(cum[index + 1])) / t - 1n;
-    low = low + (range * BigInt(cum[index])) / t;
+    high = low + (range * cum[index + 1]) / total - 1n;
+    low = low + (range * cum[index]) / total;
 
     for (;;) {
       if (high < HALF) {
@@ -210,20 +251,21 @@ export function arithmeticDecode(
       value = value * 2n + BigInt(reader.readBit());
     }
 
-    const symbol = model.alphabet[index];
-    out.push(symbol);
-    if (model.adaptive) model.observe(context, symbol);
+    out.push(model.alphabet[index]);
+    if (model.adaptive) model.observeAt(contextId, index);
   }
   return out.join('');
 }
 
 /** -sum log2 p(symbol), the bound the coder is measured against. */
-export function idealCodeBits(symbols: readonly string[], model: FrequencyModel): number {
+export function idealCodeBits(index: TextIndex, model: FrequencyModel): number {
+  const contextIds = index.contexts[model.order].positionIds!;
   let bits = 0;
-  for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    bits += -Math.log2(model.probability(context, symbols[i]));
-    if (model.adaptive) model.observe(context, symbols[i]);
+  for (let i = 0; i < index.symbols.length; i++) {
+    const contextId = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    bits += -Math.log2(model.probabilityAt(contextId, symbolId));
+    if (model.adaptive) model.observeAt(contextId, symbolId);
   }
   return bits;
 }

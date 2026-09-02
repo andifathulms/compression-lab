@@ -15,10 +15,10 @@
 
 import {
   contextAt,
-  contextKey,
+  indexText,
   type FrequencyModel,
   type Order,
-  MAX_ORDER,
+  type TextIndex,
 } from './model.ts';
 
 export interface EntropyResult {
@@ -35,30 +35,27 @@ export interface EntropyResult {
  * Every term is well defined: the context and symbol at position i were both
  * counted from this same text, so the numerator is at least 1.
  */
-export function conditionalEntropy(
-  symbols: readonly string[],
-  model: FrequencyModel,
-): number {
-  if (symbols.length === 0) return 0;
+export function conditionalEntropy(index: TextIndex, model: FrequencyModel): number {
+  const n = index.symbols.length;
+  if (n === 0) return 0;
+  const contextIds = index.contexts[model.order].positionIds!;
   let bits = 0;
-  for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    const seen = model.count(context, symbols[i]);
-    const total = model.contextTotal(context);
-    bits += -Math.log2(seen / total);
+  for (let i = 0; i < n; i++) {
+    const id = contextIds[i];
+    bits += -Math.log2(model.countAt(id, index.symbolIds[i]) / model.totalAt(id));
   }
-  return bits / symbols.length;
+  return bits / n;
 }
 
 /** The staircase: one entry per order, non-increasing in `bits`. */
 export function entropyStaircase(
-  symbols: readonly string[],
+  index: TextIndex,
   models: readonly FrequencyModel[],
 ): EntropyResult[] {
-  return models.map((m) => ({
-    order: m.order,
-    bits: conditionalEntropy(symbols, m),
-    contexts: m.counts.size,
+  return models.map((model) => ({
+    order: model.order,
+    bits: conditionalEntropy(index, model),
+    contexts: index.contexts[model.order].size,
   }));
 }
 
@@ -84,60 +81,81 @@ export function order0Entropy(symbols: readonly string[]): number {
  *
  * This is what the text surface renders as ink. It uses the *smoothed*
  * probability, because that is what a coder using this model actually pays.
+ * When `model.adaptive` the model learns as the walk proceeds, which is what
+ * an adaptive coder pays symbol by symbol; the model is mutated, so pass a
+ * fresh one.
  */
-export function surprisals(
-  symbols: readonly string[],
-  model: FrequencyModel,
-): Float64Array {
-  const out = new Float64Array(symbols.length);
-  for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    out[i] = -Math.log2(model.probability(context, symbols[i]));
+export function surprisals(index: TextIndex, model: FrequencyModel): Float64Array {
+  const n = index.symbols.length;
+  const contextIds = index.contexts[model.order].positionIds!;
+  const out = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const id = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    out[i] = -Math.log2(model.probabilityAt(id, symbolId));
+    if (model.adaptive) model.observeAt(id, symbolId);
   }
   return out;
+}
+
+/** Total cost of coding the text under a model, in bits. */
+export function idealBits(index: TextIndex, model: FrequencyModel): number {
+  const n = index.symbols.length;
+  const contextIds = index.contexts[model.order].positionIds!;
+  let bits = 0;
+  for (let i = 0; i < n; i++) {
+    const id = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    bits += -Math.log2(model.probabilityAt(id, symbolId));
+    if (model.adaptive) model.observeAt(id, symbolId);
+  }
+  return bits;
 }
 
 /**
- * Surprisals under a model that learns as it goes, matching what an adaptive
- * coder pays symbol by symbol. The model is mutated; pass a fresh one.
+ * Ideal cost at every order under models that learn as they go, in one pass
+ * over the text.
+ *
+ * The cost of a symbol is charged *before* the models observe it, which is
+ * what makes the figure honest: an adaptive coder cannot use a count it has
+ * not yet been given.
  */
-export function adaptiveSurprisals(
-  symbols: readonly string[],
-  model: FrequencyModel,
-): Float64Array {
-  const out = new Float64Array(symbols.length);
-  for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    out[i] = -Math.log2(model.probability(context, symbols[i]));
-    model.observe(context, symbols[i]);
-  }
-  return out;
-}
-
-/** Total cost of coding the text under a static model, in bits. */
-export function idealBits(
-  symbols: readonly string[],
-  model: FrequencyModel,
-): number {
-  let bits = 0;
-  for (let i = 0; i < symbols.length; i++) {
-    bits += -Math.log2(model.probability(contextAt(symbols, i, model.order), symbols[i]));
+export function adaptiveIdealBits(
+  index: TextIndex,
+  models: readonly FrequencyModel[],
+): number[] {
+  const n = index.symbols.length;
+  const bits = models.map(() => 0);
+  for (let k = 0; k < models.length; k++) {
+    const model = models[k];
+    const contextIds = index.contexts[model.order].positionIds!;
+    let total = 0;
+    for (let i = 0; i < n; i++) {
+      const id = contextIds[i];
+      const symbolId = index.symbolIds[i];
+      total += -Math.log2(model.probabilityAt(id, symbolId));
+      model.observeAt(id, symbolId);
+    }
+    bits[k] = total;
   }
   return bits;
 }
 
 /**
  * The number of distinct contexts at each order, which is what drives model
- * cost upward. Exposed for the staircase's model-cost annotation.
+ * cost upward.
  */
 export function contextCounts(symbols: readonly string[]): number[] {
-  const out: number[] = [];
-  for (let k = 0; k <= MAX_ORDER; k++) {
-    const seen = new Set<string>();
-    for (let i = 0; i < symbols.length; i++) {
-      seen.add(contextKey(contextAt(symbols, i, k)));
-    }
-    out.push(seen.size);
-  }
-  return out;
+  return indexText(symbols).contexts.map((c) => c.size);
+}
+
+/** Surprisal of one position, for the text surface's hover readout. */
+export function surprisalAt(
+  symbols: readonly string[],
+  model: FrequencyModel,
+  position: number,
+): { context: string; probability: number; bits: number } {
+  const context = contextAt(symbols, position, model.order);
+  const probability = model.probability(context, symbols[position]);
+  return { context: context.join(''), probability, bits: -Math.log2(probability) };
 }

@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { serialiseModel, deserialiseModel, modelCostBits, modelCosts } from '../src/engine/modelcost.ts';
-import { buildModel, buildModels, emptyModel, alphabetOf, toSymbols, ORDERS } from '../src/engine/model.ts';
+import {
+  buildModelsFromIndex,
+  emptyModel,
+  indexText,
+  alphabetOf,
+  toSymbols,
+  ORDERS,
+} from '../src/engine/model.ts';
 import { huffmanEncode, huffmanDecode } from '../src/engine/huffman.ts';
 import { arithmeticEncode, arithmeticDecode } from '../src/engine/arithmetic.ts';
 import { CORPUS } from './corpus.ts';
@@ -8,9 +15,10 @@ import { CORPUS } from './corpus.ts';
 describe('model description', () => {
   it('round-trips: the counts that come back are the counts that went in', () => {
     for (const { name, text } of CORPUS) {
-      const symbols = toSymbols(text);
+      const index = indexText(toSymbols(text));
+      const models = buildModelsFromIndex(index);
       for (const order of ORDERS) {
-        const model = buildModel(symbols, order);
+        const model = models[order];
         const back = deserialiseModel(serialiseModel(model));
         expect(back.order, `${name} order ${order}`).toBe(model.order);
         expect(back.adaptive).toBe(model.adaptive);
@@ -28,9 +36,10 @@ describe('model description', () => {
 
   it('is canonical: serialising twice gives identical bytes', () => {
     const symbols = toSymbols(CORPUS[6].text);
+    const models = buildModelsFromIndex(indexText(symbols));
     for (const order of ORDERS) {
-      const a = serialiseModel(buildModel(symbols, order));
-      const b = serialiseModel(deserialiseModel(serialiseModel(buildModel(symbols, order))));
+      const a = serialiseModel(models[order]);
+      const b = serialiseModel(deserialiseModel(serialiseModel(models[order])));
       expect(Array.from(a), `order ${order}`).toEqual(Array.from(b));
     }
   });
@@ -40,18 +49,18 @@ describe('model description', () => {
   // cannot, the model cost is a guess and the total-size minimum is fiction.
   it('a decoder given only the code stream and the model bytes reproduces the text', () => {
     for (const { name, text } of CORPUS) {
-      const symbols = toSymbols(text);
+      const index = indexText(toSymbols(text));
       for (const order of ORDERS) {
-        const modelBytes = serialiseModel(buildModel(symbols, order));
+        const modelBytes = serialiseModel(buildModelsFromIndex(index)[order]);
 
-        const huffman = huffmanEncode(symbols, buildModel(symbols, order));
+        const huffman = huffmanEncode(index, buildModelsFromIndex(index)[order]);
         const viaHuffman = deserialiseModel(modelBytes);
         expect(
           huffmanDecode(huffman.bytes, viaHuffman, viaHuffman.symbolCount),
           `huffman ${name} order ${order}`,
         ).toBe(text);
 
-        const arith = arithmeticEncode(symbols, buildModel(symbols, order));
+        const arith = arithmeticEncode(index, buildModelsFromIndex(index)[order]);
         const viaArith = deserialiseModel(modelBytes);
         expect(
           arithmeticDecode(arith.bytes, viaArith, viaArith.symbolCount),
@@ -62,17 +71,17 @@ describe('model description', () => {
   });
 
   it('an adaptive model description carries the alphabet and no counts', () => {
-    const symbols = toSymbols(CORPUS[6].text);
-    const alphabet = alphabetOf(symbols);
+    const index = indexText(toSymbols(CORPUS[6].text));
+    const alphabet = index.alphabet;
     const model = emptyModel(alphabet, 3);
-    model.symbolCount = symbols.length;
+    model.symbolCount = index.symbols.length;
     const back = deserialiseModel(serialiseModel(model));
     expect(back.adaptive).toBe(true);
     expect(back.counts.size).toBe(0);
     expect(back.alphabet).toEqual(alphabet);
 
     // And it round-trips, with the decoder rebuilding the counts as it goes.
-    const encoded = arithmeticEncode(symbols, emptyModel(alphabet, 3));
+    const encoded = arithmeticEncode(index, emptyModel(alphabet, 3));
     expect(arithmeticDecode(encoded.bytes, back, back.symbolCount)).toBe(CORPUS[6].text);
   });
 
@@ -80,7 +89,7 @@ describe('model description', () => {
     const symbols = toSymbols(
       'Entropy is not a property of a text; it is a property of a text under a model. '.repeat(30),
     );
-    const staticModel = buildModel(symbols, 3);
+    const staticModel = buildModelsFromIndex(indexText(symbols))[3];
     const adaptive = emptyModel(alphabetOf(symbols), 3);
     adaptive.symbolCount = symbols.length;
     expect(modelCostBits(adaptive)).toBeLessThan(modelCostBits(staticModel) / 10);
@@ -90,7 +99,7 @@ describe('model description', () => {
     const symbols = toSymbols(
       'Compression is prediction, and prediction has to be described. '.repeat(40),
     );
-    const costs = modelCosts(buildModels(symbols));
+    const costs = modelCosts(buildModelsFromIndex(indexText(symbols)));
     for (let k = 1; k < costs.length; k++) {
       expect(costs[k].bits, `order ${k} costs more than order ${k - 1}`).toBeGreaterThan(
         costs[k - 1].bits,

@@ -14,11 +14,7 @@
  */
 
 import { BitWriter, BitReader } from './bitio.ts';
-import {
-  contextAt,
-  contextKey,
-  type FrequencyModel,
-} from './model.ts';
+import { contextAt, type FrequencyModel, type TextIndex } from './model.ts';
 import type { HuffmanNode, HuffmanTrace, HuffmanMerge, WasteEntry } from './trace.ts';
 
 /** Codes deeper than this cannot occur for any weight table this app builds. */
@@ -45,7 +41,7 @@ export interface CodeTable {
  * makes the result a pure function of the weights. The decoder builds from the
  * same weights, so any non-determinism here would be a decode failure.
  */
-export function codeLengths(weights: readonly number[] | Int32Array | Float64Array): Int32Array {
+export function codeLengths(weights: ArrayLike<number>): Int32Array {
   const n = weights.length;
   const lengths = new Int32Array(n);
   if (n === 0) return lengths;
@@ -147,24 +143,27 @@ export function canonicalTable(lengths: Int32Array): CodeTable {
   return { lengths, codes, firstCode, firstIndex, countPerLength, sorted, maxLength };
 }
 
-/** Build (and cache) the code table for one context of a model. */
+/**
+ * Code tables per context, built lazily and cached by context id.
+ *
+ * The adaptive coder invalidates one context after each update, so a context
+ * is rebuilt only when its counts have actually changed.
+ */
 export class HuffmanTables {
-  private readonly cache = new Map<string, CodeTable>();
+  private readonly cache: Array<CodeTable | undefined> = [];
 
   constructor(private readonly model: FrequencyModel) {}
 
-  /** Invalidate one context, for the adaptive coder after an update. */
-  invalidate(context: readonly string[]): void {
-    this.cache.delete(contextKey(context));
+  invalidate(contextId: number): void {
+    this.cache[contextId] = undefined;
   }
 
-  get(context: readonly string[]): CodeTable {
-    const key = contextKey(context);
-    const hit = this.cache.get(key);
-    if (hit) return hit;
-    const { freqs } = this.model.frequencies(context);
+  get(contextId: number): CodeTable {
+    const hit = this.cache[contextId];
+    if (hit !== undefined) return hit;
+    const { freqs } = this.model.fill(contextId);
     const table = canonicalTable(codeLengths(freqs));
-    this.cache.set(key, table);
+    this.cache[contextId] = table;
     return table;
   }
 }
@@ -179,24 +178,22 @@ export interface HuffmanEncoded {
  * Encode with a static model: the model is measured over the whole text and
  * transmitted, so every code table is fixed before the first symbol.
  */
-export function huffmanEncode(
-  symbols: readonly string[],
-  model: FrequencyModel,
-): HuffmanEncoded {
+export function huffmanEncode(index: TextIndex, model: FrequencyModel): HuffmanEncoded {
   const tables = new HuffmanTables(model);
   const writer = new BitWriter();
-  for (let i = 0; i < symbols.length; i++) {
-    const context = contextAt(symbols, i, model.order);
-    const table = tables.get(context);
-    const index = model.indexOf(symbols[i]);
-    if (index < 0) throw new Error(`symbol ${JSON.stringify(symbols[i])} is not in the alphabet`);
-    writer.writeBits(table.codes[index], table.lengths[index]);
+  const contextIds = index.contexts[model.order].positionIds!;
+  const n = index.symbols.length;
+  for (let i = 0; i < n; i++) {
+    const contextId = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    const table = tables.get(contextId);
+    writer.writeBits(table.codes[symbolId], table.lengths[symbolId]);
     if (model.adaptive) {
-      model.observe(context, symbols[i]);
-      tables.invalidate(context);
+      model.observeAt(contextId, symbolId);
+      tables.invalidate(contextId);
     }
   }
-  return { bytes: writer.finish(), bits: writer.length, symbolCount: symbols.length };
+  return { bytes: writer.finish(), bits: writer.length, symbolCount: n };
 }
 
 /**
@@ -212,8 +209,10 @@ export function huffmanDecode(
   const reader = new BitReader(bytes);
   const out: string[] = [];
   for (let i = 0; i < symbolCount; i++) {
-    const context = contextAt(out, i, model.order);
-    const table = tables.get(context);
+    // The decoder has no text to intern ahead of time; it interns the context
+    // it has just produced, which is the same context the encoder used.
+    const contextId = model.index.idFor(contextAt(out, i, model.order));
+    const table = tables.get(contextId);
     let code = 0;
     let index = -1;
     for (let len = 1; len <= table.maxLength; len++) {
@@ -225,11 +224,10 @@ export function huffmanDecode(
       }
     }
     if (index < 0) throw new Error('Huffman stream does not decode: no code matched');
-    const symbol = model.alphabet[index];
-    out.push(symbol);
+    out.push(model.alphabet[index]);
     if (model.adaptive) {
-      model.observe(context, symbol);
-      tables.invalidate(context);
+      model.observeAt(contextId, index);
+      tables.invalidate(contextId);
     }
   }
   return out.join('');
@@ -244,8 +242,8 @@ export function huffmanDecode(
  * test asserting its code lengths equal `codeLengths`. It exists because the
  * fast path uses typed arrays and has no nodes to draw.
  */
-export function huffmanTrace(model: FrequencyModel, context: readonly string[]): HuffmanTrace {
-  const { freqs } = model.frequencies(context);
+export function huffmanTrace(model: FrequencyModel, contextId: number): HuffmanTrace {
+  const { freqs } = model.frequenciesAt(contextId);
   const weights = new Map<string, number>();
   model.alphabet.forEach((s, i) => weights.set(s, freqs[i]));
 
@@ -289,7 +287,13 @@ export function huffmanTrace(model: FrequencyModel, context: readonly string[]):
     codes.set(symbol, table.codes[i].toString(2).padStart(table.lengths[i], '0'));
   });
 
-  return { context: context.join(''), root, merges, codes, weights };
+  return {
+    context: contextId >= 0 ? model.index.texts[contextId] : '',
+    root,
+    merges,
+    codes,
+    weights,
+  };
 }
 
 /**
@@ -299,9 +303,9 @@ export function huffmanTrace(model: FrequencyModel, context: readonly string[]):
 export function huffmanWaste(
   symbols: readonly string[],
   model: FrequencyModel,
-  context: readonly string[] = [],
+  contextId: number,
 ): WasteEntry[] {
-  const { freqs, total } = model.frequencies(context);
+  const { freqs, total } = model.frequenciesAt(contextId);
   const table = canonicalTable(codeLengths(freqs));
   const occurrences = new Map<string, number>();
   for (const s of symbols) occurrences.set(s, (occurrences.get(s) ?? 0) + 1);
