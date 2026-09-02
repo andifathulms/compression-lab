@@ -20,7 +20,7 @@ import { surprisalColour } from '../../ui/ramp.ts';
 import './TextSurface.css';
 
 /** Below this, every line is rendered and browser find covers the whole text. */
-export const FULL_RENDER_LIMIT = 8000;
+export const FULL_RENDER_LIMIT = 12000;
 const OVERSCAN_LINES = 40;
 
 export interface HoverReadout {

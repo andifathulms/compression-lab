@@ -12,6 +12,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { TextSurface, FULL_RENDER_LIMIT } from './views/TextSurface/TextSurface.tsx';
 import { Staircase } from './views/Staircase/Staircase.tsx';
 import { CoderBay } from './views/CoderBay.tsx';
+import { ParallelRow } from './views/ParallelRow.tsx';
 import { ControlBar } from './ui/ControlBar.tsx';
 import { useAppState } from './state/appState.ts';
 import { useAnalysis } from './state/useAnalysis.ts';
@@ -185,6 +186,14 @@ export function App(): JSX.Element {
             onSelectSymbol={setHuffmanSymbol}
             selectedSymbol={huffmanSymbol}
             onWindowRanges={setWindowRanges}
+          />
+          <ParallelRow
+            lz77={state.lz77}
+            currentSampleId={state.sampleId}
+            onChoose={(id) => {
+              const chosen = sampleById(id);
+              if (chosen !== undefined) setText(chosen.text, chosen.id);
+            }}
           />
           <p className="assumption">
             Probabilities use add-constant smoothing, alpha = {ALPHA}, over the{' '}
