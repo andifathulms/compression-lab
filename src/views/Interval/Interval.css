@@ -6,9 +6,14 @@
   margin: var(--s-2) 0;
 }
 
+/*
+ * Wide enough to carry a band's own label. The bands are the alphabet, drawn
+ * in proportion to what the model expects next, and a column too narrow to
+ * name them turns the view into an abstract stripe.
+ */
 .interval-svg {
-  width: 132px;
-  height: 340px;
+  width: 200px;
+  height: 360px;
   flex: 0 0 auto;
   border: 1px solid var(--rule);
   border-radius: var(--r-2);
@@ -41,23 +46,72 @@
   min-width: 0;
 }
 
-.interval-readout p {
-  margin: 0 0 var(--s-1);
-  font-size: var(--t-data);
-  color: var(--ink-mid);
+.interval-cost {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  margin-bottom: var(--s-2);
 }
 
-.interval-renorm {
-  border-top: 1px solid var(--rule);
-  padding-top: var(--s-2);
-  margin-top: var(--s-2);
+.interval-cost .figure {
+  color: var(--arithmetic);
+}
+
+.interval-cost .unit {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.interval-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--s-1) var(--s-3);
+  margin: 0;
+}
+
+.interval-facts dt {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.interval-facts dd {
+  margin: 2px 0 0;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 /*
- * The integer state. It is long, it is meant to be read digit by digit against
- * the row above it, and it is the bridge between the idealised interval on the
- * left and what the engine actually did — so it is set in a bordered block
- * rather than run into the prose.
+ * A bordered block rather than a bare column with a rule down its left edge:
+ * the three parts of this view wrap to two rows on a narrow bay, and a left
+ * rule on a full-width block reads as a quotation rather than as a column.
+ */
+.interval-renorm {
+  flex: 1 1 20rem;
+  min-width: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  padding: var(--s-2);
+}
+
+.interval-renorm .assumption {
+  border-left: 0;
+  padding-left: 0;
+  margin-top: var(--s-1);
+}
+
+/*
+ * Three columns, left to right: the bands the model offers, the idealisation a
+ * person can follow, and the integer state the engine actually holds. They are
+ * side by side because they are one record — the trace carries both the
+ * idealised interval and the register contents, so the two cannot drift, and
+ * putting them in one row is that fact drawn rather than asserted.
  */
 .interval-integers {
   display: grid;

@@ -50,9 +50,29 @@
   fill: var(--ink-faint);
 }
 
+/*
+ * The figure leads and the sentence follows it on the next line. Run inline,
+ * a monospaced figure and a run of prose at two different sizes collide on
+ * the same baseline and read as one string: "39 Blost to whole-bit codes".
+ */
 .waste-total {
   margin: var(--s-2) 0;
   max-width: 44rem;
+}
+
+.waste-total .figure {
+  display: block;
+  color: var(--huffman);
+  margin-bottom: 4px;
+}
+
+.waste-total .unit {
+  display: block;
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .waste-table {

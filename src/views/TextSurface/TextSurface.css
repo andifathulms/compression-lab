@@ -11,6 +11,12 @@
   /* The specimen is the reading surface, so it gets the generous measure and
    * nothing sits between it and the paper. */
   padding-right: var(--s-2);
+  /*
+   * The last visible line is cut by the scroll edge, and a line of prose
+   * sliced in half horizontally reads as a rendering fault. A short fade at
+   * the bottom says "there is more" instead.
+   */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2rem), transparent 100%);
 }
 
 .ts-stack {
@@ -108,4 +114,13 @@
   outline: 1.5px solid var(--ink);
   outline-offset: 1px;
   border-radius: 1px;
+}
+
+@media (max-width: 980px) {
+  /* Stacked, the specimen is not its own scroll region — the page scrolls —
+   * so there is no cut edge to soften and the fade would just dim the last
+   * two lines of the text. */
+  .ts {
+    mask-image: none;
+  }
 }

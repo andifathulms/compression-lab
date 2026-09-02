@@ -151,63 +151,72 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
           </g>
         </svg>
 
-        <div className="interval-readout data">
-          <p>
-            <span className="label">symbols coded</span>
-            <br />
-            {cursor + 1} of {steps.length}
+        <div className="interval-readout">
+          {/*
+            The cost of the symbol under the cursor is the figure this whole
+            view exists to make visible, so it is the one set at figure size and
+            the other three are its context.
+          */}
+          <p className="interval-cost">
+            <span className="figure">{step.costBits.toFixed(2)}</span>
+            <span className="unit">bits for this symbol</span>
           </p>
-          <p>
-            <span className="label">idealised interval width</span>
-            <br />
-            2^{step.widthLog2.toFixed(1)}
-          </p>
-          <p>
-            <span className="label">bits emitted</span>
-            <br />
-            {step.cumulativeBits}
-          </p>
-          <p>
-            <span className="label">this symbol cost</span>
-            <br />
-            {step.costBits.toFixed(2)} bits
-          </p>
+          <dl className="interval-facts">
+            <div>
+              <dt>symbol</dt>
+              <dd>{JSON.stringify(step.symbol)}</dd>
+            </div>
+            <div>
+              <dt>symbols coded</dt>
+              <dd>
+                {cursor + 1} of {steps.length}
+              </dd>
+            </div>
+            <div>
+              <dt>idealised interval width</dt>
+              <dd>2^{step.widthLog2.toFixed(1)}</dd>
+            </div>
+            <div>
+              <dt>bits emitted so far</dt>
+              <dd>{step.cumulativeBits}</dd>
+            </div>
+          </dl>
         </div>
-      </div>
 
-      <div className="interval-renorm">
-        <h3 className="label">Renormalization</h3>
-        <p className="assumption">
-          When the top bits of the integer low and high agree they can never change again, so they
-          leave the register and the interval doubles. When the interval straddles the midpoint
-          but keeps narrowing, the bit is not yet decided: it is counted as underflow and emitted
-          later, at the opposite polarity to whichever bit resolves next.
-        </p>
-        <dl className="interval-integers data">
-          <div>
-            <dt>low</dt>
-            <dd>{step.lowAfter.toString(2).padStart(Number(PRECISION), '0')}</dd>
-          </div>
-          <div>
-            <dt>high</dt>
-            <dd>{step.highAfter.toString(2).padStart(Number(PRECISION), '0')}</dd>
-          </div>
-          <div>
-            <dt>register width</dt>
-            <dd>
-              {widthFraction.toExponential(3)} of the full range, {Number(PRECISION)}-bit
-              registers
-            </dd>
-          </div>
-          <div>
-            <dt>emitted this step</dt>
-            <dd>{step.bitsEmitted || 'nothing yet'}</dd>
-          </div>
-          <div>
-            <dt>underflow pending</dt>
-            <dd>{step.underflowCount}</dd>
-          </div>
-        </dl>
+        <div className="interval-renorm">
+          <h3 className="label">Renormalization</h3>
+          <p className="assumption">
+            When the top bits of the integer low and high agree they can never change again, so they
+            leave the register and the interval doubles. When the interval straddles the midpoint
+            but keeps narrowing, the bit is not yet decided: it is counted as underflow and emitted
+            later, at the opposite polarity to whichever bit resolves next.
+          </p>
+          <dl className="interval-integers data">
+            <div>
+              <dt>low</dt>
+              <dd>{step.lowAfter.toString(2).padStart(Number(PRECISION), '0')}</dd>
+            </div>
+            <div>
+              <dt>high</dt>
+              <dd>{step.highAfter.toString(2).padStart(Number(PRECISION), '0')}</dd>
+            </div>
+            <div>
+              <dt>register width</dt>
+              <dd>
+                {widthFraction.toExponential(3)} of the full range, {Number(PRECISION)}-bit
+                registers
+              </dd>
+            </div>
+            <div>
+              <dt>emitted this step</dt>
+              <dd>{step.bitsEmitted || 'nothing yet'}</dd>
+            </div>
+            <div>
+              <dt>underflow pending</dt>
+              <dd>{step.underflowCount}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
       <div className="interval-controls">

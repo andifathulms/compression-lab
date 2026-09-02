@@ -27,6 +27,7 @@ async function open(theme, w, h) {
   return page;
 }
 const targets = process.argv.slice(2);
+const process_scroll = Number(process.env.SCROLL ?? 420);
 const want = (n) => targets.length === 0 || targets.includes(n);
 
 for (const [name, w, h, theme] of [['desktop-light',1440,900,'light'],['desktop-dark',1440,900,'dark'],['mobile-light',430,932,'light']]) {
@@ -47,7 +48,7 @@ for (const [name, coder, theme] of [['arithmetic-dark','Arithmetic','dark'],['lz
   }
   await page.getByRole('button', { name: coder, exact: true }).click({ timeout: 8000, force: true }).catch((e) => errors.push(`${name}: ${e.message.split('\n').slice(0,6).join(' / ')}`));
   await page.waitForTimeout(1200);
-  await page.evaluate(() => window.scrollTo(0, 420));
+  await page.evaluate((s) => window.scrollTo(0, s), process_scroll);
   await page.waitForTimeout(400);
   await page.screenshot({ path: `/tmp/shots/${name}.png` });
   await page.close();
