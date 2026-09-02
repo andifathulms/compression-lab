@@ -17,7 +17,10 @@
   display: flex;
   align-items: flex-start;
   gap: var(--s-3);
-  flex: 0 0 auto;
+  /* Shrinkable, or on a narrow screen the longest label sets a floor the
+   * whole rail cannot get under and the facts run off the edge. */
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .rail-figure {
@@ -42,15 +45,19 @@
   color: var(--ink-faint);
   align-self: flex-end;
   padding-bottom: 2px;
+  /* Two lines, and the break is the one in the markup. */
+  white-space: nowrap;
 }
 
 .rail-facts {
   display: flex;
-  gap: var(--s-3);
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
   margin: 0;
   padding-left: var(--s-3);
   border-left: 1px solid var(--rule);
   align-self: center;
+  min-width: 0;
 }
 
 .rail-facts dt {
@@ -298,6 +305,14 @@
   .rail-facts {
     gap: var(--s-2);
     padding-left: var(--s-2);
+  }
+  /* Two words of label per fact rather than one long line running off the
+   * edge of the screen. */
+  .rail-facts dt {
+    white-space: normal;
+  }
+  .rail-facts > div {
+    min-width: 0;
   }
   /* The ratio is the fact that survives the squeeze: it is the only one that
    * does not need another number to be read against. */

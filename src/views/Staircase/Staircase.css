@@ -21,8 +21,14 @@
   margin: var(--s-1) 0 var(--s-2);
 }
 
+/*
+ * A step down from the reading in the rail. Both are display numerals and
+ * there is only one hero on the page: the rail answers what the text costs,
+ * and this answers which model is cheapest, which is the second question.
+ */
 .stair-headline .display {
   color: var(--ink);
+  font-size: 28px;
 }
 
 .stair-headline .unit {
@@ -46,10 +52,14 @@
   height: auto;
 }
 
-/* The order in view. A marker, not a highlight: the slider is a continuous
- * control and this follows it on the same frame, with no transition. */
+/*
+ * The order in view. A marker, not a highlight: the slider is a continuous
+ * control and this follows it on the same frame, with no transition. It is a
+ * wash of the ink rather than the bench colour, because on the dark ground the
+ * bench is darker than the plot and the band read as a hole punched in it.
+ */
 .stair-band {
-  fill: var(--sunk);
+  fill: color-mix(in srgb, var(--ink) 7%, transparent);
 }
 
 .stair-hit {
@@ -117,8 +127,16 @@
   fill: var(--ink);
 }
 
-.stair-orders {
+.stair-tools {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  align-items: center;
   margin: var(--s-2) 0;
+}
+
+.stair-orders {
+  margin: 0;
 }
 
 .stair-orders .segmented-item {
@@ -161,6 +179,5 @@
 
 .stair-table {
   margin: var(--s-2) 0;
-  max-width: 44rem;
   max-height: 15rem;
 }

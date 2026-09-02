@@ -14,7 +14,7 @@
  * away, because every other instrument is an elaboration of it.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TextSurface, FULL_RENDER_LIMIT } from './views/TextSurface/TextSurface.tsx';
 import { Staircase } from './views/Staircase/Staircase.tsx';
 import { CoderBay } from './views/CoderBay.tsx';
@@ -139,6 +139,27 @@ export function App(): JSX.Element {
     [setText],
   );
 
+  /**
+   * The rail is pinned at the top and the two columns are pinned underneath
+   * it, so they need to know how tall it is. It wraps differently at every
+   * width and with every reading, so it is measured rather than guessed and
+   * published as a custom property the layout reads.
+   */
+  const railRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const rail = railRef.current;
+    const shell = shellRef.current;
+    if (rail === null || shell === null || typeof ResizeObserver === 'undefined') return;
+    const apply = (): void => {
+      shell.style.setProperty('--rail-h', `${Math.round(rail.getBoundingClientRect().height)}px`);
+    };
+    const observer = new ResizeObserver(apply);
+    observer.observe(rail);
+    apply();
+    return () => observer.disconnect();
+  }, []);
+
   const [huffmanSymbol, setHuffmanSymbol] = useState<string | null>(null);
   const [windowRanges, setWindowRanges] = useState<{
     lookahead: [number, number] | null;
@@ -146,7 +167,7 @@ export function App(): JSX.Element {
   }>({ lookahead: null, match: null });
 
   return (
-    <div className="app">
+    <div className="app" ref={shellRef}>
       <a className="skip-link" href="#apparatus">
         Skip to the instruments
       </a>
@@ -159,7 +180,7 @@ export function App(): JSX.Element {
         theme={theme}
       />
 
-      <div className="app-rail">
+      <div className="app-rail" ref={railRef}>
         <Rail
           order={state.order}
           onOrder={(order) => set('order', order)}

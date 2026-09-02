@@ -13,6 +13,9 @@
   flex-direction: column;
   min-height: 100%;
   background: var(--sunk);
+  /* Replaced by the measured height of the rail as soon as it has laid out.
+   * The fallback is what an unwrapped rail comes to at a desktop width. */
+  --rail-h: 90px;
 }
 
 /* ---- The pinned rail ---------------------------------------------------- */
@@ -41,13 +44,14 @@
 
 .app-specimen {
   position: sticky;
-  top: 0;
+  /* Under the rail, not behind it. */
+  top: var(--rail-h);
   align-self: stretch;
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  max-height: 100vh;
+  max-height: calc(100vh - var(--rail-h));
   padding: var(--s-3) var(--s-4) 0;
   background: var(--page);
   border-right: 1px solid var(--rule);
@@ -72,7 +76,7 @@
  * instrument is an elaboration of, and it should not scroll away from them. */
 .app-stair {
   position: sticky;
-  top: 0;
+  top: var(--rail-h);
   z-index: 2;
   background: var(--sunk);
   padding-bottom: var(--s-2);
@@ -235,6 +239,14 @@
   }
   .app-apparatus {
     padding-top: var(--s-2);
+  }
+  /*
+   * The rail stops being pinned. Stacked, it is most of a phone screen tall,
+   * and a sticky element that leaves a third of the viewport for the thing it
+   * describes is worse than one you scroll back to.
+   */
+  .app-rail {
+    position: static;
   }
 }
 

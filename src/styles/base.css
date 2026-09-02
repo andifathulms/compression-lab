@@ -401,6 +401,11 @@ tbody tr:hover th {
 tbody tr[aria-current='true'] td,
 tbody tr[aria-current='true'] th {
   background: var(--surface-hover);
+}
+
+/* The marker goes on the leading edge of the row, not on every cell in it —
+ * on every cell it draws a rule between all six columns. */
+tbody tr[aria-current='true'] > :first-child {
   box-shadow: inset 2px 0 0 var(--ink);
 }
 

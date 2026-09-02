@@ -14,7 +14,7 @@
  * floor.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { CoderResult, Order, TextAnalysis } from '../../engine/index.ts';
 import { ORDERS } from '../../engine/index.ts';
 import type { CoderChoice } from '../../state/appState.ts';
@@ -47,16 +47,36 @@ export function Staircase({
   const rows = analysis.rows;
   const empty = analysis.symbolCount === 0;
 
+  /**
+   * What the vertical axis is scaled to.
+   *
+   * A static order-5 model on a short text costs upwards of fifty bits per
+   * symbol, and against that the entropy steps — which are the thing this
+   * chart is named after — descend across two pixels at the bottom of the
+   * plot. So the axis has two settings and the reader picks.
+   *
+   * "Everything" fits the tallest series and is the default, because it is the
+   * honest picture and the model line running away is the lesson. "The
+   * steps" fits the entropy and the coders, and lets the model and total lines
+   * run off the top — which the interface says out loud, because a line that
+   * leaves the plot without saying so is a lie about where it went.
+   */
+  const [fit, setFit] = useState<'all' | 'steps'>('all');
+
+  const coderRates = [huffman.bitsPerSymbol, arithmetic.bitsPerSymbol, lz77.bitsPerSymbol];
+
   const maxBits = useMemo(() => {
-    const values = [
-      ...rows.map((r) => r.totalBits),
-      ...rows.map((r) => r.entropyBits),
-      huffman.bitsPerSymbol,
-      arithmetic.bitsPerSymbol,
-      lz77.bitsPerSymbol,
-    ].filter((v) => Number.isFinite(v));
+    const values = (
+      fit === 'all'
+        ? [...rows.map((r) => r.totalBits), ...rows.map((r) => r.entropyBits), ...coderRates]
+        : [...rows.map((r) => r.entropyBits), ...coderRates]
+    ).filter((v) => Number.isFinite(v));
     return Math.max(1, ...values) * 1.08;
-  }, [rows, huffman, arithmetic, lz77]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, fit, huffman, arithmetic, lz77]);
+
+  const clipped =
+    fit === 'steps' && ORDERS.some((o) => rows[o].totalBits > maxBits);
 
   const plotW = WIDTH - PAD.left - PAD.right;
   const plotH = HEIGHT - PAD.top - PAD.bottom;
@@ -83,10 +103,24 @@ export function Staircase({
 
   const best = analysis.optimalOrder;
   const current = pickResult(coder, huffman, arithmetic, lz77);
+  /**
+   * Ticks at a round interval, about six of them.
+   *
+   * A static order-5 model on a short text costs upwards of fifty bits per
+   * symbol, and a fixed interval that suits a scale of eight draws thirty
+   * labels on top of each other at a scale of fifty. So the interval is chosen
+   * from the range: the first of 1, 2 or 5 times a power of ten that gets the
+   * count down to six.
+   */
   const ticks = useMemo(() => {
-    const step = maxBits > 8 ? 2 : maxBits > 4 ? 1 : 0.5;
+    const rough = maxBits / 6;
+    const magnitude = 10 ** Math.floor(Math.log10(rough));
+    const step =
+      [1, 2, 5, 10].find((m) => m * magnitude >= rough) !== undefined
+        ? [1, 2, 5, 10].find((m) => m * magnitude >= rough)! * magnitude
+        : magnitude;
     const out: number[] = [];
-    for (let v = 0; v <= maxBits; v += step) out.push(v);
+    for (let v = 0; v <= maxBits; v += step) out.push(Number(v.toFixed(6)));
     return out;
   }, [maxBits]);
 
@@ -105,6 +139,66 @@ export function Staircase({
   if (coder === 'lz77' || coder === 'compare') {
     points.push({ key: 'lz77', colour: 'var(--lz77)', result: lz77, label: 'LZ77' });
   }
+
+  /**
+   * The right-hand key.
+   *
+   * Each entry wants to sit at the height of the thing it names, and several of
+   * them want the same height — the model and the total both pin to the top of
+   * the plot when the axis is fitted to the steps, and a coder's rate lands on
+   * a series as often as not. So the wanted heights are collected, then pushed
+   * apart to a minimum gap, and a leader is drawn from where the label wanted
+   * to be to where it ended up.
+   */
+  const keys = useMemo(() => {
+    const wanted: Array<{ id: string; label: string; colour: string; at: number; from: number }> =
+      [
+        {
+          id: 'H',
+          label: 'H',
+          colour: 'var(--ink-mid)',
+          at: y(rows[5].entropyBits),
+          from: WIDTH - PAD.right,
+        },
+        {
+          id: 'model',
+          label: 'model',
+          colour: 'var(--model-cost)',
+          at: y(rows[5].modelBits),
+          from: centre(5),
+        },
+        {
+          id: 'total',
+          label: 'total',
+          colour: 'var(--ink)',
+          at: y(rows[5].totalBits),
+          from: centre(5),
+        },
+        ...points.map((p) => ({
+          id: p.key,
+          label: `${p.label} ${p.result.bitsPerSymbol.toFixed(2)}`,
+          colour: p.colour,
+          at: y(p.result.bitsPerSymbol),
+          from: p.result.order === null ? WIDTH - PAD.right : centre(p.result.order),
+        })),
+      ];
+
+    const GAP = 12;
+    const sorted = [...wanted].sort((a, b) => a.at - b.at);
+    const placed = sorted.map((k) => ({ ...k, y: k.at }));
+    // Down the list, then back up, so a run pinned to the top spreads
+    // downward and a run pinned to the bottom spreads upward.
+    for (let i = 1; i < placed.length; i++) {
+      placed[i].y = Math.max(placed[i].y, placed[i - 1].y + GAP);
+    }
+    const floor = PAD.top + plotH;
+    for (let i = placed.length - 1; i >= 0; i--) {
+      if (placed[i].y > floor) placed[i].y = floor;
+      if (i > 0 && placed[i - 1].y > placed[i].y - GAP) placed[i - 1].y = placed[i].y - GAP;
+    }
+    return placed;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, maxBits, coder, huffman, arithmetic, lz77, plotH]);
 
   return (
     <section className="stair panel" aria-label="The staircase">
@@ -147,7 +241,7 @@ export function Staircase({
                   strokeWidth={1}
                 />
                 <text x={PAD.left - 6} y={y(v) + 4} className="stair-axis" textAnchor="end">
-                  {v % 1 === 0 ? v : v.toFixed(1)}
+                  {v % 1 === 0 ? v : v.toFixed(v < 1 ? 2 : 1)}
                 </text>
               </g>
             ))}
@@ -222,74 +316,55 @@ export function Staircase({
               lowest total
             </text>
 
-            {points.map((p) => {
-              const px = p.result.order === null ? WIDTH - PAD.right : centre(p.result.order);
-              const py = y(p.result.bitsPerSymbol);
-              return (
-                <g key={p.key}>
-                  {p.result.order === null ? (
-                    <line
-                      x1={PAD.left}
-                      x2={WIDTH - PAD.right}
-                      y1={py}
-                      y2={py}
-                      stroke={p.colour}
-                      strokeWidth={2}
-                      strokeDasharray="5 3"
-                    />
-                  ) : (
-                    <circle
-                      cx={px}
-                      cy={py}
-                      r={5}
-                      fill={p.colour}
-                      className="stair-point"
-                    />
-                  )}
+            {points.map((p) => (
+              <g key={p.key}>
+                {p.result.order === null ? (
                   <line
-                    x1={px}
-                    x2={WIDTH - PAD.right + 8}
-                    y1={py}
-                    y2={py}
+                    x1={PAD.left}
+                    x2={WIDTH - PAD.right}
+                    y1={y(p.result.bitsPerSymbol)}
+                    y2={y(p.result.bitsPerSymbol)}
                     stroke={p.colour}
-                    strokeWidth={0.75}
+                    strokeWidth={2}
+                    strokeDasharray="5 3"
                   />
-                  <text
-                    x={WIDTH - PAD.right + 12}
-                    y={py + 4}
-                    className="stair-key"
+                ) : (
+                  <circle
+                    cx={centre(p.result.order)}
+                    cy={y(p.result.bitsPerSymbol)}
+                    r={5}
                     fill={p.colour}
-                  >
-                    {p.label} {p.result.bitsPerSymbol.toFixed(2)}
-                  </text>
-                </g>
-              );
-            })}
+                    className="stair-point"
+                  />
+                )}
+              </g>
+            ))}
 
-            <text
-              x={WIDTH - PAD.right + 12}
-              y={y(rows[5].modelBits) + 4}
-              className="stair-key"
-              fill="var(--model-cost)"
-            >
-              model
-            </text>
-            <text
-              x={WIDTH - PAD.right + 12}
-              y={y(rows[5].totalBits) + 4}
-              className="stair-key"
-              fill="var(--ink)"
-            >
-              total
-            </text>
-            <text
-              x={WIDTH - PAD.right + 12}
-              y={y(rows[5].entropyBits) + 4}
-              className="stair-key"
-              fill="var(--ink-mid)"
-            >
-              H
-            </text>
+            {/* The key, laid out so nothing overlaps. Two series that land on
+                the same value — which they do the moment the axis is fitted to
+                the steps and both run off the top — would otherwise print one
+                label on top of another. */}
+            {keys.map((k) => (
+              <g key={k.id}>
+                <line
+                  x1={k.from}
+                  x2={WIDTH - PAD.right + 8}
+                  y1={k.at}
+                  y2={k.y}
+                  stroke={k.colour}
+                  strokeWidth={0.75}
+                  opacity={0.6}
+                />
+                <text
+                  x={WIDTH - PAD.right + 12}
+                  y={k.y + 3.5}
+                  className="stair-key"
+                  fill={k.colour}
+                >
+                  {k.label}
+                </text>
+              </g>
+            ))}
 
             {ORDERS.map((o) => (
               <text
@@ -308,6 +383,7 @@ export function Staircase({
           </svg>
           </div>
 
+          <div className="stair-tools">
           <div className="stair-orders segmented" role="group" aria-label="Model order">
             {ORDERS.map((o) => (
               <button
@@ -325,6 +401,36 @@ export function Staircase({
             ))}
           </div>
 
+          <div className="segmented" role="group" aria-label="Vertical axis">
+            <button
+              type="button"
+              className="segmented-item"
+              aria-pressed={fit === 'all'}
+              onClick={() => setFit('all')}
+              title="Fit the tallest series, including the model description"
+            >
+              Everything
+            </button>
+            <button
+              type="button"
+              className="segmented-item"
+              aria-pressed={fit === 'steps'}
+              onClick={() => setFit('steps')}
+              title="Fit the entropy steps and the coder rates"
+            >
+              The steps
+            </button>
+          </div>
+          </div>
+
+          {clipped ? (
+            <p className="assumption">
+              The axis is fitted to the entropy steps, so the model and total lines run off the
+              top of the plot rather than being drawn. At order 5 the total is{' '}
+              {rows[5].totalBits.toFixed(1)} bits per symbol.
+            </p>
+          ) : null}
+
           <dl className="stair-split">
             <div>
               <dt>code stream</dt>
@@ -339,7 +445,7 @@ export function Staircase({
               <dd>{bytes(current.totalBits)}</dd>
             </div>
             <div>
-              <dt>of the utf-8 original</dt>
+              <dt>of original</dt>
               <dd>{ratio(current.totalBits, analysis.byteCount)}</dd>
             </div>
           </dl>
@@ -347,16 +453,17 @@ export function Staircase({
           <div className="stair-table scroll-box">
           <table>
             <caption className="visually-hidden">
-              Conditional entropy, model description and total, by model order
+              Conditional entropy, model description, code stream and total, by
+              model order. Every column but the context count is in bits per symbol.
             </caption>
             <thead>
               <tr>
                 <th scope="col">Order</th>
-                <th scope="col">H, bits/symbol</th>
+                <th scope="col">H</th>
                 <th scope="col">Contexts</th>
-                <th scope="col">Model, bits/symbol</th>
-                <th scope="col">Code, bits/symbol</th>
-                <th scope="col">Total, bits/symbol</th>
+                <th scope="col">Model</th>
+                <th scope="col">Code</th>
+                <th scope="col">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -388,6 +495,12 @@ export function Staircase({
   );
 }
 
+/**
+ * The result the split under the plot belongs to. Under compare there is no
+ * coder in view, so it is the lowest of the three — the same rule the rail
+ * uses, because two readings of the same text disagreeing on the same screen
+ * would be worse than either of them being arbitrary.
+ */
 function pickResult(
   coder: CoderChoice,
   huffman: CoderResult,
@@ -396,5 +509,10 @@ function pickResult(
 ): CoderResult {
   if (coder === 'arithmetic') return arithmetic;
   if (coder === 'lz77') return lz77;
+  if (coder === 'compare') {
+    return [huffman, arithmetic, lz77].reduce((a, b) =>
+      b.bitsPerSymbol < a.bitsPerSymbol ? b : a,
+    );
+  }
   return huffman;
 }
