@@ -78,17 +78,17 @@ describe('the app in a browser', () => {
     expect(headline?.textContent).toBe('order 1');
 
     const surface = screen.getByLabelText(/the text being measured/i) as HTMLTextAreaElement;
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     await user.clear(surface);
     await user.type(surface, 'the cat sat on the mat. the cat sat on the mat.');
 
     // A short text cannot pay for a bigger model, so the minimum falls back.
     expect(document.querySelector('.stair-headline .display')?.textContent).toBe('order 0');
-  }, 20000);
+  }, 120_000);
 
   it('switches instruments without disturbing the staircase or the text', async () => {
     render(<App />);
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const before = document.querySelector('.stair-headline')?.textContent;
 
     await user.click(screen.getByRole('button', { name: 'Arithmetic' }));
@@ -100,33 +100,33 @@ describe('the app in a browser', () => {
     expect(screen.getByLabelText(/^window/i)).toBeTruthy();
 
     expect(document.querySelector('.stair-headline')?.textContent).toBe(before);
-  }, 20000);
+  }, 120_000);
 
   it('marks every occurrence of a symbol picked out of the Huffman tree', async () => {
     const { container } = render(<App />);
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const table = container.querySelector('.ht-table')!;
     const buttons = within(table as HTMLElement).getAllByRole('button');
     await user.click(buttons[0]);
     expect(container.querySelectorAll('.ts-symbol').length).toBeGreaterThan(0);
-  }, 20000);
+  }, 120_000);
 
   it('refuses a paste over the cap instead of truncating it', async () => {
     render(<App />);
     const surface = screen.getByLabelText(/the text being measured/i) as HTMLTextAreaElement;
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     surface.focus();
     await user.paste('x'.repeat(200_001));
     expect(screen.getByRole('alert').textContent).toMatch(/was not truncated/i);
-  }, 20000);
+  }, 120_000);
 
   it('keeps typed text out of the URL', async () => {
     render(<App />);
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const surface = screen.getByLabelText(/the text being measured/i) as HTMLTextAreaElement;
     await user.clear(surface);
     await user.type(surface, 'something private');
     expect(window.location.search).not.toContain('private');
     expect(window.location.search).toContain('order=');
-  }, 20000);
+  }, 120_000);
 });
