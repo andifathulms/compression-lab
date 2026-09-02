@@ -1,0 +1,98 @@
+import { BitWriter, BitReader } from './bitio.ts';
+
+/**
+ * Huffman code lengths for a weight vector, by the two-queue construction.
+ *
+ * Ties are broken by ascending weight then ascending alphabet position, which
+ * makes the result a pure function of the weights.
+ */
+export function codeLengths(weights: ArrayLike<number>): Int32Array {
+  const n = weights.length;
+  const lengths = new Int32Array(n);
+  if (n === 0) return lengths;
+  if (n === 1) {
+    lengths[0] = 1;
+    return lengths;
+  }
+
+  const order = Array.from({ length: n }, (_, i) => i).sort(
+    (a, b) => weights[a] - weights[b] || a - b,
+  );
+
+  const total = 2 * n - 1;
+  const weight = new Float64Array(total);
+  const left = new Int32Array(total).fill(-1);
+  const right = new Int32Array(total).fill(-1);
+  for (let i = 0; i < n; i++) weight[i] = weights[order[i]];
+
+  let leaf = 0;
+  let internal = n;
+  let next = n;
+
+  const take = (): number => {
+    if (leaf < n && (internal >= next || weight[leaf] <= weight[internal])) {
+      return leaf++;
+    }
+    return internal++;
+  };
+
+  while (next < total) {
+    const a = take();
+    const b = take();
+    weight[next] = weight[a] + weight[b];
+    left[next] = a;
+    right[next] = b;
+    next++;
+  }
+
+  const depth = new Int32Array(total);
+  const root = total - 1;
+  const stack = [root];
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+    if (left[node] === -1) {
+      lengths[order[node]] = depth[node];
+      continue;
+    }
+    depth[left[node]] = depth[node] + 1;
+    depth[right[node]] = depth[node] + 1;
+    stack.push(left[node], right[node]);
+  }
+  return lengths;
+}
+
+export function canonicalTable(lengths: Int32Array): CodeTable {
+  const n = lengths.length;
+  let maxLength = 0;
+  for (let i = 0; i < n; i++) if (lengths[i] > maxLength) maxLength = lengths[i];
+
+  const countPerLength = new Int32Array(maxLength + 2);
+  for (let i = 0; i < n; i++) if (lengths[i] > 0) countPerLength[lengths[i]]++;
+
+  const sorted = new Int32Array(n);
+  const offset = new Int32Array(maxLength + 2);
+  let running = 0;
+  for (let len = 1; len <= maxLength; len++) {
+    offset[len] = running;
+    running += countPerLength[len];
+  }
+  const cursor = offset.slice();
+  for (let i = 0; i < n; i++) {
+    if (lengths[i] > 0) sorted[cursor[lengths[i]]++] = i;
+  }
+
+  const codes = new Int32Array(n);
+  const firstCode = new Int32Array(maxLength + 2);
+  const firstIndex = new Int32Array(maxLength + 2);
+  let code = 0;
+  for (let len = 1; len <= maxLength; len++) {
+    firstCode[len] = code;
+    firstIndex[len] = offset[len];
+    for (let k = 0; k < countPerLength[len]; k++) {
+      codes[sorted[offset[len] + k]] = code + k;
+    }
+    code = (code + countPerLength[len]) << 1;
+  }
+
+  return { lengths, codes, firstCode, firstIndex, countPerLength, sorted, maxLength };
+}

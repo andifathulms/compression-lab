@@ -1,0 +1,97 @@
+.bar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-2) var(--s-3);
+  border-top: 1px solid var(--rule);
+  background: var(--page);
+}
+
+.bar-order {
+  flex: 1 1 18rem;
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bar-order input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+.bar-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-faint);
+}
+
+.bar-tick-on {
+  color: var(--ink);
+}
+
+.bar-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  padding-bottom: 2px;
+}
+
+.bar-check input {
+  accent-color: var(--ink);
+}
+
+.bar-coder {
+  display: flex;
+}
+
+.bar-coder button + button {
+  border-left: 0;
+}
+
+/* Each coder's accent appears on its own control and on its instrument
+ * panel, and nowhere else. */
+.bar-coder button.bar-coder-huffman[aria-pressed='true'] {
+  box-shadow: inset 0 -3px 0 var(--huffman);
+}
+.bar-coder button.bar-coder-arithmetic[aria-pressed='true'] {
+  box-shadow: inset 0 -3px 0 var(--arithmetic);
+}
+.bar-coder button.bar-coder-lz77[aria-pressed='true'] {
+  box-shadow: inset 0 -3px 0 var(--lz77);
+}
+
+.bar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  margin-left: auto;
+}
+
+.bar-right select {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--page);
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .bar {
+    gap: var(--s-2);
+  }
+  .bar-right {
+    margin-left: 0;
+    width: 100%;
+  }
+  .bar-right button:last-of-type {
+    display: none;
+  }
+}

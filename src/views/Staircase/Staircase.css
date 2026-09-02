@@ -1,0 +1,80 @@
+.stair {
+  border-top: 0;
+}
+
+.stair-headline {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  margin: var(--s-2) 0 var(--s-1);
+}
+
+.stair-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 40rem;
+}
+
+/* The entropy steps are ink-mid, not a coder colour. They are not a coder's
+ * achievement; they are the standard being compared against. */
+.stair-entropy {
+  fill: none;
+  stroke: var(--ink-mid);
+  stroke-width: 2;
+}
+
+.stair-model {
+  fill: none;
+  stroke: var(--model-cost);
+  stroke-width: 1.5;
+}
+
+.stair-total {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.stair-axis {
+  font-family: var(--font-data);
+  font-size: 10px;
+  fill: var(--ink-faint);
+}
+
+.stair-axis-on {
+  fill: var(--ink);
+}
+
+.stair-key {
+  font-family: var(--font-data);
+  font-size: 10px;
+}
+
+.stair-annotation {
+  font-family: var(--font-data);
+  font-size: 10px;
+  fill: var(--ink);
+}
+
+.stair-orders {
+  display: flex;
+  gap: 0;
+  margin: var(--s-1) 0;
+}
+
+.stair-orders button + button {
+  border-left: 0;
+}
+
+.stair-split {
+  font-size: var(--t-data);
+  color: var(--ink-mid);
+  margin: var(--s-1) 0;
+}
+
+.stair-table {
+  margin: var(--s-2) 0;
+  max-width: 40rem;
+}

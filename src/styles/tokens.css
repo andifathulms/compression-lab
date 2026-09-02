@@ -1,0 +1,90 @@
+/*
+ * Design tokens. DESIGN.md is the source; this file is its transcription.
+ *
+ * The one idea the palette is built around: cost is rendered as visibility.
+ * A character the model predicted perfectly is drawn in the page colour and
+ * disappears. A character it did not expect is drawn in full ink. The
+ * surprisal ramp is therefore not a hue scale, it is a presence scale, and it
+ * is the only continuous colour scale in the app.
+ */
+
+:root {
+  /* Ground. Warm off-white because this is a reading surface, not a UI. */
+  --page: #f7f5f0;
+  --page-edge: #efece5;
+  --ink: #1a1815;
+  --ink-mid: #5c5852;
+  --ink-faint: #9b9589;
+  --rule: #dcd7cc;
+
+  /* The surprisal ramp, traversed by cost in bits. */
+  --ramp-0: #f7f5f0;
+  --ramp-2: #cfc8b9;
+  --ramp-4: #918977;
+  --ramp-6: #4e4940;
+  --ramp-8: #1a1815;
+
+  /* The three coders. Used for a coder's line, its point, and its panel
+   * accent. Nowhere else. */
+  --huffman: #b0642a;
+  --arithmetic: #2f6b7a;
+  --lz77: #6b4b8a;
+
+  /* Two functional colours. The model cost is deliberately unlike the coder
+   * colours because it is a different kind of quantity. */
+  --model-cost: #8a7a3d;
+  --match: #3e7d5a;
+
+  /*
+   * Literata and Iosevka are the specified faces. No woff2 files ship with
+   * this repository, so both fall back to a stack: Literata to Georgia, which
+   * shares the large x-height that lets a character survive being tinted
+   * toward the page colour, and Iosevka to the platform's monospace. Drop the
+   * woff2 files into src/styles/fonts/ and add the @font-face rules to use
+   * the real faces; nothing else has to change, and nothing is fetched over
+   * the network either way.
+   */
+  --font-text: Literata, Georgia, 'Times New Roman', serif;
+  --font-data: Iosevka, ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Base 17 px for the text surface: larger than typical UI, because it is
+   * meant to be read. Ratio 1.2. */
+  --t-display: 35px;
+  --t-figure: 24px;
+  --t-h2: 20px;
+  --t-text: 17px;
+  --t-body: 15px;
+  --t-data: 13px;
+  --t-small: 12px;
+
+  /* 8 px base. */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-3: 24px;
+  --s-4: 40px;
+  --s-5: 64px;
+  --s-6: 96px;
+
+  --measure: 34rem;
+  --max-width: 84rem;
+
+  /* Motion. Continuous controls use none of these: they map to the pointer
+   * directly. These are for discrete state changes only. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decisive: cubic-bezier(0.32, 0.72, 0, 1);
+  --d-interval: 420ms;
+  --d-coder: 300ms;
+  --d-sample: 500ms;
+  --d-merge: 260ms;
+  --d-window: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-interval: 0ms;
+    --d-coder: 0ms;
+    --d-sample: 0ms;
+    --d-merge: 0ms;
+    --d-window: 0ms;
+  }
+}

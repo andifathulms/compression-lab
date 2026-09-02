@@ -1,0 +1,123 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.app-header {
+  padding: var(--s-3) var(--s-3) var(--s-2);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.app-header h1 {
+  font-size: var(--t-h2);
+}
+
+.app-descriptor {
+  color: var(--ink-mid);
+  font-size: var(--t-body);
+}
+
+.app-main {
+  flex: 1;
+  display: grid;
+  /* The text column is fixed at its measure; the instruments take the rest.
+   * The text is the specimen, the instruments are the apparatus. */
+  grid-template-columns: var(--measure) minmax(0, 1fr);
+  gap: 0 var(--s-4);
+  padding: 0 var(--s-3) var(--s-4);
+  align-items: start;
+}
+
+.app-text {
+  border-top: 1px solid var(--rule);
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 8rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  overflow: hidden;
+}
+
+.app-readout {
+  min-height: 1.6em;
+  font-size: var(--t-data);
+  color: var(--ink-mid);
+}
+
+.app-warning {
+  border-left: 2px solid var(--ink);
+  padding-left: var(--s-1);
+  font-size: var(--t-body);
+}
+
+.app-instruments {
+  min-width: 0;
+}
+
+.app-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--page);
+}
+
+@media (max-width: 860px) {
+  .app-main {
+    /* Staircase first, then the text surface, then the coder bay. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-text {
+    position: static;
+    max-height: none;
+    order: 2;
+  }
+  .app-instruments {
+    order: 1;
+  }
+}
+
+.split {
+  margin: var(--s-1) 0 var(--s-2);
+  max-width: 34rem;
+}
+
+.split-bar {
+  display: flex;
+  height: 10px;
+  background: var(--page-edge);
+  border: 1px solid var(--rule);
+}
+
+.split-code {
+  display: block;
+  height: 100%;
+}
+
+.split-model {
+  display: block;
+  height: 100%;
+  background: var(--model-cost);
+}
+
+.split-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 2px var(--s-2);
+  margin: var(--s-1) 0 0;
+  font-size: var(--t-data);
+}
+
+.split-figures dt {
+  color: var(--ink-mid);
+  font-size: var(--t-small);
+}
+
+.split-figures dd {
+  margin: 0;
+}

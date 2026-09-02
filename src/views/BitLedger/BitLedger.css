@@ -1,0 +1,41 @@
+.ledger {
+  margin-top: var(--s-2);
+}
+
+.ledger-scroll {
+  max-height: 20rem;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-top: 1px solid var(--rule);
+}
+
+.ledger table {
+  max-width: 34rem;
+}
+
+.ledger thead th {
+  position: sticky;
+  top: 0;
+  background: var(--page);
+}
+
+.ledger tbody tr {
+  cursor: pointer;
+}
+
+.ledger tbody tr[aria-current='true'] td,
+.ledger tbody tr[aria-current='true'] th {
+  background: var(--page-edge);
+}
+
+.ledger-symbol {
+  text-align: left;
+}
+
+.ledger-bits {
+  text-align: left;
+  color: var(--ink-mid);
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
