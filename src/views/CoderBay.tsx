@@ -18,6 +18,8 @@ import { SizeSplit } from './SizeSplit.tsx';
 import { BitLedger } from './BitLedger/BitLedger.tsx';
 import { Interval } from './Interval/Interval.tsx';
 import { SlidingWindow } from './SlidingWindow/SlidingWindow.tsx';
+import { HuffmanTree } from './HuffmanTree/HuffmanTree.tsx';
+import { WastePlot } from './WastePlot/WastePlot.tsx';
 
 interface Props {
   analysis: TextAnalysis;
@@ -42,6 +44,8 @@ export function CoderBay({
   lz77,
   onLz77,
   onWindowRanges,
+  onSelectSymbol,
+  selectedSymbol,
 }: Props): JSX.Element {
   const [ledgerCursor, setLedgerCursor] = useState(0);
 
@@ -157,6 +161,26 @@ export function CoderBay({
         result={huffman.result}
         originalBytes={analysis.byteCount}
         colour="var(--huffman)"
+      />
+      {state.order > 0 ? (
+        <p className="assumption">
+          At order {state.order} there is a code table per context. The tree drawn is the one for
+          the context {JSON.stringify(huffman.trace.context)}; the size above counts every table
+          the encoder used.
+        </p>
+      ) : null}
+      <HuffmanTree
+        trace={huffman.trace}
+        selected={selectedSymbol}
+        onSelect={onSelectSymbol}
+      />
+      <h3 className="label">What the whole bits cost</h3>
+      <WastePlot
+        entries={huffman.waste}
+        wasteBits={huffman.wasteBits}
+        symbolCount={analysis.symbolCount}
+        selected={selectedSymbol}
+        onSelect={onSelectSymbol}
       />
     </section>
   );

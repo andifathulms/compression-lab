@@ -1,0 +1,102 @@
+.ht {
+  margin-top: var(--s-2);
+}
+
+.ht-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 40rem;
+  border: 1px solid var(--rule);
+  background: var(--page);
+}
+
+.ht-edge {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.ht-bit {
+  font-family: var(--font-data);
+  font-size: 8px;
+  fill: var(--ink-faint);
+  text-anchor: middle;
+}
+
+.ht-node {
+  fill: var(--ink-mid);
+  cursor: pointer;
+  /* A merge is a discrete step, so it gets a timed transition. */
+  transition: fill var(--d-merge) var(--ease-standard), r var(--d-merge) var(--ease-standard);
+}
+
+.ht-node-on {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.ht-node-merge {
+  fill: var(--huffman);
+}
+
+.ht-leaf {
+  font-family: var(--font-data);
+  font-size: 9px;
+  fill: var(--ink-mid);
+}
+
+.ht-queue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin: var(--s-1) 0;
+  max-width: 40rem;
+}
+
+.ht-chip {
+  border: 1px solid var(--rule);
+  padding: 1px 5px;
+  font-size: var(--t-small);
+}
+
+.ht-controls {
+  display: flex;
+  gap: var(--s-1);
+  align-items: center;
+  flex-wrap: wrap;
+  margin: var(--s-1) 0;
+}
+
+.ht-controls input[type='range'] {
+  flex: 1 1 10rem;
+  accent-color: var(--ink);
+}
+
+.ht-table {
+  max-width: 34rem;
+  display: block;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.ht-table tbody tr {
+  cursor: pointer;
+}
+
+.ht-table tbody tr[aria-current='true'] th,
+.ht-table tbody tr[aria-current='true'] td {
+  background: var(--page-edge);
+}
+
+.ht-code {
+  font-size: var(--t-small);
+  color: var(--ink-mid);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ht-node {
+    transition: none;
+  }
+}
