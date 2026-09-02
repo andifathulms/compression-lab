@@ -53,7 +53,8 @@ export interface WasteEntry {
 /* ------------------------------------------------------------------- LZ77 */
 
 export type Lz77Token =
-  | { kind: 'literal'; symbol: string }
+  /** LZ77 works on bytes, so a literal is a byte, not a code point. */
+  | { kind: 'literal'; byte: number }
   | { kind: 'match'; distance: number; length: number };
 
 export interface Lz77Step {
