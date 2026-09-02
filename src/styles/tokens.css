@@ -1,63 +1,115 @@
 /*
  * Design tokens. DESIGN.md is the source; this file is its transcription.
  *
- * The one idea the palette is built around: cost is rendered as visibility.
- * A character the model predicted perfectly is drawn in the page colour and
- * disappears. A character it did not expect is drawn in full ink. The
- * surprisal ramp is therefore not a hue scale, it is a presence scale, and it
- * is the only continuous colour scale in the app.
+ * Two ideas hold the whole palette together.
+ *
+ * The first is unchanged from the original design and is the reason the app
+ * looks the way it does: **cost is rendered as visibility**. A character the
+ * model predicted perfectly is drawn in the ground colour and disappears. A
+ * character it did not expect is drawn at full contrast. The surprisal ramp is
+ * therefore not a hue scale, it is a presence scale, and it is the only
+ * continuous colour scale in the app.
+ *
+ * The second is new: **paper and instrument**. The specimen — the text being
+ * measured — sits on paper. The apparatus that measures it sits on a recessed
+ * machined surface. The seam between the two is the app's argument made
+ * visible, so the two grounds are different tokens and never borrow each
+ * other's.
+ *
+ * Both survive the change of theme, and the dark theme is not an inversion.
+ * On paper the ramp runs from the page toward ink; on the bench it runs from
+ * the bench toward light, and picks up warmth at the top so an unexpected
+ * character reads as a signal rather than as more grey.
  */
 
 :root {
-  /* Ground. Warm off-white because this is a reading surface, not a UI. */
-  --page: #f7f5f0;
-  --page-edge: #efece5;
-  --ink: #1a1815;
-  --ink-mid: #5c5852;
-  --ink-faint: #9b9589;
-  --rule: #dcd7cc;
+  color-scheme: light;
 
-  /* The surprisal ramp, traversed by cost in bits. */
-  --ramp-0: #f7f5f0;
-  --ramp-2: #cfc8b9;
-  --ramp-4: #918977;
-  --ramp-6: #4e4940;
-  --ramp-8: #1a1815;
+  /* ---- Ground ------------------------------------------------------- */
+  /* Paper: warm off-white, because the left column is a reading surface. */
+  --page: #fbfaf7;
+  /* The instrument ground, recessed under the paper. */
+  --sunk: #f1efe8;
+  /* A raised control or panel that sits on top of either. */
+  --surface: #ffffff;
+  --surface-hover: #f6f4ee;
 
-  /* The three coders. Used for a coder's line, its point, and its panel
-   * accent. Nowhere else. */
-  --huffman: #b0642a;
-  --arithmetic: #2f6b7a;
-  --lz77: #6b4b8a;
+  --ink: #191817;
+  --ink-mid: #57544e;
+  --ink-faint: #918d84;
+  --rule: #e3dfd5;
+  --rule-strong: #c9c3b5;
 
-  /* Two functional colours. The model cost is deliberately unlike the coder
-   * colours because it is a different kind of quantity. */
-  --model-cost: #8a7a3d;
-  --match: #3e7d5a;
+  /* ---- The surprisal ramp, traversed by cost in bits ----------------- */
+  --ramp-0: #fbfaf7;
+  --ramp-2: #d6d0c2;
+  --ramp-4: #948c7a;
+  --ramp-6: #4c483f;
+  --ramp-8: #191817;
 
+  /* ---- The three coders ---------------------------------------------- */
+  /* Used for a coder's line, its point, its control and its panel accent.
+   * Nowhere else. Each has a tint for fills that must sit under text. */
+  --huffman: #b0601f;
+  --huffman-tint: #f4e7d8;
+  --arithmetic: #10697c;
+  --arithmetic-tint: #dcecef;
+  --lz77: #67449e;
+  --lz77-tint: #eae2f6;
+
+  /* ---- Two functional colours ---------------------------------------- */
+  /* Model cost is deliberately unlike the coder colours, because it is a
+   * different kind of quantity: overhead, not output. It is also the only
+   * fill in the app rendered as a hatch rather than a solid, for the same
+   * reason. */
+  --model-cost: #8a7326;
+  --match: #2f7d54;
+
+  /* ---- Type ----------------------------------------------------------- */
   /*
-   * Literata and Iosevka are the specified faces. No woff2 files ship with
-   * this repository, so both fall back to a stack: Literata to Georgia, which
-   * shares the large x-height that lets a character survive being tinted
-   * toward the page colour, and Iosevka to the platform's monospace. Drop the
-   * woff2 files into src/styles/fonts/ and add the @font-face rules to use
-   * the real faces; nothing else has to change, and nothing is fetched over
-   * the network either way.
+   * Two voices, assigned strictly.
+   *
+   * Literata is the prose voice: the specimen, the notes, the argument. It is
+   * a screen-reading face with a large x-height, which is what lets a
+   * character survive being tinted most of the way toward the page colour.
+   *
+   * JetBrains Mono is the instrument voice: every number, label, control,
+   * axis and table cell. Nothing that is a measurement is set in the prose
+   * face, and nothing that is prose is set in the instrument face.
+   *
+   * Both are self-hosted variable faces, imported in base.css. Nothing is
+   * fetched over the network.
    */
-  --font-text: Literata, Georgia, 'Times New Roman', serif;
-  --font-data: Iosevka, ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-text: 'Literata Variable', Literata, Georgia, 'Times New Roman', serif;
+  --font-data: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo,
+    Consolas, monospace;
 
-  /* Base 17 px for the text surface: larger than typical UI, because it is
-   * meant to be read. Ratio 1.2. */
-  --t-display: 35px;
-  --t-figure: 24px;
-  --t-h2: 20px;
+  /* Ratio 1.25 at the display end, 1.15 through the working sizes. Base 17px
+   * for the specimen: larger than typical UI, because it is meant to be read. */
+  --t-display: clamp(30px, 1.6rem + 1.1vw, 42px);
+  --t-figure: 23px;
+  --t-h2: 17px;
+  --t-h3: 14px;
   --t-text: 17px;
   --t-body: 15px;
   --t-data: 13px;
-  --t-small: 12px;
+  --t-small: 11.5px;
+  --t-micro: 10.5px;
 
-  /* 8 px base. */
+  /* Tracking. Mono at small sizes needs opening up; display numerals need
+   * tightening, or a five-digit figure reads as a serial number. */
+  --track-display: -0.02em;
+  --track-figure: -0.01em;
+  --track-label: 0.08em;
+  --track-micro: 0.11em;
+
+  --weight-text: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+
+  /* ---- Space ---------------------------------------------------------- */
+  /* 4px base, so the dense instrument side has a half-step to work in. */
+  --s-0: 4px;
   --s-1: 8px;
   --s-2: 16px;
   --s-3: 24px;
@@ -65,13 +117,25 @@
   --s-5: 64px;
   --s-6: 96px;
 
-  --measure: 34rem;
-  --max-width: 84rem;
+  --measure: 36rem;
+  --max-width: 96rem;
 
-  /* Motion. Continuous controls use none of these: they map to the pointer
-   * directly. These are for discrete state changes only. */
+  /* ---- Shape ---------------------------------------------------------- */
+  /* Panels stay ruled rectangles. Radius exists only on things a pointer
+   * touches, which is how a control announces that it is one. */
+  --r-1: 3px;
+  --r-2: 6px;
+  --r-3: 10px;
+  --ring: 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
+  --shadow-1: 0 1px 2px rgb(25 24 23 / 0.05);
+  --shadow-2: 0 6px 20px -8px rgb(25 24 23 / 0.18), 0 1px 2px rgb(25 24 23 / 0.06);
+
+  /* ---- Motion --------------------------------------------------------- */
+  /* Continuous controls use none of these: they map to the pointer directly.
+   * These are for discrete state changes only. */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-decisive: cubic-bezier(0.32, 0.72, 0, 1);
+  --d-fast: 120ms;
   --d-interval: 420ms;
   --d-coder: 300ms;
   --d-sample: 500ms;
@@ -79,8 +143,52 @@
   --d-window: 180ms;
 }
 
+/*
+ * The bench.
+ *
+ * Not an inversion. The paper becomes a dark machined ground, the ramp runs
+ * from that ground toward light, and the coder colours are lifted in
+ * lightness and dropped in saturation so that a 1px line still reads at
+ * 13px against a dark field.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --page: #131415;
+  --sunk: #0b0c0d;
+  --surface: #1b1d1f;
+  --surface-hover: #23262a;
+
+  --ink: #ece9e2;
+  --ink-mid: #a09b91;
+  --ink-faint: #6a665f;
+  --rule: #292c2f;
+  --rule-strong: #3d4145;
+
+  --ramp-0: #131415;
+  --ramp-2: #33383c;
+  --ramp-4: #676c6f;
+  --ramp-6: #a8a79e;
+  --ramp-8: #f7eedc;
+
+  --huffman: #e5a05c;
+  --huffman-tint: #2e2318;
+  --arithmetic: #52c3d8;
+  --arithmetic-tint: #14282d;
+  --lz77: #b598ef;
+  --lz77-tint: #241d33;
+
+  --model-cost: #d8b95d;
+  --match: #58c48d;
+
+  --ring: 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px -10px rgb(0 0 0 / 0.7), 0 1px 2px rgb(0 0 0 / 0.4);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
+    --d-fast: 0ms;
     --d-interval: 0ms;
     --d-coder: 0ms;
     --d-sample: 0ms;

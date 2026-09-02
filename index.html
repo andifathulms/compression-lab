@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,6 +8,26 @@
       name="description"
       content="Entropy is not a property of a text. It is a property of a text under a model."
     />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Resolve the ground before the first paint. React sets the same
+      // attribute a moment later; without this the page would flash paper at
+      // someone who asked for the bench.
+      (function () {
+        try {
+          var stored = localStorage.getItem('compression-lab:theme');
+          var mode =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.dataset.theme = mode;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
