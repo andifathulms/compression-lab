@@ -23,7 +23,9 @@ export function BitLedger({ steps, cursor, onSelect }: Props): JSX.Element {
 
   useEffect(() => {
     const row = bodyRef.current?.querySelector<HTMLElement>('[aria-current="true"]');
-    row?.scrollIntoView({ block: 'nearest' });
+    // Guarded: scrolling the ledger into step is a convenience, and not every
+    // environment that renders this implements it.
+    row?.scrollIntoView?.({ block: 'nearest' });
   }, [cursor]);
 
   return (
