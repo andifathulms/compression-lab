@@ -103,6 +103,17 @@ export interface ArithmeticStep {
    * symbols, and the depth readout needs to keep counting past that.
    */
   widthLog2: number;
+  /**
+   * The idealised band boundaries of this step's distribution, as fractions of
+   * the current interval, length alphabet + 1.
+   *
+   * Carried in the trace rather than recomputed by the view. Under an adaptive
+   * model the distribution at step i exists only during step i, so a view that
+   * re-derived it would be drawing a different distribution from the one the
+   * coder used — which is the drift this whole trace arrangement exists to
+   * make impossible.
+   */
+  bands: Float64Array;
 }
 
 export interface ArithmeticTrace {

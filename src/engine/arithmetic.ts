@@ -82,6 +82,14 @@ class Cumulative {
   }
 }
 
+/** Band boundaries as fractions of the current interval, for the trace. */
+function normalise(cum: BigInt64Array, total: bigint): Float64Array {
+  const scale = Number(total);
+  const out = new Float64Array(cum.length);
+  for (let i = 0; i < cum.length; i++) out[i] = Number(cum[i]) / scale;
+  return out;
+}
+
 export interface ArithmeticEncoded {
   bytes: Uint8Array;
   bits: number;
@@ -175,6 +183,7 @@ export function arithmeticEncode(
         cumulativeBits: writer.length,
         probability,
         widthLog2,
+        bands: normalise(cum, total),
       });
     }
 

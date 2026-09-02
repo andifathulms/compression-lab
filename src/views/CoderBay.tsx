@@ -16,6 +16,7 @@ import type {
 import type { AppState, Lz77Settings } from '../state/appState.ts';
 import { SizeSplit } from './SizeSplit.tsx';
 import { BitLedger } from './BitLedger/BitLedger.tsx';
+import { Interval } from './Interval/Interval.tsx';
 
 interface Props {
   analysis: TextAnalysis;
@@ -85,6 +86,18 @@ export function CoderBay({
           result={arithmetic.result}
           originalBytes={analysis.byteCount}
           colour="var(--arithmetic)"
+        />
+        <p className="assumption">
+          What is drawn is the idealised real-number interval, because that is the version a
+          person can follow. What the engine does is an integer range coder with renormalization
+          and underflow handling. The renormalization track below is the bridge between them, and
+          both are read from the same trace record, so they cannot come apart.
+        </p>
+        <Interval
+          steps={arithmetic.trace.steps}
+          analysis={analysis}
+          cursor={Math.min(ledgerCursor, Math.max(0, arithmetic.trace.steps.length - 1))}
+          onCursor={setLedgerCursor}
         />
         <BitLedger
           steps={arithmetic.trace.steps}

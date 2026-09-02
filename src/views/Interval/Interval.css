@@ -1,0 +1,79 @@
+.interval-body {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  margin: var(--s-2) 0;
+}
+
+.interval-svg {
+  width: 120px;
+  height: 320px;
+  flex: 0 0 auto;
+  border: 1px solid var(--rule);
+  background: var(--page);
+}
+
+.interval-band {
+  fill: var(--page);
+  stroke: var(--rule);
+  stroke-width: 0.5;
+}
+
+/* The selected band, in the arithmetic coder's colour. It is the only thing
+ * in this view that carries the coder's identity. */
+.interval-band-on {
+  fill: var(--page-edge);
+  stroke: var(--arithmetic);
+  stroke-width: 1.5;
+}
+
+.interval-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  fill: var(--ink-mid);
+}
+
+.interval-readout p {
+  margin: 0 0 var(--s-1);
+  font-size: var(--t-data);
+}
+
+.interval-renorm {
+  border-top: 1px solid var(--rule);
+  padding-top: var(--s-2);
+}
+
+.interval-integers {
+  display: grid;
+  gap: 2px;
+  margin: var(--s-1) 0 0;
+  font-size: var(--t-small);
+}
+
+.interval-integers dt {
+  color: var(--ink-mid);
+}
+
+.interval-integers dd {
+  margin: 0 0 var(--s-1);
+  word-break: break-all;
+  line-height: 1.3;
+}
+
+.interval-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  margin-top: var(--s-2);
+}
+
+.interval-controls input[type='range'] {
+  accent-color: var(--ink);
+}
+
+/* The scrubber is a continuous control: it follows the pointer exactly. */
+.interval-scrub {
+  flex: 1 1 12rem;
+  min-width: 8rem;
+}

@@ -82,4 +82,25 @@ describe('arithmetic coding', () => {
     const summed = trace.steps.reduce((s, x) => s + x.costBits, 0);
     expect(trace.steps[trace.steps.length - 1].widthLog2).toBeCloseTo(-summed, 9);
   });
+
+  it('the trace carries the bands the coder actually used', () => {
+    // The Interval view draws these rather than re-deriving them. Under an
+    // adaptive model the distribution at step i exists only during step i, so
+    // a view that recomputed it would draw a different one.
+    const index = indexText(toSymbols('to be or not to be, that is the question'));
+    for (const model of [buildModelsFromIndex(index)[1], emptyModel(index.alphabet, 1)]) {
+      const { trace } = arithmeticEncode(index, model);
+      for (const step of trace.steps) {
+        expect(step.bands.length).toBe(index.alphabet.length + 1);
+        expect(step.bands[0]).toBe(0);
+        expect(step.bands[step.bands.length - 1]).toBeCloseTo(1, 12);
+        const at = index.alphabet.indexOf(step.symbol);
+        expect(step.bands[at]).toBeCloseTo(step.idealLow, 12);
+        expect(step.bands[at + 1]).toBeCloseTo(step.idealHigh, 12);
+        for (let i = 1; i < step.bands.length; i++) {
+          expect(step.bands[i]).toBeGreaterThan(step.bands[i - 1]);
+        }
+      }
+    }
+  });
 });
