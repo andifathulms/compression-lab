@@ -6,8 +6,8 @@ Visual and motion specification. PRD.md defines substance; this defines form.
 
 ## 0. The design problem
 
-The previous two apps were handed their palettes by the world — parties have colours,
-QR codes are black and white. This one is handed nothing. The subject is abstract:
+The previous two apps were handed their palettes by the world — parties have colours, QR
+codes are black and white. This one is handed nothing. The subject is abstract:
 probability, cost, prediction. That freedom is the risk, because an abstract brief is
 exactly where a design defaults.
 
@@ -16,225 +16,231 @@ text**. Everything in this app is a measurement of prose that someone pasted in.
 a reading surface with instrumentation on it, not a dashboard that happens to contain some
 words.
 
-That decides almost everything: the ground is light because it is a reading surface, the
-primary face is a serif because the subject is prose, and the central visual idea comes
-straight out of the subject matter —
+Two ideas come out of that, and everything else in this document is downstream of them.
 
-**Cost is rendered as visibility.** A character that the model predicted perfectly costs
-nothing and is drawn in the page colour: invisible. A character the model did not expect
-costs a lot and is drawn in full ink. Surprisal is not mapped onto an arbitrary colour
-ramp; it is mapped onto how much the character is *there*.
+**Cost is rendered as visibility.** A character the model predicted perfectly costs nothing
+and is drawn in the ground colour: invisible. A character the model did not expect costs a
+lot and is drawn at full contrast. Surprisal is not mapped onto an arbitrary hue ramp; it
+is mapped onto how much the character is *there*. That single mapping does more teaching
+than any legend, and it makes the surprisal ramp the one place in this family of apps where
+a continuous colour scale is correct rather than lazy.
 
-That single mapping does more teaching than any legend, and it makes the surprisal ramp the
-one place in this family of apps where a continuous colour scale is correct rather than
-lazy.
+**Paper and instrument.** The thing being measured and the thing doing the measuring are
+different materials. The specimen sits on paper: a serif face, a real reading measure,
+generous margins. The apparatus sits on a recessed machined ground: a monospaced face,
+dense figures, hairline rules and framed plots. The seam between the two columns is a real
+edge, and it is the app's subject drawn rather than described.
 
 ---
 
 ## 1. Design plan
 
-**Concept: the annotated manuscript.**
-
-A page of text under a measuring instrument. Generous margins, a real reading measure, and
-marks made on the text rather than beside it. The instruments to the right are the
-apparatus; the text is the specimen.
+**Concept: the specimen on the bench.**
 
 Structure encodes the argument. The staircase is a staircase because conditional entropy
 genuinely descends in discrete steps. The waste plot is an area because waste is an area.
-Nothing is a chart type chosen from a menu.
+The interval view puts the idealisation and the integer registers side by side because they
+come out of one trace record. Nothing is a chart type chosen from a menu.
 
-**Alignment:** the text column is left-aligned, ragged right, on a measure of 62–66
+**Alignment.** The specimen column is left-aligned, ragged right, on a measure of 62–66
 characters. The instrument column is right-aligned on its numerals and left-aligned on its
-labels. The two columns share a baseline grid so a value in the instruments sits on the
-same line as the text it describes.
+labels, in one monospaced grid.
+
+**Hierarchy.** There is exactly one hero figure on the page: the current coder's rate, in
+the rail. Everything else steps down from it. On the instrument side the size hierarchy is
+carried entirely by the figures — every panel heading is the same size — because eight
+panels with eight heading sizes read as eight competing arguments.
 
 ---
 
 ## 2. Colour
 
-### 2.1 Ground
+The palette is defined once, as tokens, and instantiated on two grounds. The dark ground is
+not an inversion: the roles are the same, the values are chosen independently, and the ramp
+changes direction rather than being flipped.
 
-| Token | Value | Use |
-|---|---|---|
-| `--page` | `#F7F5F0` | The reading surface. Warm off-white, paper rather than UI white. |
-| `--page-edge` | `#EFECE5` | Instrument panel grounds, one step down from the page. |
-| `--ink` | `#1A1815` | Full ink. The maximum of the surprisal ramp. |
-| `--ink-mid` | `#5C5852` | Labels, axis text, secondary copy. |
-| `--ink-faint` | `#9B9589` | Disabled states, axis ticks. |
-| `--rule` | `#DCD7CC` | Hairlines, grid, panel edges. |
+### 2.1 The two grounds
 
-This is a warm off-white ground, which sits close to a known generated-design default. It
-is used here because the app is literally a reading surface and a cool grey would fight the
-prose — but the usual companions of that ground are banned to keep it from reading as the
-template: no terracotta accent, no high-contrast display serif, no centred hero.
+| Token | Paper | Bench | Use |
+|---|---|---|---|
+| `--page` | `#FBFAF7` | `#131415` | The specimen. Warm off-white, or the lighter of the two dark grounds. |
+| `--sunk` | `#F1EFE8` | `#0B0C0D` | The bench: the recessed ground the apparatus sits on. |
+| `--surface` | `#FFFFFF` | `#1B1D1F` | A raised control, a framed plot, a scrolling table. |
+| `--surface-hover` | `#F6F4EE` | `#23262A` | The same, under a pointer. |
+| `--ink` | `#191817` | `#ECE9E2` | Text, the total line, the selected state. |
+| `--ink-mid` | `#57544E` | `#A09B91` | Prose that qualifies a figure. The entropy line. |
+| `--ink-faint` | `#918D84` | `#6A665F` | Labels, axis numerals, disabled controls. |
+| `--rule` | `#E3DFD5` | `#292C2F` | Hairlines between panels. |
+| `--rule-strong` | `#C9C3B5` | `#3D4145` | Slider tracks, table header rules, menu borders. |
+
+On paper the specimen is *lighter* than the bench; on the bench it is *lighter* than the
+bench too. The specimen is always the raised material. That is the one invariant the two
+grounds share, and it is what keeps the layout reading the same way in both.
 
 ### 2.2 The surprisal ramp
 
-The app's primary colour system. A continuous ramp from `--page` to `--ink`, traversed by
-cost in bits.
+Five stops, traversed by cost in bits, rescaled if the alphabet tops out below 8 bits — and
+the interface says when it has been rescaled, because a rescaled ramp changes what the page
+looks like.
 
-Not a hue ramp. The ramp runs through *presence*: from the page colour itself, through a
-warm grey, to full ink, with a very slight warm shift at the high end so that expensive
-characters read as ink rather than as shadow.
-
-| Bits | Colour | Reading |
+| Bits | Paper | Bench |
 |---|---|---|
-| 0 | `--page` | invisible; the model knew exactly |
-| 2 | `#CFC8B9` | barely there |
-| 4 | `#918977` | present |
-| 6 | `#4E4940` | dark |
-| 8+ | `--ink` | full ink; the model was surprised |
+| 0 | `#FBFAF7` | `#131415` |
+| 2 | `#D6D0C2` | `#33383C` |
+| 4 | `#948C7A` | `#676C6F` |
+| 6 | `#4C483F` | `#A8A79E` |
+| 8 | `#191817` | `#F7EEDC` |
 
-Clamp at 8 bits for an 8-bit alphabet; rescale the top of the ramp when the alphabet is
-smaller, and say so, because a DNA sample maxes out at 2 bits and would otherwise render
-entirely pale.
+Both start at the ground and end at full presence. The paper ramp ends in ink. The bench
+ramp ends in a warm near-white — the only place in the app where warmth means intensity —
+so that on the dark ground an unexpected character reads as a signal rather than as one
+more shade of grey.
 
-Because zero-cost characters are the page colour, low-entropy text partially disappears.
-That is correct and it is the app's best single visual: paste a repeated phrase, raise the
-order, and watch the text fade off the page as the model learns it.
+The low end of both ramps is deliberately below the 4.5:1 contrast floor. That is
+legitimate because the tint is redundant encoding: every value is also in the readout under
+the specimen and in the tables.
 
 ### 2.3 The three coders
 
-Three identity colours. Only three, so they can be genuinely distinct and none of them
-needs to be a ramp.
+Each coder has one colour. It appears on that coder's segment in the control, its line and
+point on the staircase, the code-stream bar in its size split, and the marks its instrument
+makes in the specimen. Nowhere else. There is no legend, because the control, the plot and
+the instrument already agree.
 
-| Coder | Colour | Note |
-|---|---|---|
-| Huffman | `#B0642A` | burnt orange |
-| Arithmetic | `#2F6B7A` | deep teal |
-| LZ77 | `#6B4B8A` | plum |
+| Coder | Paper | Bench | Why |
+|---|---|---|---|
+| Huffman | `#B0601F` | `#E5A05C` | Warm, discrete, stepped. |
+| Arithmetic | `#10697C` | `#52C3D8` | Cool, continuous, flowing. |
+| LZ77 | `#67449E` | `#B598EF` | Neither; it is about memory, not probability. |
 
-Each is used for that coder's line on the staircase, its point on every comparison, and the
-accent on its instrument panel. Nowhere else.
-
-Entropy steps on the staircase are drawn in `--ink-mid`, not in a coder colour — they are
-not a coder's achievement, they are the standard being compared against.
+Each also has a tint (`--huffman-tint` and so on) for fills that sit under text.
 
 ### 2.4 Two functional colours
 
-| Token | Value | Use |
-|---|---|---|
-| `--model-cost` | `#8A7A3D` | The model description cost, on the staircase and in every size breakdown. Olive; deliberately unlike the three coder colours because it is a different kind of quantity. |
-| `--match` | `#3E7D5A` | The LZ77 match highlight, in the sliding window view only. |
+| Token | Paper | Bench | Use |
+|---|---|---|---|
+| `--model-cost` | `#8A7326` | `#D8B95D` | The model description, everywhere it appears. |
+| `--match` | `#2F7D54` | `#58C48D` | An LZ77 match, marked in both places at once. |
 
-Nothing else is coloured. Selection is a 2 px `--ink` outline. No hover tints.
+The model description is the only quantity in the app drawn as a **hatch** rather than a
+solid fill. It is overhead, not output, and a solid block beside the code stream would read
+as more of the same substance. The hatch takes the model-cost token, so it follows the
+theme.
+
+### 2.5 Prohibitions
+
+No gradient anywhere except the hatch and the specimen's scroll-edge fade. No colour-coded
+sentiment: nothing is green because it is good. No hue used to mean two things. Colour on a
+number always means which series it belongs to, never whether the number is large.
 
 ---
 
 ## 3. Typography
 
-Two families, both doing real work.
+Two voices, assigned strictly. Both are self-hosted variable faces subsetted to Latin and
+Latin Extended, bundled with the app; nothing is fetched at runtime.
 
-**Literata** for the text surface and for running copy. It was drawn for long-form screen
-reading, it has a large x-height that survives being tinted toward the page colour, and it
-holds together when individual characters are set at different values — which is exactly
-what the surprisal view does to it. A display serif with high stroke contrast would fall
-apart under that treatment; test this specifically.
+**Literata** is the prose voice: the specimen, the notes, the argument, the claim in the
+masthead. A screen-reading face with a large x-height, which is what lets a character
+survive being tinted most of the way toward the ground colour.
 
-**Iosevka** for every number, bitstream, code, label and axis. Narrow, so a bit ledger
-column of 32 characters fits without shrinking; excellent digits; and its condensation is
-useful rather than stylistic when the app is full of long binary strings.
+**JetBrains Mono** is the instrument voice: every number, label, axis, control, table cell
+and panel heading, with tabular figures throughout. The staircase animates its numbers and
+proportional figures would jitter.
 
-No sans. The app is prose and numerals, and a third voice would be a third opinion nobody
-asked for.
+Nothing measured is set in the prose face. Nothing prose-like is set in the instrument
+face. The one deliberate crossing is the sliding-window strip, where the text is set in the
+instrument voice — because there it is not being read, it is being indexed, and a
+monospaced grid is what makes a distance of nine legible as nine.
 
 ### 3.1 Scale
 
-Base 17 px for the text surface — larger than typical UI, because it is meant to be read.
-Ratio 1.2.
+| Token | Size | Use |
+|---|---|---|
+| `--t-display` | `clamp(30px, 1.6rem + 1.1vw, 42px)` | The rail's reading. One per page. |
+| `--t-figure` | 23px | A panel's leading figure. |
+| `--t-h2` | 17px | The app name; the specimen's hover glyph. |
+| `--t-text` | 17px | The specimen. Larger than typical UI, because it is meant to be read. |
+| `--t-body` | 15px | Prose notes. |
+| `--t-data` | 13px | Table cells, controls, readouts. |
+| `--t-small` | 11.5px | Panel headings, assumptions. |
+| `--t-micro` | 10.5px | Field labels, axis numerals. |
 
-| Token | Size / line-height | Face | Use |
-|---|---|---|---|
-| `--t-display` | 35 / 1.1, 500 | Iosevka | The headline figure: bits per symbol, optimal order |
-| `--t-figure` | 24 / 1.1, 500 | Iosevka | Instrument values |
-| `--t-h2` | 20 / 1.3, 600 | Literata | Panel headings |
-| `--t-text` | 17 / 1.65, 400 | Literata | The text surface. Measure 62–66 characters. |
-| `--t-body` | 15 / 1.6, 400 | Literata | Explanatory copy |
-| `--t-data` | 13 / 1.5, 400 | Iosevka | Bits, codes, tokens, tables |
-| `--t-small` | 12 / 1.4, 400 | Iosevka | Axis labels, units, legend |
-
-`font-variant-numeric: tabular-nums` on all Iosevka. The staircase animates numbers and
-proportional figures will jitter.
+Tracking is a token too: display numerals are tightened (`-0.02em`) or a five-digit figure
+reads as a serial number; micro labels are opened out (`0.08em`–`0.11em`) or uppercase mono
+at 10.5px sets solid.
 
 ### 3.2 Prohibitions
 
-No all-caps labels. No tracked-out eyebrows. No single word in a heading accented in colour
-or weight — particularly tempting here, and particularly wrong, since colour already means
-cost. Sentence case throughout.
+Sentence case throughout, except the tracked uppercase micro-labels, which are a machine
+convention and not a heading. No word in a heading accented in colour or weight — colour
+already means cost. One italic in the whole interface, on "under a model" in the claim; it
+is on language, never on a number. Every number carries its unit.
 
 ---
 
 ## 4. Layout
 
-### 4.1 Two columns
+### 4.1 Three bands, then two columns
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│ Compression Lab                                                  │
-├────────────────────────────────┬─────────────────────────────────┤
-│                                │  THE STAIRCASE                  │
-│  THE TEXT SURFACE              │  ┌───────────────────────────┐  │
-│                                │  │ H₀ ▔▔▔▔                   │  │
-│  Every character coloured by   │  │   H₁ ▔▔▔▔                 │  │
-│  what it costs. Predictable    │  │     H₂ ▔▔▔▔               │  │
-│  characters fade into the      │  │  · huffman  · arith · lz  │  │
-│  page; surprising ones sit in  │  │  ╱ model cost             │  │
-│  full ink.                     │  │  ╲ total ── minimum at 2  │  │
-│                                │  └───────────────────────────┘  │
-│  Scrolls independently.        │                                 │
-│  Measure held at 62–66 chars.  │  code 4.1 kB · model 0.9 kB     │
-│                                │  total 5.0 kB · ratio 0.41      │
-│                                ├─────────────────────────────────┤
-│                                │  THE CODER BAY                 │
-│                                │  [huffman|arithmetic|lz77|all]  │
-│                                │                                 │
-│                                │  ← one instrument at a time     │
-│                                │                                 │
-├────────────────────────────────┴─────────────────────────────────┤
-│ order ●──────────  0 1 2 3 4 5   □ adaptive    [ sample ▾ ]      │
-└──────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│ masthead   name · claim              text · share · ground│  scrolls away
+├───────────────────────────────────────────────────────────┤
+│ rail       8.36 bits/symbol   coder · order · adaptive    │  pinned
+├──────────────────────────┬────────────────────────────────┤
+│ specimen (paper)         │ apparatus (bench)              │
+│  the text, tinted        │  staircase — pinned            │
+│  hover readout           │  coder bay                     │
+│                          │  parallel corpus               │
+└──────────────────────────┴────────────────────────────────┘
 ```
 
-The text is on the left and it is the largest thing on the page. That is the argument the
-layout makes: this app measures writing, and the writing stays visible while you measure it.
+The **masthead** states the claim and holds the chrome that is not a measurement.
 
-The staircase is pinned at the top of the right column and never scrolls away, because
-every other instrument is an elaboration of it.
+The **rail** is pinned and is the app's answer to its own question, together with the only
+three controls that move it. The reading and the controls are one object because the model
+order is the primary control and it belongs next to the number it changes, not at the far
+end of the page from it. Under compare the reading shows the lowest of the three and names
+it; a blank reading or an arbitrary one would both be worse.
 
-### 4.2 The coder bay
+The rail's height is measured at runtime and published as `--rail-h`, which the two pinned
+columns offset against. It wraps differently at every width, so it cannot be a constant.
 
-Below the staircase. Four states: Huffman, arithmetic, LZ77, and compare. Switching swaps
-the instrument; the staircase and the text surface do not change.
+### 4.2 The specimen
 
-This is the structural parallel to the fixed matrix in Anatomi QRIS — one constant, one
-interchangeable part — arrived at for the same reason, that a constant anchor is what makes
-a set of views read as one subject.
+Its own scroll region, pinned under the rail, at `--measure` (36rem). It fades at its
+scroll edge, because a line of prose sliced in half horizontally reads as a rendering
+fault. The hover readout is a fixed line at the foot of the column, not a tooltip: a
+tooltip that follows the pointer across 200,000 characters is a tooltip permanently in
+front of the character you wanted to look at next.
 
-### 4.3 The control bar
+### 4.3 The apparatus
 
-Pinned to the bottom, full width. The model order slider is the primary control and takes
-the most space, with the six orders marked. Adaptive is a checkbox beside it, because
-adaptive is the thing that zeroes the model cost and the user should be able to toggle it
-while watching the staircase.
-
-The sample chooser sits at the right. The paste target is the text surface itself — click
-into it and type or paste. There is no separate input box, because the text is the subject
-and putting it behind a form field would say otherwise.
+One constant anchor and one interchangeable part. The staircase is pinned at the top of the
+column and does not change when the coder changes, because a constant anchor is what makes
+a set of views read as one subject rather than as four unrelated screens. Below it, the
+coder bay swaps its instrument, then the parallel corpus row, then the smoothing note.
 
 ### 4.4 Grid and rhythm
 
-8 px base. Spacing scale: 8 · 16 · 24 · 40 · 64 · 96. Max width 84 rem. Text column fixed
-at 34 rem; instrument column takes the rest.
+4px base scale, so the dense side has a half step. Panels are separated by a hairline and
+by the ground under them, never by cards. No shadow on a panel. Radius exists only on
+things a pointer touches — that is how a control announces that it is one — and on framed
+plots and scroll boxes, which are surfaces rather than panels.
 
-Panels are separated by value and a single hairline, not by cards. No radius, no shadow —
-this is a page, not a set of tiles.
+### 4.5 Responsive
 
-### 4.5 Mobile
+Three breakpoints.
 
-Below 860 px the columns stack: staircase first, then text surface, then coder bay. The
-staircase stays sticky at the top at reduced height. The text surface keeps its measure and
-its type size — it is still meant to be read. The control bar keeps the order slider and
-collapses adaptive and sample behind one control.
+- **≤1180px** — gutters tighten, the specimen narrows toward its measure.
+- **≤980px** — one column. The specimen goes first, because the app opens on a piece of
+  text and it should be the first thing there is. Both pinned columns and the rail go
+  static: two nested sticky scroll regions on a phone is a trap, and a rail that is most of
+  a phone screen tall leaves nothing for the thing it describes.
+- **≤560px** — the rail's controls take a full row each, the ground control keeps its marks
+  and drops its words, and the total-size fact drops out; the ratio survives, because it is
+  the only fact that does not need another number to be read against.
 
 ---
 
@@ -242,83 +248,77 @@ collapses adaptive and sample behind one control.
 
 ### 5.1 The staircase
 
-Horizontal axis: model order, 0 through 5. Vertical: bits per symbol.
+The app's centre. Literal steps: a flat segment per order joined by vertical risers,
+because conditional entropy is defined at integer orders and a smooth curve between them
+would assert a continuity that does not exist. The model description and the total are
+defined at integer orders too, so they are points joined by straight segments at the centre
+of each step.
 
-- Entropy steps as literal steps — flat segments with vertical risers, `--ink-mid`, 2 px.
-  Not a smooth curve. Conditional entropy is defined at integer orders and drawing a curve
-  between them would assert a continuity that does not exist.
-- Each coder's achieved rate as a point at the order it is configured for, in its colour.
-- Model cost as a rising line in `--model-cost`.
-- Total as a line with a marked minimum, annotated with the order.
+It sits in a framed plot on the raised surface. It is pinned, and without a frame a panel
+scrolling underneath it looks like part of the chart.
 
-The minimum annotation is the app's headline: *"lowest total at order 2"*. When the user
-pastes a longer text and the minimum shifts right, the annotation moves with it and that
-movement is the thesis.
+**The plot is the control.** Clicking a column picks that order, which is the gesture a
+reader tries first. The H0–H5 buttons below are the same thing on the keyboard path.
 
-Compare mode plots all three coders at once with a light connecting rule to their labels.
+**Two axis settings.** A static order-5 model on a short text costs upwards of fifty bits
+per symbol, and against that the entropy steps — the thing the chart is named after —
+descend across two pixels at the bottom of the plot. *Everything* fits the tallest series
+and is the default, because the model line running away is the lesson. *The steps* fits the
+entropy and the coder rates, and says in words that the model and total lines have run off
+the top: a line that leaves the plot without saying where it went is a lie.
 
-### 5.2 The text surface
+Ticks come from the range — 1, 2 or 5 times a power of ten, about six of them. The key on
+the right collects each label's wanted height, pushes them apart to a minimum gap, and
+draws a leader back to where each wanted to be, because several series land on the same
+value routinely.
 
-The user's text, set at reading size, every character tinted by its cost.
+### 5.2 The specimen
 
-Hovering a character shows its context, its probability under the current model, and its
-cost in bits. The context is shown as the preceding *n* characters highlighted in place,
-which is how a user learns what "order 3" actually means without a definition.
+Two layers that must agree exactly: a coloured, `aria-hidden`, pointer-transparent layer of
+spans underneath, and a real transparent textarea on top carrying the caret, the selection
+and the text. That is what keeps the prose selectable, editable and legible to a screen
+reader, which is why this is DOM and not canvas.
 
-Selecting a range shows that range's total cost, which lets someone measure a single word
-against another.
-
-Virtualised (CLAUDE.md §7) but never paginated. Scrolling must feel like scrolling a
-document.
+Marks made on the text carry the colour of the instrument that made them: a Huffman symbol
+selection is a Huffman-coloured underline, the LZ77 look-ahead is an LZ77-coloured wash, a
+match is a `--match` underline in both places at once. A tint would mean cost, so a mark is
+never a tint. The selection is translucent for the same reason: a solid block hides the
+tint underneath it, and the tint is the point.
 
 ### 5.3 Huffman tree
 
-Built bottom-up, steppable. Nodes carry their frequency; edges carry 0 and 1. The queue is
-shown as a row beneath, shrinking by one on each merge.
-
-Selecting a leaf highlights every occurrence of that symbol in the text surface. That
-binding is the reason the text stays on screen.
+Framed plot, canonical codes, one merge at a time on a scrubber. The selected leaf takes
+the Huffman colour and marks every occurrence of that symbol in the specimen.
 
 ### 5.4 Waste plot
 
-Symbols on the horizontal axis, ordered by frequency. Two marks per symbol: the ideal cost
-−log₂(p), and the integer code length Huffman assigned. The area between them, weighted by
-frequency, is filled in the Huffman colour at low opacity.
-
-The filled area is the entire argument for arithmetic coding. Label it with its total in
-bits, once.
+An area, because the waste is an area: the gap between `-log2 p` and the whole number of
+bits the code actually spends. Filled in the Huffman colour at low opacity — it is the
+entire argument for arithmetic coding, drawn.
 
 ### 5.5 Sliding window
 
-The text with two adjacent regions marked: search buffer behind, look-ahead ahead. The
-match, when found, is outlined in `--match` in both places simultaneously — this
-simultaneity is the point, since the whole idea is that the second occurrence can be
-replaced by a reference to the first.
-
-Emitted tokens accumulate in a column at the right. Window and look-ahead sizes are sliders
-directly beneath, so a user can shrink the window and watch a match fall out of range.
+The strip in the instrument voice, at line-height 2 so distances can be counted off it. The
+search buffer is shaded in the LZ77 colour and the look-ahead is left on the ground with
+the ink, so the two are told apart by presence rather than by two competing tints.
 
 ### 5.6 The interval
 
-The [0,1) interval as a vertical bar filling the panel height, subdivided by symbol
-probability, each band labelled where it fits.
+The app's one orchestrated moment, and the only autonomous animation. Three columns, left
+to right: the bands the model offers, the idealised interval a person can follow, and the
+integer register state the engine actually holds. They are side by side because the trace
+carries both — PRD 7.3 honoured structurally rather than by a disclaimer — and putting them
+in one row is that fact drawn instead of asserted.
 
-On each step, the active band is selected and the view zooms continuously so that band
-fills the panel. The bar never appears to shrink; the subdivisions expand past the frame
-edges.
-
-A depth readout accumulates: symbols coded, current interval width in scientific notation,
-bits emitted. Beneath, the renormalization track — bits leaving as the top bits agree, and
-the underflow counter.
-
-A single line of standing copy states that the visual is the idealised real-number interval
-and the engine is an integer range coder, with the renormalization track as the bridge.
-This is a PRD commitment (§7.3), not a caveat to be styled away.
+The cost of the symbol under the cursor leads at figure size in the arithmetic colour. It
+is the figure the view exists to show, and stacked with three other lines in the same size
+it was indistinguishable from the step counter.
 
 ### 5.7 Bit ledger
 
-A column: symbol, probability, cost in bits, cumulative bits. Iosevka, right-aligned
-numerals, one row per symbol, scrolling in step with whichever coder is running.
+Every symbol, its probability, its cost and the bits it emitted, in the arithmetic colour.
+A row that emitted nothing gets a mark rather than a blank: it is not a gap in the ledger,
+it is a symbol the coder absorbed without resolving a bit.
 
 ---
 
@@ -326,94 +326,84 @@ numerals, one row per symbol, scrolling in step with whichever coder is running.
 
 ### 6.1 The rule
 
-Settled across all three apps now:
+**Continuous control → direct mapping, zero easing.** The model order slider, the window
+and look-ahead sliders, the interval scrubber. They follow the pointer exactly and
+everything that re-plots from them re-plots on the same frame.
 
-**Continuous control → direct mapping, zero easing.** The order slider, the window size
-sliders, and the interval scrubber follow the pointer exactly. The staircase re-plots and
-the text re-tints on every frame of the drag.
-
-**Discrete control → timed transition.** Coder switch, sample switch, adaptive toggle.
+**Discrete control → timed transition.** Switching coder, switching sample, toggling
+adaptive, toggling lazy matching, stepping a merge.
 
 ### 6.2 Durations
 
-| Event | Duration | Curve |
+| Token | Duration | What |
 |---|---|---|
-| Interval zoom, per symbol | 420 ms | `cubic-bezier(.4,0,.2,1)` |
-| Coder switch | 300 ms | `cubic-bezier(.32,.72,0,1)` |
-| Sample switch, text re-tint | 500 ms, staggered 0.4 ms per character | `cubic-bezier(.4,0,.2,1)` |
-| Huffman merge step | 260 ms | `cubic-bezier(.4,0,.2,1)` |
-| Window slide | 180 ms | linear |
-| Staircase re-plot (discrete) | 300 ms | `cubic-bezier(.32,.72,0,1)` |
-| Hover readout | 0 ms | none — a query, not a transition |
+| `--d-fast` | 120ms | A control acknowledging a pointer. |
+| `--d-window` | 180ms, linear | The window sliding one byte. |
+| `--d-merge` | 260ms | One Huffman merge. |
+| `--d-coder` | 300ms | Swapping the instrument. |
+| `--d-interval` | 420ms | One interval zoom. |
+| `--d-sample` | 500ms | A new text arriving. |
 
 ### 6.3 The orchestrated moment
 
-The interval zoom. It is the only autonomous animation in the app and it is user-started.
+The interval zoom. The bar never appears to shrink; the world expands around it. It is
+user-started and it is the only thing in the app that moves unprompted once started.
 
-Play, pause, step, scrub. Two hundred symbols at 420 ms each is well over a minute, so
-provide a speed control — but the default speed must be slow enough that a viewer can read
-the band labels, because the labels are what make it comprehensible rather than merely
-pretty.
+### 6.4 Staleness
 
-Nothing else in the app animates unprompted. No panel entrances, no hover transitions on
-instrument cards, no pulsing.
-
-### 6.4 The text re-tint
-
-Not an orchestrated moment, but the app's most-seen transition and worth specifying: when
-the order changes discretely or a sample loads, characters retint with a stagger that
-sweeps in reading order at 0.4 ms per character.
-
-The stagger is barely perceptible as a sequence — it reads as the page settling — and at
-0.4 ms even a 2,000-character viewport completes in under a second. Do not increase it into
-a visible wave; that would turn a state change into a performance.
+Above 50,000 characters the figures are recomputed on idle rather than on every keystroke.
+While that is pending the rail's reading fades rather than blanking: a number you can see
+is a moment behind is better than a number that disappears while you type.
 
 ### 6.5 Reduced motion
 
-`prefers-reduced-motion: reduce`: interval zoom becomes a stepper with instant state
-writes, the text re-tint becomes instantaneous with no stagger, the Huffman build and the
-window slide become step-only. Nothing is lost but the animation.
+`prefers-reduced-motion: reduce` zeroes every duration token, turns the interval zoom into
+a stepper, and says so in the interface rather than silently changing behaviour.
 
 ---
 
 ## 7. Copy
 
-English. Sentence case. No exclamation marks. Terms introduced once at first use, in one
-sentence, in `--ink-mid` beneath the heading that introduces them.
+English. Sentence case. No exclamation marks.
 
-Every number carries a unit: "4.13 bits per symbol", never "entropy: 4.13".
+Terms are introduced once, in one sentence, at the point of first use: surprisal,
+conditional entropy, prefix code, renormalization. No glossary page; a glossary is where
+explanations go to be ignored.
 
-Every limit is labelled with its model, per PRD §7.2. The staircase's steps read
-"H₂ — conditional on 2 previous characters", not "entropy".
+Every number carries its unit. Bits per symbol, not "entropy: 4.13".
 
-Assumptions are stated next to the figures they affect, not in an about page: the smoothing
-constant beside the entropy values, the LZ77 token encoding beside the LZ77 size, the model
-serialisation format beside the model cost.
+**Assumptions are visible, always.** The smoothing choice, the LZ77 token encoding and the
+model serialisation format are all arbitrary in ways that change the numbers. Each is
+stated next to the figure it affects, in the instrument voice, hung off a rule in the left
+margin so it reads as attached to that figure. None is collapsed behind a disclosure. This
+app's credibility rests on not hiding its assumptions, and a disclosure is hiding.
 
-Empty state: the text surface holds a focused cursor and one line of placeholder — "Paste
-some text, or choose a sample." Nothing else. No illustration, no feature tour.
+**Controls carry their consequence.** The adaptive switch says "model costs nothing" or
+"model is transmitted", because that is the most useful sentence in the app and it was
+otherwise discoverable only by watching a chart. The two share actions say what each puts
+in the URL, because one of them puts someone's private writing in the address bar.
 
 ---
 
 ## 8. Quality floor
 
-Assumed, not announced: usable at 380 px; visible keyboard focus everywhere; the text
-surface fully selectable and searchable by the browser; every instrument has a
-keyboard-reachable table equivalent; contrast 4.5:1 for text and 3:1 for graphical objects
-— note that the low end of the surprisal ramp is *deliberately* below that, which is
-legitimate because the tint is redundant encoding and every value is available in the hover
-readout and the table view; reduced motion honoured; no network at runtime.
+- Full recompute under 16ms for 10,000 characters, so typing needs no debounce.
+- The specimen virtualises above 12,000 characters, and says that browser find will not
+  reach past the drawn window.
+- Every selection in the app is on the keyboard path: table rows carry real buttons, the
+  caret drives the hover readout, and the staircase's click-a-column gesture has the H0–H5
+  buttons as its keyboard equivalent.
+- One focus treatment everywhere: a 2px ink ring at 2px offset.
+- A skip link ahead of everything, to the instruments.
+- No network at runtime. Fonts bundled, samples bundled.
+
+---
 
 ## 9. Relationship to the house layer
 
-Takes: the spacing scale, the motion curve family, the type floor, the
-continuous-versus-discrete motion rule.
-
-Contributes back: the constant-anchor-plus-interchangeable-bay layout, now used in two apps
-(the fixed matrix in Anatomi QRIS, the fixed staircase here). It is worth promoting to the
-house layer as a pattern for any app with several views of one subject.
-
-Departs in one place: this is the only app in the family with a warm light ground. The
-reason is in §0 — it is a reading surface and the text is the subject. Document the
-departure so the ground does not quietly become a house default, since it is the closest
-of the three to a generic choice and is only justified by this specific brief.
+The motion rule and the "display and computation are one object" rule carry over from Suara
+ke Kursi and Anatomi QRIS unchanged. What is new here is the two-ground palette and the
+paper/instrument split, and both exist for the same reason the house rules do: the subject
+decided them. This app is about the difference between a thing and a measurement of it, so
+the thing and the measurement are made of different materials, and the reader can see the
+join.
