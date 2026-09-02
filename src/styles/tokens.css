@@ -36,7 +36,14 @@
 
   --ink: #191817;
   --ink-mid: #57544e;
-  --ink-faint: #918d84;
+  /*
+   * Every one of these is used for text at 10.5 to 13px — field labels, axis
+   * numerals, table headings, a coder's name in the rail — so all of them
+   * clear 4.5:1 against the *bench*, which is the darkest of the three light
+   * grounds. Checked, not eyeballed: the earlier values were between 2.9 and
+   * 4.4, which is where a muted palette quietly goes when nobody measures it.
+   */
+  --ink-faint: #6f6b62;
   --rule: #e3dfd5;
   --rule-strong: #c9c3b5;
 
@@ -50,7 +57,7 @@
   /* ---- The three coders ---------------------------------------------- */
   /* Used for a coder's line, its point, its control and its panel accent.
    * Nowhere else. Each has a tint for fills that must sit under text. */
-  --huffman: #b0601f;
+  --huffman: #a65615;
   --huffman-tint: #f4e7d8;
   --arithmetic: #10697c;
   --arithmetic-tint: #dcecef;
@@ -62,8 +69,8 @@
    * different kind of quantity: overhead, not output. It is also the only
    * fill in the app rendered as a hatch rather than a solid, for the same
    * reason. */
-  --model-cost: #8a7326;
-  --match: #2f7d54;
+  --model-cost: #80691c;
+  --match: #2b7950;
 
   /* ---- Type ----------------------------------------------------------- */
   /*
@@ -161,7 +168,7 @@
 
   --ink: #ece9e2;
   --ink-mid: #a09b91;
-  --ink-faint: #6a665f;
+  --ink-faint: #89857e;
   --rule: #292c2f;
   --rule-strong: #3d4145;
 

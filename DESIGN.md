@@ -69,7 +69,7 @@ changes direction rather than being flipped.
 | `--surface-hover` | `#F6F4EE` | `#23262A` | The same, under a pointer. |
 | `--ink` | `#191817` | `#ECE9E2` | Text, the total line, the selected state. |
 | `--ink-mid` | `#57544E` | `#A09B91` | Prose that qualifies a figure. The entropy line. |
-| `--ink-faint` | `#918D84` | `#6A665F` | Labels, axis numerals, disabled controls. |
+| `--ink-faint` | `#6F6B62` | `#89857E` | Labels, axis numerals, disabled controls. |
 | `--rule` | `#E3DFD5` | `#292C2F` | Hairlines between panels. |
 | `--rule-strong` | `#C9C3B5` | `#3D4145` | Slider tracks, table header rules, menu borders. |
 
@@ -109,7 +109,7 @@ the instrument already agree.
 
 | Coder | Paper | Bench | Why |
 |---|---|---|---|
-| Huffman | `#B0601F` | `#E5A05C` | Warm, discrete, stepped. |
+| Huffman | `#A65615` | `#E5A05C` | Warm, discrete, stepped. |
 | Arithmetic | `#10697C` | `#52C3D8` | Cool, continuous, flowing. |
 | LZ77 | `#67449E` | `#B598EF` | Neither; it is about memory, not probability. |
 
@@ -119,15 +119,28 @@ Each also has a tint (`--huffman-tint` and so on) for fills that sit under text.
 
 | Token | Paper | Bench | Use |
 |---|---|---|---|
-| `--model-cost` | `#8A7326` | `#D8B95D` | The model description, everywhere it appears. |
-| `--match` | `#2F7D54` | `#58C48D` | An LZ77 match, marked in both places at once. |
+| `--model-cost` | `#80691C` | `#D8B95D` | The model description, everywhere it appears. |
+| `--match` | `#2B7950` | `#58C48D` | An LZ77 match, marked in both places at once. |
 
 The model description is the only quantity in the app drawn as a **hatch** rather than a
 solid fill. It is overhead, not output, and a solid block beside the code stream would read
 as more of the same substance. The hatch takes the model-cost token, so it follows the
 theme.
 
-### 2.5 Prohibitions
+### 2.5 Contrast
+
+Every colour used for text clears 4.5:1 against the **worst** of the three grounds it can
+appear on — the bench on paper, the raised surface on the bench. That is checked
+arithmetically rather than eyeballed, because a muted palette drifts into the low threes
+without anyone noticing: `--ink-faint`, `--huffman`, `--model-cost` and `--match` were all
+between 2.9 and 4.4 before they were measured, and every one of them is used for text at
+10.5–13px.
+
+The two deliberate exemptions are the low end of the surprisal ramp and the pale end of the
+staircase's gridlines. Both are redundant encoding — every ramp value is also in the
+readout under the specimen and in the tables — and this is stated in §2.2.
+
+### 2.6 Prohibitions
 
 No gradient anywhere except the hatch and the specimen's scroll-edge fade. No colour-coded
 sentiment: nothing is green because it is good. No hue used to mean two things. Colour on a
