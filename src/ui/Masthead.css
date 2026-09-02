@@ -1,0 +1,187 @@
+/**
+ * The masthead: the claim, and the chrome that is not a measurement.
+ */
+
+.masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3) var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4) var(--s-2);
+  max-width: var(--max-width);
+  background: var(--sunk);
+}
+
+.masthead-identity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.masthead h1 {
+  font-size: var(--t-h2);
+  color: var(--ink);
+  /* Two words, and they are the app's name; they do not break across lines. */
+  white-space: nowrap;
+}
+
+/*
+ * The claim, in the prose voice, sitting on the same baseline as the name. The
+ * italic falls on "under a model", which is the two words the whole app exists
+ * to argue for — the only emphasis in the interface, and it is on language,
+ * never on a number.
+ */
+.masthead-claim {
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  color: var(--ink-mid);
+  max-width: 42rem;
+  text-wrap: pretty;
+}
+
+.masthead-claim em {
+  color: var(--ink);
+  font-style: italic;
+}
+
+.masthead-tools {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+}
+
+/* ---- Share -------------------------------------------------------------- */
+
+.share-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  width: 20rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-2);
+  padding: var(--s-0);
+}
+
+.share-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  border: 0;
+  border-radius: var(--r-2);
+  background: transparent;
+  padding: var(--s-1) var(--s-1);
+  white-space: normal;
+}
+
+.share-option:hover {
+  border: 0;
+  background: var(--surface-hover);
+}
+
+.share-option-title {
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+/* The reason is on the control, not in a tooltip. One of these two actions
+ * puts someone's private writing in the address bar and it has to say so. */
+.share-option-note {
+  font-family: var(--font-text);
+  font-size: var(--t-small);
+  line-height: 1.45;
+  color: var(--ink-mid);
+}
+
+/* ---- Theme -------------------------------------------------------------- */
+
+.segmented-quiet {
+  background: transparent;
+}
+
+.segmented-quiet .segmented-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+}
+
+.glyph {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.segmented-quiet .segmented-item[aria-pressed='true'] .glyph {
+  /* The chosen ground fills its own mark, so the state reads at a glance
+   * without relying on the tinted background alone. */
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.segmented-quiet .segmented-item[aria-pressed='true'][data-coder] {
+  box-shadow: var(--shadow-1);
+}
+
+.masthead-status {
+  flex: 1 1 100%;
+  min-height: 1.2em;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-mid);
+}
+
+.masthead-status:empty {
+  display: none;
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .masthead {
+    padding-left: var(--s-3);
+    padding-right: var(--s-3);
+  }
+}
+
+@media (max-width: 720px) {
+  .masthead-tools {
+    width: 100%;
+  }
+  .share-menu {
+    right: auto;
+    left: 0;
+    width: min(20rem, calc(100vw - var(--s-4)));
+  }
+  /* On a narrow screen the ground control keeps its marks and drops its
+   * words. There are three of them and they are conventional. */
+  .segmented-quiet .segmented-text {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .masthead {
+    padding: var(--s-2);
+  }
+}

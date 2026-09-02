@@ -1,0 +1,314 @@
+/**
+ * The rail: the reading, and the three controls that move it.
+ */
+
+.rail {
+  display: flex;
+  align-items: stretch;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-2) var(--s-4);
+  max-width: var(--max-width);
+}
+
+/* ---- The reading -------------------------------------------------------- */
+
+.rail-reading {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  flex: 0 0 auto;
+}
+
+.rail-figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+}
+
+.rail-figure .display {
+  /* The one number on the page that is allowed to be this size. It is the
+   * app's answer to its own question. */
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-unit {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  line-height: 1.25;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+.rail-facts {
+  display: flex;
+  gap: var(--s-3);
+  margin: 0;
+  padding-left: var(--s-3);
+  border-left: 1px solid var(--rule);
+  align-self: center;
+}
+
+.rail-facts dt {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.rail-facts dd {
+  margin: 3px 0 0;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* The coder's own colour, on the one line that names it. */
+.rail-facts dd[data-coder='huffman'] {
+  color: var(--huffman);
+}
+.rail-facts dd[data-coder='arithmetic'] {
+  color: var(--arithmetic);
+}
+.rail-facts dd[data-coder='lz77'] {
+  color: var(--lz77);
+}
+
+/*
+ * While a large text is being recomputed the reading is stale, and it says so
+ * by fading rather than by blanking. A number that disappears while you type
+ * is worse than a number you can see is a moment behind.
+ */
+.rail-stale .rail-reading {
+  opacity: 0.45;
+  transition: opacity var(--d-coder) var(--ease-standard);
+}
+
+/* ---- The controls ------------------------------------------------------- */
+
+.rail-controls {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  flex: 1 1 32rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.rail-control {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rail-control-order {
+  flex: 1 1 15rem;
+  max-width: 22rem;
+  min-width: 11rem;
+}
+
+.rail-slider {
+  display: flex;
+  flex-direction: column;
+}
+
+.rail-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  color: var(--ink-faint);
+  /* The grip is 15px wide, so the end ticks sit half a grip in from the ends
+   * of the track and the numbers line up with the positions they name. */
+  padding: 0 6px;
+  margin-top: -3px;
+}
+
+.rail-tick-on {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
+/* ---- The segmented control ---------------------------------------------- */
+
+/*
+ * One control, four exclusive states, drawn as one object rather than four
+ * buttons. Each coder keeps its own colour on the underline, which is the same
+ * colour its line takes on the staircase and its panel takes in the bay — so
+ * the control, the plot and the instrument all agree without a legend.
+ */
+.segmented {
+  display: inline-flex;
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented-item {
+  border: 0;
+  border-radius: var(--r-1);
+  background: transparent;
+  padding: 5px 10px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.segmented-item:hover:not([aria-pressed='true']) {
+  background: transparent;
+  color: var(--ink-mid);
+  border: 0;
+}
+
+.segmented-item[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  border: 0;
+  box-shadow: var(--shadow-1);
+  /* A discrete control, so it gets a timed transition. */
+  transition:
+    background var(--d-coder) var(--ease-decisive),
+    color var(--d-coder) var(--ease-decisive);
+}
+
+.segmented-item[aria-pressed='true'][data-coder='huffman'] {
+  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--huffman);
+}
+.segmented-item[aria-pressed='true'][data-coder='arithmetic'] {
+  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--arithmetic);
+}
+.segmented-item[aria-pressed='true'][data-coder='lz77'] {
+  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--lz77);
+}
+.segmented-item[aria-pressed='true'][data-coder='compare'] {
+  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--ink);
+}
+
+/* ---- The adaptive switch ------------------------------------------------ */
+
+/*
+ * A switch rather than a checkbox, and it carries its consequence.
+ *
+ * Adaptive coding is the reason the model cost collapses to zero and it is
+ * half the answer to why LZ77 wins. Labelling the control "Adaptive" and
+ * leaving a reader to discover that from the staircase is hiding the most
+ * useful sentence in the app inside a chart.
+ */
+.switch {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-track {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--sunk);
+  border: 1px solid var(--rule-strong);
+  padding: 2px;
+  display: flex;
+  transition: background var(--d-fast) var(--ease-standard);
+}
+
+.switch-grip {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  transition:
+    transform var(--d-fast) var(--ease-decisive),
+    background var(--d-fast) var(--ease-standard);
+}
+
+.switch input:checked + .switch-track {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.switch input:checked + .switch-track .switch-grip {
+  background: var(--page);
+  transform: translateX(14px);
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.switch-text {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.switch-consequence {
+  font-size: var(--t-micro);
+  font-weight: var(--weight-text);
+  color: var(--ink-faint);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .rail {
+    padding-left: var(--s-3);
+    padding-right: var(--s-3);
+    gap: var(--s-3);
+  }
+}
+
+@media (max-width: 980px) {
+  .rail-controls {
+    justify-content: flex-start;
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .rail {
+    padding: var(--s-2);
+    gap: var(--s-2);
+  }
+  .rail-facts {
+    gap: var(--s-2);
+    padding-left: var(--s-2);
+  }
+  /* The ratio is the fact that survives the squeeze: it is the only one that
+   * does not need another number to be read against. */
+  .rail-facts > div:nth-child(2) {
+    display: none;
+  }
+  .rail-control-order {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .segmented-item {
+    padding: 5px 8px;
+  }
+}

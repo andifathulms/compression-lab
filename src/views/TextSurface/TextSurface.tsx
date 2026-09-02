@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { surprisalColour } from '../../ui/ramp.ts';
+import type { ThemeMode } from '../../ui/theme.ts';
 import './TextSurface.css';
 
 /** Below this, every line is rendered and browser find covers the whole text. */
@@ -39,6 +40,9 @@ interface Props {
   rampMaxBits: number;
   /** Symbol position to UTF-16 offset, from the engine's text index. */
   charOffsets: Int32Array;
+  /** Which ground is on screen. The ramp ends in ink on one and light on the
+   * other, so the tint has to be recomputed when it changes. */
+  mode: ThemeMode;
   onChange: (text: string) => void;
   onHover: (position: number | null) => void;
   /** The caret moved. The readout is a query, so it follows the keyboard too. */
@@ -81,6 +85,7 @@ export function TextSurface({
   surprisal,
   rampMaxBits,
   charOffsets,
+  mode,
   onChange,
   onHover,
   onCaret,
@@ -134,9 +139,9 @@ export function TextSurface({
     const spans = layer.querySelectorAll<HTMLElement>('[data-i]');
     for (const span of spans) {
       const i = Number(span.dataset.i);
-      span.style.color = surprisalColour(surprisal[i] ?? 0, rampMaxBits);
+      span.style.color = surprisalColour(surprisal[i] ?? 0, rampMaxBits, mode);
     }
-  }, [surprisal, rampMaxBits, firstLine, lastLine, text]);
+  }, [surprisal, rampMaxBits, mode, firstLine, lastLine, text]);
 
   useEffect(() => {
     const el = scrollRef.current;

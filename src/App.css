@@ -1,130 +1,157 @@
+/**
+ * The shell: three bands, then two columns.
+ *
+ * The two columns are two grounds. The left is paper and carries the specimen;
+ * the right is the recessed bench and carries the apparatus. The seam between
+ * them is a real edge — a hairline and a change of material — because the
+ * distinction between the thing being measured and the thing doing the
+ * measuring is the app's whole subject.
+ */
+
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
+  background: var(--sunk);
 }
 
-.app-header {
-  padding: var(--s-3) var(--s-3) var(--s-2);
-  display: flex;
-  align-items: baseline;
-  gap: var(--s-2);
-  flex-wrap: wrap;
+/* ---- The pinned rail ---------------------------------------------------- */
+
+.app-rail {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--page);
+  border-bottom: 1px solid var(--rule);
+  /* Only when it has something above it to shadow. */
+  box-shadow: var(--shadow-1);
 }
 
-.app-header h1 {
-  font-size: var(--t-h2);
-}
-
-.app-descriptor {
-  color: var(--ink-mid);
-  font-size: var(--t-body);
-}
+/* ---- The two columns ---------------------------------------------------- */
 
 .app-main {
   flex: 1;
   display: grid;
-  /* The text column is fixed at its measure; the instruments take the rest.
-   * The text is the specimen, the instruments are the apparatus. */
-  grid-template-columns: var(--measure) minmax(0, 1fr);
-  grid-template-areas:
-    'text stair'
-    'text bay';
-  grid-template-rows: auto 1fr;
-  gap: 0 var(--s-4);
-  padding: 0 var(--s-3) var(--s-4);
+  /* The specimen is fixed at its measure plus its gutters; the apparatus takes
+   * whatever is left. The text is the specimen, the rest is the bench. */
+  grid-template-columns: minmax(28rem, 44rem) minmax(0, 1fr);
   align-items: start;
+  min-height: 0;
 }
 
-.app-stair {
-  grid-area: stair;
-  /* Pinned, because every other instrument is an elaboration of it. */
+.app-specimen {
   position: sticky;
   top: 0;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100vh;
+  padding: var(--s-3) var(--s-4) 0;
   background: var(--page);
-  z-index: 1;
+  border-right: 1px solid var(--rule);
+}
+
+.specimen-head {
+  flex: 0 0 auto;
+  padding-bottom: var(--s-2);
+}
+
+.specimen-head .panel-heading {
+  margin-bottom: var(--s-1);
+}
+
+.app-apparatus {
+  min-width: 0;
+  padding: var(--s-3) var(--s-4) var(--s-6);
+  background: var(--sunk);
+}
+
+/* The staircase is pinned inside its own column: it is the anchor every other
+ * instrument is an elaboration of, and it should not scroll away from them. */
+.app-stair {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--sunk);
+  padding-bottom: var(--s-2);
+  margin-bottom: var(--s-1);
+  /* A fade rather than a hard cut, so a panel scrolling under it does not
+   * appear to be clipped by an invisible box. */
+  box-shadow: 0 12px 12px -12px var(--sunk);
 }
 
 .app-bay {
-  grid-area: bay;
   min-width: 0;
 }
 
-.app-text {
-  grid-area: text;
-  border-top: 1px solid var(--rule);
-  position: sticky;
-  top: 0;
-  max-height: calc(100vh - 8rem);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-1);
-  overflow: hidden;
-}
+/* ---- The readout under the specimen ------------------------------------- */
 
-.app-readout {
-  min-height: 1.6em;
+/*
+ * The hover readout is pinned to the bottom of the specimen rather than
+ * floating over the character it describes. A tooltip that follows the pointer
+ * across 200,000 characters is a tooltip that is always in the way of the next
+ * character you wanted to look at.
+ */
+.specimen-readout {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  min-height: 3.2rem;
+  padding: var(--s-1) 0 var(--s-2);
+  border-top: 1px solid var(--rule);
   font-size: var(--t-data);
   color: var(--ink-mid);
 }
 
+.specimen-readout-symbol {
+  font-size: var(--t-h2);
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+.specimen-readout-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specimen-readout-cost {
+  font-size: var(--t-figure);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  letter-spacing: var(--track-figure);
+  margin-left: auto;
+}
+
 .app-warning {
-  border-left: 2px solid var(--ink);
-  padding-left: var(--s-1);
+  border-left: 2px solid var(--huffman);
+  background: var(--huffman-tint);
+  border-radius: 0 var(--r-2) var(--r-2) 0;
+  padding: var(--s-1) var(--s-2);
+  margin-bottom: var(--s-2);
   font-size: var(--t-body);
+  max-width: 44rem;
 }
 
-.app-footer {
-  position: sticky;
-  bottom: 0;
-  background: var(--page);
-}
-
-@media (max-width: 860px) {
-  /* Staircase first, then the text surface, then the coder bay. */
-  .app-main {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      'stair'
-      'text'
-      'bay';
-    grid-template-rows: auto auto auto;
-  }
-  .app-text {
-    position: static;
-    max-height: none;
-  }
-  .app-stair {
-    /* Sticky at reduced height, so the anchor is still an anchor. */
-    max-height: 46vh;
-    overflow: hidden;
-  }
-}
-
-@media (max-width: 420px) {
-  .app-header,
-  .app-main {
-    padding-left: var(--s-2);
-    padding-right: var(--s-2);
-  }
-  .app-stair {
-    position: static;
-    max-height: none;
-  }
-}
+/* ---- The size split ----------------------------------------------------- */
 
 .split {
-  margin: var(--s-1) 0 var(--s-2);
-  max-width: 34rem;
+  margin: var(--s-2) 0 var(--s-3);
+  max-width: 40rem;
 }
 
 .split-bar {
   display: flex;
-  height: 10px;
-  background: var(--page-edge);
+  height: 14px;
+  background: var(--surface);
   border: 1px solid var(--rule);
+  border-radius: var(--r-1);
+  overflow: hidden;
 }
 
 .split-code {
@@ -132,25 +159,96 @@
   height: 100%;
 }
 
+/*
+ * The model description is hatched, not filled.
+ *
+ * It is the only fill in the app that is not solid, and that is the point: the
+ * model is overhead rather than output, and a solid block beside the code
+ * stream would read as more of the same substance. The hatch is drawn in the
+ * model-cost token so it still follows the theme.
+ */
 .split-model {
   display: block;
   height: 100%;
-  background: var(--model-cost);
+  background-color: color-mix(in srgb, var(--model-cost) 22%, transparent);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--model-cost) 0 1.5px,
+    transparent 1.5px 5px
+  );
 }
 
 .split-figures {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 2px var(--s-2);
-  margin: var(--s-1) 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-2) 0 0;
   font-size: var(--t-data);
 }
 
 .split-figures dt {
-  color: var(--ink-mid);
-  font-size: var(--t-small);
+  color: var(--ink-faint);
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
 }
 
 .split-figures dd {
-  margin: 0;
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .app-specimen,
+  .app-apparatus {
+    padding-left: var(--s-3);
+    padding-right: var(--s-3);
+  }
+  .app-main {
+    grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  /*
+   * One column. The specimen goes first, because the app opens on a piece of
+   * text and it should be the first thing there is, and it stops being sticky
+   * — two nested sticky scroll regions on a phone is a trap.
+   */
+  .app-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-specimen {
+    position: static;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: var(--s-2);
+  }
+  .app-stair {
+    position: static;
+    box-shadow: none;
+  }
+  .app-apparatus {
+    padding-top: var(--s-2);
+  }
+}
+
+@media (max-width: 560px) {
+  .app-specimen,
+  .app-apparatus {
+    padding-left: var(--s-2);
+    padding-right: var(--s-2);
+  }
+  .specimen-readout {
+    flex-wrap: wrap;
+    gap: var(--s-1);
+  }
+  .specimen-readout-cost {
+    margin-left: 0;
+  }
 }
