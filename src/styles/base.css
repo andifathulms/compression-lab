@@ -1,3 +1,4 @@
+@import './fonts.css';
 @import './tokens.css';
 
 *,
@@ -12,42 +13,100 @@ body,
   height: 100%;
 }
 
+html {
+  /* The specimen column scrolls inside itself; anchoring keeps a jump to a
+   * table row from landing under the sticky instrument rail. */
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--s-5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
-  background: var(--page);
+  background: var(--sunk);
   color: var(--ink);
   font-family: var(--font-text);
   font-size: var(--t-body);
+  font-weight: var(--weight-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Every numeral in the app is Iosevka with tabular figures. The staircase
- * animates its numbers and proportional figures would jitter. */
+/*
+ * The instrument voice.
+ *
+ * Every numeral in the app is JetBrains Mono with tabular figures. The
+ * staircase animates its numbers and proportional figures would jitter. Every
+ * label, control and table cell is the same face, because they are all
+ * readings off the same machine.
+ */
 .data,
+.label,
+.figure,
+.display,
 input,
 button,
 select,
+textarea,
 th,
-td {
+td,
+code,
+kbd {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
 }
 
+/* ---- Headings ------------------------------------------------------- */
+
+/*
+ * A panel heading is a machine label, not a title: instrument voice, small,
+ * tracked out, in the muted ink. The size hierarchy on the instrument side is
+ * carried by the figures, which are large, and never by the headings, which
+ * are all the same size. That is what keeps a column of eight panels from
+ * reading as eight competing arguments.
+ */
 h1,
 h2,
 h3 {
-  font-weight: 600;
   margin: 0;
+  font-weight: var(--weight-strong);
   /* Sentence case throughout, and no word in a heading accented in colour or
    * weight: colour already means cost. */
   text-transform: none;
-  letter-spacing: 0;
+}
+
+h1 {
+  font-family: var(--font-text);
+  font-size: var(--t-h2);
+  font-weight: var(--weight-strong);
+  letter-spacing: -0.01em;
 }
 
 h2 {
-  font-size: var(--t-h2);
-  line-height: 1.3;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: var(--weight-strong);
+  line-height: 1.4;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+
+h3 {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-micro);
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 p {
@@ -56,42 +115,176 @@ p {
 
 a {
   color: var(--ink);
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
 }
 
-/* Selection is a 2 px ink outline. No hover tints anywhere. */
+a:hover {
+  text-decoration-color: var(--ink);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: var(--s-3) 0;
+}
+
+/* ---- Focus ----------------------------------------------------------- */
+
+/* One focus treatment everywhere: a 2px ink ring, held off the element by a
+ * ring of the ground so it reads on a rule and on a fill alike. */
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+  border-radius: var(--r-1);
 }
+
+/* ---- Controls -------------------------------------------------------- */
 
 button {
   font: inherit;
   font-family: var(--font-data);
   font-size: var(--t-data);
-  color: var(--ink);
-  background: transparent;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink-mid);
+  background: var(--surface);
   border: 1px solid var(--rule);
-  padding: 6px 10px;
+  border-radius: var(--r-2);
+  padding: 6px 11px;
   cursor: pointer;
+  transition:
+    color var(--d-fast) var(--ease-standard),
+    background var(--d-fast) var(--ease-standard),
+    border-color var(--d-fast) var(--ease-standard);
+}
+
+button:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--rule-strong);
+  background: var(--surface-hover);
 }
 
 button[aria-pressed='true'],
 button[aria-current='true'] {
+  color: var(--ink);
   border-color: var(--ink);
-  background: var(--page-edge);
+  background: var(--surface);
 }
 
 button:disabled {
   color: var(--ink-faint);
   border-color: var(--rule);
+  background: transparent;
   cursor: default;
 }
 
-/* Panels are separated by value and a hairline, not by cards. No radius, no
- * shadow: this is a page, not a set of tiles. */
+select {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: 6px 26px 6px 10px;
+  cursor: pointer;
+  appearance: none;
+  /* The caret is drawn rather than imported, so it takes the ink token and
+   * follows the theme. */
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 9px) calc(50% + 1px);
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+}
+
+select:hover {
+  border-color: var(--rule-strong);
+}
+
+/*
+ * Ranges.
+ *
+ * Every slider in this app is a continuous control, so it is drawn as a track
+ * with a grip and nothing else: no fill animation, no tooltip, no easing. The
+ * grip is where the pointer is, on the frame the pointer is there.
+ */
+input[type='range'] {
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: grab;
+}
+
+input[type='range']:active {
+  cursor: grabbing;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--rule-strong);
+}
+
+input[type='range']::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--rule-strong);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--page);
+  box-shadow: var(--shadow-1);
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--page);
+  box-shadow: var(--shadow-1);
+}
+
+input[type='checkbox'] {
+  accent-color: var(--ink);
+  width: 14px;
+  height: 14px;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--page);
+}
+
+/* ---- Surfaces --------------------------------------------------------- */
+
+/*
+ * Panels are separated by a hairline and by the ground under them, not by
+ * cards. No shadow: this is a page of readings, not a set of tiles. The only
+ * radius in the app is on things a pointer touches.
+ */
 .panel {
   border-top: 1px solid var(--rule);
   padding: var(--s-3) 0;
+}
+
+.panel:first-child {
+  border-top: 0;
+  padding-top: var(--s-2);
 }
 
 .panel-heading {
@@ -102,38 +295,55 @@ button:disabled {
   margin-bottom: var(--s-1);
 }
 
+/* ---- Prose ------------------------------------------------------------ */
+
 /* A term is introduced once, at the point of first use, in one sentence. */
 .note {
   color: var(--ink-mid);
+  font-family: var(--font-text);
   font-size: var(--t-body);
-  max-width: 46rem;
+  line-height: 1.65;
+  max-width: 44rem;
+  text-wrap: pretty;
 }
 
+/*
+ * An assumption is a caveat the numbers depend on. It is set in the
+ * instrument voice and hung off a rule in the left margin, so it reads as
+ * something attached to the figure above it rather than as more prose. This
+ * app's credibility rests on these being visible, so they are never collapsed
+ * behind a disclosure.
+ */
 .assumption {
   color: var(--ink-mid);
   font-family: var(--font-data);
   font-size: var(--t-small);
-  line-height: 1.5;
-  max-width: 46rem;
+  line-height: 1.65;
+  max-width: 44rem;
+  border-left: 2px solid var(--rule);
+  padding-left: var(--s-2);
+  margin-top: var(--s-2);
+  text-wrap: pretty;
 }
 
+/* ---- Figures ---------------------------------------------------------- */
+
 .figure {
-  font-family: var(--font-data);
-  font-variant-numeric: tabular-nums;
   font-size: var(--t-figure);
-  font-weight: 500;
-  line-height: 1.1;
+  font-weight: var(--weight-medium);
+  line-height: 1.05;
+  letter-spacing: var(--track-figure);
 }
 
 .display {
-  font-family: var(--font-data);
-  font-variant-numeric: tabular-nums;
   font-size: var(--t-display);
-  font-weight: 500;
-  line-height: 1.1;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: var(--track-display);
 }
 
 .unit {
+  font-family: var(--font-data);
   font-size: var(--t-small);
   color: var(--ink-mid);
 }
@@ -141,8 +351,13 @@ button:disabled {
 .label {
   font-family: var(--font-data);
   font-size: var(--t-small);
-  color: var(--ink-mid);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
+
+/* ---- Tables ----------------------------------------------------------- */
 
 table {
   border-collapse: collapse;
@@ -153,7 +368,7 @@ table {
 th,
 td {
   text-align: right;
-  padding: 3px var(--s-1) 3px 0;
+  padding: 5px var(--s-1) 5px 0;
   border-bottom: 1px solid var(--rule);
   white-space: nowrap;
 }
@@ -163,9 +378,30 @@ td:first-child {
   text-align: left;
 }
 
-th {
-  color: var(--ink-mid);
-  font-weight: 400;
+thead th {
+  color: var(--ink-faint);
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  border-bottom-color: var(--rule-strong);
+}
+
+tbody th {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+tbody tr:hover td,
+tbody tr:hover th {
+  background: var(--surface-hover);
+}
+
+tbody tr[aria-current='true'] td,
+tbody tr[aria-current='true'] th {
+  background: var(--surface-hover);
+  box-shadow: inset 2px 0 0 var(--ink);
 }
 
 /* Table rows carry a real button rather than a click handler on the row, so
@@ -176,17 +412,84 @@ th {
   background: none;
   font: inherit;
   font-family: var(--font-data);
+  font-size: var(--t-data);
   color: inherit;
   text-align: left;
   text-decoration: underline;
-  text-decoration-color: var(--rule);
+  text-decoration-color: var(--rule-strong);
   text-underline-offset: 3px;
+}
+
+.row-button:hover {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  text-decoration-color: var(--ink);
 }
 
 .row-button[aria-pressed='true'] {
   background: none;
+  border: 0;
+  color: var(--ink);
   text-decoration-color: var(--ink);
 }
+
+/* A scrolling table keeps its own hairline frame so the cut edge is
+ * deliberate rather than looking like a rendering accident. */
+.scroll-box {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.scroll-box table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.scroll-box th,
+.scroll-box td {
+  padding-left: var(--s-1);
+}
+
+.scroll-box thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+
+/* Thin scrollbars, in the theme's own ink. A default macOS overlay bar is
+ * fine; a Windows default one is 17px of chrome inside a 34rem measure. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--rule-strong);
+  border-radius: 5px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-faint);
+  background-clip: content-box;
+}
+
+/* ---- Utilities -------------------------------------------------------- */
 
 .visually-hidden {
   position: absolute;
@@ -198,4 +501,24 @@ th {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Keyboard users land here first, before the specimen and the apparatus. */
+.skip-link {
+  position: absolute;
+  left: var(--s-2);
+  top: var(--s-2);
+  z-index: 20;
+  transform: translateY(-200%);
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: var(--r-2);
+  padding: 8px 12px;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
