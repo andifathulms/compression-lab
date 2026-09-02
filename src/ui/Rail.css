@@ -69,6 +69,17 @@
   white-space: nowrap;
 }
 
+/* The compare caveat sits under the coder's name rather than replacing the
+ * label above it, so the column is as wide as "lowest of three" and not as
+ * wide as that plus a heading. */
+.rail-caveat {
+  display: block;
+  font-size: var(--t-micro);
+  font-weight: var(--weight-text);
+  color: var(--ink-faint);
+  letter-spacing: 0;
+}
+
 .rail-facts dd {
   margin: 3px 0 0;
   font-family: var(--font-data);

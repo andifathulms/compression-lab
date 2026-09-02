@@ -45,6 +45,8 @@ interface Props {
   result: CoderResult;
   /** What that reading belongs to, named, because compare picks a winner. */
   resultLabel: string;
+  /** Why it is that one, when the choice was not the reader's. */
+  resultCaveat: string | null;
   originalBytes: number;
   symbolCount: number;
   /** True while the figures behind the reading are being recomputed. */
@@ -60,6 +62,7 @@ export function Rail({
   onCoder,
   result,
   resultLabel,
+  resultCaveat,
   originalBytes,
   symbolCount,
   stale,
@@ -80,14 +83,22 @@ export function Rail({
         <dl className="rail-facts">
           <div>
             <dt>coder</dt>
-            <dd data-coder={result.order === null ? 'lz77' : coder}>{resultLabel}</dd>
+            <dd data-coder={result.order === null ? 'lz77' : coder}>
+              {resultLabel}
+              {resultCaveat !== null ? (
+                <span className="rail-caveat">{resultCaveat}</span>
+              ) : null}
+            </dd>
           </div>
           <div>
             <dt>total size</dt>
             <dd>{empty ? '—' : bytes(result.totalBits)}</dd>
           </div>
           <div>
-            <dt>of the utf-8 original</dt>
+            {/* "of the utf-8 original" is twenty-one characters of tracked
+                uppercase, and it was the widest thing in the rail by a
+                distance. The full phrase is on the title. */}
+            <dt title="of the UTF-8 original">of original</dt>
             <dd>{empty ? '—' : ratio(result.totalBits, originalBytes)}</dd>
           </div>
         </dl>

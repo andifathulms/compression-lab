@@ -78,7 +78,11 @@ export function App(): JSX.Element {
    * rail shows the lowest of the three and names it — a blank reading, or an
    * arbitrary one, would be worse than picking the winner and saying so.
    */
-  const reading = useMemo((): { result: CoderResult; label: string } => {
+  const reading = useMemo((): {
+    result: CoderResult;
+    label: string;
+    caveat: string | null;
+  } => {
     if (state.coder === 'compare') {
       const candidates: Array<[string, CoderResult]> = [
         ['Huffman', huffman.result],
@@ -88,7 +92,11 @@ export function App(): JSX.Element {
       const best = candidates.reduce((a, b) =>
         b[1].bitsPerSymbol < a[1].bitsPerSymbol ? b : a,
       );
-      return { result: best[1], label: `${best[0]}, lowest of three` };
+      // The name alone. "LZ77, lowest of three" is twice as wide as any other
+      // value this row ever holds, and it pushed the whole rail onto a second
+      // line for one of the four coder settings. The qualifier moves to the
+      // label above it, which has the room.
+      return { result: best[1], label: best[0], caveat: 'lowest of three' };
     }
     const result =
       state.coder === 'arithmetic'
@@ -96,7 +104,7 @@ export function App(): JSX.Element {
         : state.coder === 'lz77'
           ? lz77.result
           : huffman.result;
-    return { result, label: CODER_NAMES[state.coder] };
+    return { result, label: CODER_NAMES[state.coder], caveat: null };
   }, [state.coder, huffman, arithmetic, lz77]);
 
   const sample = sampleById(state.sampleId);
@@ -190,6 +198,7 @@ export function App(): JSX.Element {
           onCoder={(coder) => set('coder', coder)}
           result={reading.result}
           resultLabel={reading.label}
+          resultCaveat={reading.caveat}
           originalBytes={analysis.byteCount}
           symbolCount={analysis.symbolCount}
           stale={stale}

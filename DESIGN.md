@@ -230,10 +230,24 @@ front of the character you wanted to look at next.
 
 ### 4.3 The apparatus
 
-One constant anchor and one interchangeable part. The staircase is pinned at the top of the
-column and does not change when the coder changes, because a constant anchor is what makes
-a set of views read as one subject rather than as four unrelated screens. Below it, the
-coder bay swaps its instrument, then the parallel corpus row, then the smoothing note.
+One constant anchor and one interchangeable part. **The anchor is the rail, not the
+staircase.** The staircase scrolls with the rest of the column.
+
+That is a change from the original design, and the reason is arithmetic. The staircase is a
+thousand pixels tall — plot, order control, split, table, assumption — and the rail is
+another ninety. Pinned together in a nine-hundred-pixel viewport they are the entire
+screen: the scrollbar runs and nothing moves, and the bottom of the staircase is never
+reachable at all, because a sticky element taller than its own slot never releases.
+
+The rail does the anchor's job in ninety pixels. It carries the reading, the coder and the
+order, it does not change when the instrument below it changes, and it is what makes the
+set of views read as one subject rather than as four unrelated screens.
+
+Below it: the staircase, then the coder bay swapping its instrument, then the parallel
+corpus row, then the smoothing note.
+
+Anything pinned has to leave room for what it describes. The specimen and the rail together
+come to a little over half the viewport, which is the budget.
 
 ### 4.4 Grid and rhythm
 

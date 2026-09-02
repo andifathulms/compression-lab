@@ -45,8 +45,11 @@ export function SizeSplit({ result, originalBytes, colour }: Props): JSX.Element
           <dd>{bytes(result.totalBits)}</dd>
         </div>
         <div>
-          <dt>rate</dt>
-          <dd>{result.bitsPerSymbol.toFixed(3)} bits per symbol</dd>
+          {/* The unit goes on the label, so the value stays one figure on one
+              line like the three beside it. "8.361 bits per symbol" wrapped,
+              and a figure that wraps stops reading as a figure. */}
+          <dt>rate, bits/symbol</dt>
+          <dd>{result.bitsPerSymbol.toFixed(3)}</dd>
         </div>
       </dl>
     </div>

@@ -72,18 +72,25 @@
   background: var(--sunk);
 }
 
-/* The staircase is pinned inside its own column: it is the anchor every other
- * instrument is an elaboration of, and it should not scroll away from them. */
+/*
+ * The staircase is NOT pinned, and this is the one place the original design
+ * has to give.
+ *
+ * The idea was that it is the anchor every other instrument elaborates, so it
+ * should never scroll away. But it is a thousand pixels tall — plot, order
+ * control, split, table, assumption — and the rail above it is another ninety.
+ * Pinned together in a nine-hundred-pixel viewport they are the entire screen:
+ * the scrollbar runs, nothing moves, and the bottom of the staircase is never
+ * reachable at all because a sticky element taller than its own slot never
+ * releases.
+ *
+ * The rail is the anchor instead. It carries the reading, the coder and the
+ * order — everything the old anchor was for — in ninety pixels rather than a
+ * thousand, and it is genuinely constant while the instrument below it
+ * changes.
+ */
 .app-stair {
-  position: sticky;
-  top: var(--rail-h);
-  z-index: 2;
-  background: var(--sunk);
   padding-bottom: var(--s-2);
-  margin-bottom: var(--s-1);
-  /* A fade rather than a hard cut, so a panel scrolling under it does not
-   * appear to be clipped by an invisible box. */
-  box-shadow: 0 12px 12px -12px var(--sunk);
 }
 
 .app-bay {
@@ -144,9 +151,11 @@
 
 /* ---- The size split ----------------------------------------------------- */
 
+/* Same geometry as the staircase's split, so the same four quantities line up
+ * in the same four columns wherever they appear. */
 .split {
   margin: var(--s-2) 0 var(--s-3);
-  max-width: 40rem;
+  max-width: 44rem;
 }
 
 .split-bar {
@@ -184,7 +193,7 @@
 
 .split-figures {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
   gap: var(--s-1) var(--s-3);
   margin: var(--s-2) 0 0;
   font-size: var(--t-data);
@@ -196,6 +205,9 @@
   font-size: var(--t-micro);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
+  /* Two lines of room whether the label needs them or not, so the figures
+   * underneath sit on one baseline across the row. */
+  min-height: 2.4em;
 }
 
 .split-figures dd {
