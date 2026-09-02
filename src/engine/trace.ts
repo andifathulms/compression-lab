@@ -96,6 +96,12 @@ export interface ArithmeticStep {
   /** Cumulative output bits after this symbol. */
   cumulativeBits: number;
   probability: number;
+  /**
+   * log2 of the idealised interval width after this symbol. Carried as a
+   * logarithm because the width itself underflows a double after about 50
+   * symbols, and the depth readout needs to keep counting past that.
+   */
+  widthLog2: number;
 }
 
 export interface ArithmeticTrace {
