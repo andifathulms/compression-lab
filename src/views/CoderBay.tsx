@@ -17,6 +17,7 @@ import type { AppState, Lz77Settings } from '../state/appState.ts';
 import { SizeSplit } from './SizeSplit.tsx';
 import { BitLedger } from './BitLedger/BitLedger.tsx';
 import { Interval } from './Interval/Interval.tsx';
+import { SlidingWindow } from './SlidingWindow/SlidingWindow.tsx';
 
 interface Props {
   analysis: TextAnalysis;
@@ -39,6 +40,8 @@ export function CoderBay({
   huffman,
   arithmetic,
   lz77,
+  onLz77,
+  onWindowRanges,
 }: Props): JSX.Element {
   const [ledgerCursor, setLedgerCursor] = useState(0);
 
@@ -129,6 +132,13 @@ export function CoderBay({
           {lz77.widths.distanceBits} bits of distance and {lz77.widths.lengthBits} bits of length.
           The size depends on this scheme and there is no single right one.
         </p>
+        <SlidingWindow
+          run={lz77}
+          analysis={analysis}
+          settings={state.lz77}
+          onSettings={onLz77}
+          onRanges={onWindowRanges}
+        />
       </section>
     );
   }

@@ -1,0 +1,143 @@
+.sw {
+  margin-top: var(--s-2);
+}
+
+.sw-strip {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  line-height: 1.9;
+  word-break: break-all;
+  border: 1px solid var(--rule);
+  padding: var(--s-1);
+  background: var(--page);
+  max-width: 40rem;
+}
+
+.sw-b {
+  padding: 1px 0;
+  /* The window slide is 180 ms linear, and it is a discrete step. */
+  transition: background var(--d-window) linear;
+}
+
+.sw-out {
+  color: var(--ink-faint);
+}
+
+.sw-search {
+  background: var(--page-edge);
+}
+
+.sw-ahead {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* The match, outlined in both places simultaneously. */
+.sw-source,
+.sw-target {
+  box-shadow: inset 0 -2px 0 var(--match);
+  color: var(--ink);
+}
+
+.sw-target {
+  background: var(--page-edge);
+}
+
+.sw-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: var(--s-1) 0;
+}
+
+.sw-key {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border: 1px solid var(--rule);
+  margin-left: var(--s-1);
+}
+
+.sw-key-search {
+  background: var(--page-edge);
+  margin-left: 0;
+}
+
+.sw-key-ahead {
+  background: var(--page);
+}
+
+.sw-key-match {
+  border-bottom: 2px solid var(--match);
+}
+
+.sw-token {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 2px var(--s-2);
+  font-size: var(--t-data);
+  margin: var(--s-2) 0;
+  max-width: 40rem;
+}
+
+.sw-token dt {
+  color: var(--ink-mid);
+  font-size: var(--t-small);
+}
+
+.sw-token dd {
+  margin: 0;
+}
+
+.sw-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+}
+
+.sw-controls input[type='range'] {
+  flex: 1 1 10rem;
+  accent-color: var(--ink);
+}
+
+.sw-sliders {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin: var(--s-2) 0;
+}
+
+.sw-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 12rem;
+}
+
+.sw-slider input[type='range'] {
+  accent-color: var(--ink);
+}
+
+.sw-table {
+  max-width: 40rem;
+  display: block;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.sw-table tbody tr {
+  cursor: pointer;
+}
+
+.sw-table tbody tr[aria-current='true'] td {
+  background: var(--page-edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-b {
+    transition: none;
+  }
+}
