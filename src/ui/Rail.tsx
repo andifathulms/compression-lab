@@ -97,8 +97,12 @@ export function Rail({
           <div>
             {/* "of the utf-8 original" is twenty-one characters of tracked
                 uppercase, and it was the widest thing in the rail by a
-                distance. The full phrase is on the title. */}
-            <dt title="of the UTF-8 original">of original</dt>
+                distance. So the visible label is the short one, and the rest
+                of the phrase is read out rather than left on a title
+                attribute, which a keyboard and a touchscreen never reach. */}
+            <dt title="of the UTF-8 original">
+              of original<span className="visually-hidden"> UTF-8 bytes</span>
+            </dt>
             <dd>{empty ? '—' : ratio(result.totalBits, originalBytes)}</dd>
           </div>
         </dl>
