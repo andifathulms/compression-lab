@@ -7,7 +7,7 @@
 
 **What a text costs, and what that cost depends on.**
 
-[**Open the app →**](https://andifathulms.github.io/compression-lab/)
+[**Open the app →**](https://andifathulms.github.io/compression-lab/) · [What it measures](https://andifathulms.github.io/compression-lab/about/)
 
 [![CI](https://github.com/andifathulms/compression-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/andifathulms/compression-lab/actions/workflows/ci.yml)
 [![Deploy](https://github.com/andifathulms/compression-lab/actions/workflows/deploy.yml/badge.svg)](https://github.com/andifathulms/compression-lab/actions/workflows/deploy.yml)
@@ -76,6 +76,7 @@ src/
 ├─ styles/       tokens and base
 └─ samples/      bundled texts, plain .txt, imported with ?raw
 public/          the mark: favicon, installed icons, the manifest, the card
+about/           the way in: a static page, no bundle, the app's own tokens
 tests/
 ```
 
