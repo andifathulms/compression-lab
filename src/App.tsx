@@ -21,6 +21,7 @@ import { CoderBay } from './views/CoderBay.tsx';
 import { ParallelRow } from './views/ParallelRow.tsx';
 import { Masthead } from './ui/Masthead.tsx';
 import { Rail } from './ui/Rail.tsx';
+import { MakerSignature } from './ui/MakerSignature.tsx';
 import { useTheme } from './ui/theme.ts';
 import { count } from './ui/format.ts';
 import { useAppState } from './state/appState.ts';
@@ -320,6 +321,10 @@ export function App(): JSX.Element {
           </div>
         </section>
       </main>
+
+      <footer className="app-foot">
+        <MakerSignature />
+      </footer>
     </div>
   );
 }

@@ -97,6 +97,21 @@
   min-width: 0;
 }
 
+/* ---- The foot ----------------------------------------------------------- */
+
+/*
+ * One seam and one bar. The credit is personal rather than a caveat, so it is
+ * not set as an .assumption and it does not sit inside the apparatus column —
+ * it is the page's own bottom edge, on the bench ground, under the single
+ * hairline that already separates the columns from the end of the page.
+ */
+.app-foot {
+  flex: 0 0 auto;
+  padding: var(--s-2) var(--s-4);
+  background: var(--sunk);
+  border-top: 1px solid var(--rule);
+}
+
 /* ---- The readout under the specimen ------------------------------------- */
 
 /*
@@ -220,7 +235,8 @@
 
 @media (max-width: 1180px) {
   .app-specimen,
-  .app-apparatus {
+  .app-apparatus,
+  .app-foot {
     padding-left: var(--s-3);
     padding-right: var(--s-3);
   }
@@ -264,7 +280,8 @@
 
 @media (max-width: 560px) {
   .app-specimen,
-  .app-apparatus {
+  .app-apparatus,
+  .app-foot {
     padding-left: var(--s-2);
     padding-right: var(--s-2);
   }
