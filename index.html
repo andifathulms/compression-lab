@@ -9,6 +9,30 @@
       content="Entropy is not a property of a text. It is a property of a text under a model."
     />
     <meta name="color-scheme" content="light dark" />
+
+    <!-- The mark: conditional entropy stepping down as the model conditions on
+         more of the text, with the gold riser marking the step that wins. The
+         SVG carries both grounds; the PNGs are the fallback and the installed
+         icon. All are bundled — nothing here is fetched from a CDN. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131415" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-title" content="Compression Lab" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Compression Lab — what a text costs" />
+    <meta
+      property="og:description"
+      content="Entropy is not a property of a text. It is a property of a text under a model."
+    />
+    <meta property="og:url" content="https://andifathulms.github.io/compression-lab/" />
+    <meta property="og:image" content="https://andifathulms.github.io/compression-lab/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <script>
       // Resolve the ground before the first paint. React sets the same
       // attribute a moment later; without this the page would flash paper at

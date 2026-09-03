@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+  <!-- The 32px tier of the mark: two steps, one gold riser, no dot. Gold is
+       the model, and it is the one colour that survives both grounds. The
+       ground follows the reader's scheme so the tile does not sit as a bright
+       square in a dark browser chrome. -->
+  <style>
+    .ground { fill: #EDE9DF }
+    .stair  { stroke: #100F0D }
+    @media (prefers-color-scheme: dark) {
+      .ground { fill: #100F0D }
+      .stair  { stroke: #EDE9DF }
+    }
+  </style>
+  <rect class="ground" width="100" height="100" rx="14" />
+  <path class="stair" d="M11 28 H40 V56 H89" fill="none" stroke-width="14" stroke-linecap="square" />
+  <path d="M40 28 V56" fill="none" stroke="#D7A340" stroke-width="14" stroke-linecap="square" />
+</svg>
