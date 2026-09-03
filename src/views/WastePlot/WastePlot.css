@@ -80,3 +80,16 @@
   max-height: 15rem;
   margin-top: var(--s-2);
 }
+
+/* Same treatment as the staircase, and for the same reason: the axis is placed
+ * against a 560-unit geometry, so the plot scrolls rather than shrinking its
+ * numerals out of legibility. */
+@media (max-width: 620px) {
+  .waste-plot {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .waste-svg {
+    min-width: 34rem;
+  }
+}

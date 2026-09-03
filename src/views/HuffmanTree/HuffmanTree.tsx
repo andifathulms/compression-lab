@@ -110,6 +110,9 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
 
   return (
     <div className="ht">
+      {/* The frame is its own element so the tree can scroll inside it on a
+          narrow screen while the queue and the code table below stay put. */}
+      <div className="ht-frame">
       <svg
         className="ht-svg"
         viewBox={`0 0 ${WIDTH} ${height}`}
@@ -182,6 +185,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
           );
         })}
       </svg>
+      </div>
 
       <div className="ht-queue" aria-label="The priority queue">
         <span className="label">queue, {queue.length}</span>

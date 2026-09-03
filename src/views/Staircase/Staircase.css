@@ -181,3 +181,27 @@
   margin: var(--s-2) 0;
   max-height: 15rem;
 }
+
+/* ---- Narrow ------------------------------------------------------------- */
+
+/*
+ * Below the width at which the plot would be scaled under its own design size,
+ * it stops scaling and scrolls inside its frame instead.
+ *
+ * The alternative was to raise the type in user units, and it is the wrong
+ * fix: every numeral, the key and the annotation are placed against a 620-unit
+ * geometry, and growing the type without regrowing the plot is how an axis
+ * label ends up sitting on the line it labels. At a 380px viewport the old
+ * behaviour drew the key and every axis numeral at about five pixels, which is
+ * not a small chart, it is an unreadable one. The frame keeps its hairline so
+ * the cut edge reads as deliberate, the same way a scrolling table does.
+ */
+@media (max-width: 620px) {
+  .stair-plot {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .stair-svg {
+    min-width: 38rem;
+  }
+}

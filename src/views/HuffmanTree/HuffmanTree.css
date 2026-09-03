@@ -2,14 +2,18 @@
   margin-top: var(--s-2);
 }
 
-.ht-svg {
-  display: block;
-  width: 100%;
-  height: auto;
+.ht-frame {
   max-width: 44rem;
   border: 1px solid var(--rule);
   border-radius: var(--r-2);
   background: var(--surface);
+  overflow: hidden;
+}
+
+.ht-svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .ht-edge {
@@ -101,5 +105,18 @@
 @media (prefers-reduced-motion: reduce) {
   .ht-node {
     transition: none;
+  }
+}
+
+/* Same treatment as the staircase. The tree is laid out against a 560-unit
+ * geometry with 8 and 9 unit labels on it, so below this width it scrolls
+ * inside its frame rather than rendering its code digits at five pixels. */
+@media (max-width: 620px) {
+  .ht-frame {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .ht-svg {
+    min-width: 34rem;
   }
 }
