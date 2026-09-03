@@ -84,7 +84,7 @@
 
         <figure class="hero-figure">
           <svg viewBox="0 0 560 356" class="plot" role="img"
-               aria-label="Two plots against model order. The total cost per character is 4.58 bits at order 0, falls to 4.51 at order 1, then rises to 8.27, 18.74, 33.86 and 49.31 bits at order 5. Below it, the conditional entropy falls from 4.44 bits at order 0 to 0.47 bits at order 5.">
+               aria-label="Two plots against model order. The total cost per character is 4.58 bits at order 0, falls to 4.50 at order 1, then rises to 8.26, 18.74, 33.86 and 49.31 bits at order 5. The model description alone accounts for 0.14, 0.98, 4.97, 15.05, 29.79 and 44.98 bits of that. Below it, the conditional entropy falls from 4.44 bits at order 0 to 0.47 bits at order 5.">
             <!-- top plot: total cost, code stream plus model description -->
             <g class="axis">
               <line x1="46" y1="182" x2="542" y2="182" />
@@ -98,6 +98,12 @@
               <text class="tick" x="40" y="56.9">40</text>
             </g>
             <text class="plot-title" x="46" y="12">Total, bits per character</text>
+            <!-- The model description alone, in gold, under the total it is
+                 dragging upward. Gold means the model here exactly as it does
+                 in the lab, and the gap between the two lines is the code
+                 stream: the thing that got cheaper. -->
+            <path class="model" d="M 87.3 181.5 L 170 178.8 L 252.7 166 L 335.3 133.6 L 418 86.2 L 500.7 37.4" />
+            <text class="callout callout-model" x="329.3" y="147">the model description</text>
             <path class="total" d="M 87.3 167.3 L 170 167.5 L 252.7 155.4 L 335.3 121.8 L 418 73.2 L 500.7 23.5" />
             <circle class="total-dot" cx="87.3" cy="167.3" r="3" />
             <circle class="total-dot" cx="252.7" cy="155.4" r="3" />
@@ -106,8 +112,8 @@
             <circle class="total-dot" cx="500.7" cy="23.5" r="3" />
             <circle class="best-dot" cx="170" cy="167.5" r="4.5" />
             <line class="leader" x1="170" y1="163" x2="170" y2="120" />
-            <text class="callout" x="176" y="118">4.51 at order 1, the lowest total</text>
-            <text class="callout callout-end" x="542" y="38">49.31</text>
+            <text class="callout" x="176" y="118">4.50 at order 1, the lowest total</text>
+            <text class="callout callout-end" x="542" y="38">49.31 total</text>
 
             <!-- bottom plot: the entropy staircase, its own scale -->
             <g class="axis">
@@ -130,8 +136,9 @@
           </svg>
           <figcaption>
             Model order along the bottom. English prose, 10,652 characters, static models,
-            measured by the app you are about to open. The two plots have different scales
-            because at one scale the staircase is four pixels tall.
+            measured by the app you are about to open. Gold is the model description, and it
+            is gold everywhere in this project. The two plots have different scales because
+            at one scale the staircase is four pixels tall.
           </figcaption>
         </figure>
       </section>
@@ -150,7 +157,7 @@
         </div>
         <div>
           <p class="label">The cheapest total is at</p>
-          <p class="figure-xl data">order 1<span class="unit"> · 4.51 bits</span></p>
+          <p class="figure-xl data">order 1<span class="unit"> · 4.50 bits</span></p>
           <p>Barely under order 0. Paste a longer text and the minimum moves to the right.</p>
         </div>
       </section>
@@ -341,8 +348,9 @@
     </footer>
 
     <script>
-      // The year is the current one, and it is written rather than shipped as
-      // a literal that goes stale in January.
+      // The literal in the markup is the fallback for a reader with scripting
+      // off; this replaces it with the real current year. Two places, and the
+      // markup one is the one that can go stale.
       document.getElementById('year').textContent = String(new Date().getFullYear());
     </script>
   </body>

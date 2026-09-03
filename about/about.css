@@ -343,20 +343,41 @@ section h2 {
 
 .callout-end {
   text-anchor: end;
-  fill: var(--model-cost);
+  fill: var(--ink);
 }
 
-/* Gold is the model, here as in the app: the total is the line the model
- * description drags upward, so it is the line that carries the gold. */
+/*
+ * Gold is the model description and nothing else, which is the rule everywhere
+ * in this project and was broken here first.
+ *
+ * The total was drawn in gold on the reasoning that the model drags it upward.
+ * That reasoning would let gold mean anything gold influences, and it taught a
+ * reader a vocabulary the lab then contradicts: there the total is ink and the
+ * gold dashed line is the model. Now both lines are drawn, in the colours they
+ * have in the instrument, and the gap between them is the code stream.
+ */
 .total {
   fill: none;
-  stroke: var(--model-cost);
+  stroke: var(--ink);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
 .total-dot {
+  fill: var(--ink);
+}
+
+.model {
+  fill: none;
+  stroke: var(--model-cost);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+  stroke-linejoin: round;
+}
+
+.callout-model {
   fill: var(--model-cost);
+  text-anchor: end;
 }
 
 .best-dot {
