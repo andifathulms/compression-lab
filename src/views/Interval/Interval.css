@@ -12,7 +12,14 @@
  * name them turns the view into an abstract stripe.
  */
 .interval-svg {
-  width: 200px;
+  /*
+   * 270 by 360 is the 240 by 320 viewBox, not an approximation of it. At
+   * 200 by 360 the drawing was letterboxed into a taller box and lost about
+   * forty pixels of dead surface at each end, which is the one thing the
+   * chosen band must not have: DESIGN.md 5.6 says it fills the frame, and
+   * under the old numbers it could not.
+   */
+  width: 270px;
   height: 360px;
   flex: 0 0 auto;
   border: 1px solid var(--rule);

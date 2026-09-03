@@ -20,9 +20,3 @@
   text-overflow: ellipsis;
 }
 
-/* A row that emitted nothing is not a gap in the ledger, it is a symbol the
- * coder absorbed without resolving a bit. It gets a mark rather than a blank. */
-.ledger-bits:empty::after {
-  content: '·';
-  color: var(--ink-faint);
-}

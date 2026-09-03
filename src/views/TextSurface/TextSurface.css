@@ -79,8 +79,11 @@
 
 .ts:focus-within {
   /* The surface is the input, so focus belongs on the surface, not on a box
-   * drawn around a form field that is meant to be invisible. */
-  box-shadow: -14px 0 0 -12px var(--ink);
+   * drawn around a form field that is meant to be invisible. The bar was two
+   * pixels, which made the most important control on the page advertise focus
+   * more faintly than any button on it. Four, and the ink, so it reads at a
+   * glance without boxing the prose. */
+  box-shadow: -14px 0 0 -10px var(--ink);
 }
 
 .ts-line {

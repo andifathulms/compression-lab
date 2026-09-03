@@ -223,11 +223,16 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
         <button type="button" onClick={() => move(-1)} disabled={cursor === 0}>
           Step back
         </button>
+        {/* Reduced motion means do not animate, not do not advance. The
+            timing branch above already knows this and steps at a fixed 700ms
+            with no interpolation; disabling the control made that branch
+            unreachable and took the instrument away from the reader it was
+            written for. The speed slider stays disabled, because under reduced
+            motion the interval is stepped at one rate by design. */}
         <button
           type="button"
           onClick={() => setPlaying((p) => !p)}
           aria-pressed={playing}
-          disabled={reduced}
         >
           {playing ? 'Pause' : 'Play'}
         </button>
@@ -265,7 +270,9 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
       </div>
       {reduced ? (
         <p className="assumption">
-          Reduced motion is on, so the zoom is a stepper: each step writes its state instantly.
+          Reduced motion is on, so the zoom is a stepper: each step writes its state
+          instantly, and Play advances one resolved step at a time rather than animating
+          between them.
         </p>
       ) : null}
     </div>
