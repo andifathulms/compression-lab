@@ -72,6 +72,14 @@
   position: relative;
 }
 
+/*
+ * The restore control is not an alert and does not get a colour. It is an
+ * offer, and it disappears the moment it is taken.
+ */
+.restore {
+  white-space: nowrap;
+}
+
 /* ---- Share -------------------------------------------------------------- */
 
 .share-menu {

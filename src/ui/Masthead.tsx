@@ -13,6 +13,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { SAMPLES } from '../samples/index.ts';
+import { count } from './format.ts';
 import type { ThemeHandle } from './theme.ts';
 import { ThemeToggle } from './ThemeToggle.tsx';
 import { Mark } from './Mark.tsx';
@@ -21,6 +22,9 @@ import './Masthead.css';
 interface Props {
   sampleId: string | null;
   onSample: (id: string) => void;
+  /** The reader's own text, if a sample displaced it. */
+  restorable: string | null;
+  onRestore: () => void;
   onCopyLink: (withText: boolean) => void;
   linkStatus: string | null;
   theme: ThemeHandle;
@@ -29,6 +33,8 @@ interface Props {
 export function Masthead({
   sampleId,
   onSample,
+  restorable,
+  onRestore,
   onCopyLink,
   linkStatus,
   theme,
@@ -74,13 +80,39 @@ export function Masthead({
           </label>
           <select id="sample" value={sampleId ?? ''} onChange={(e) => onSample(e.target.value)}>
             {sampleId === null ? <option value="">Your own text</option> : null}
-            {SAMPLES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
+            {/* The four Declaration texts say the same thing in four languages,
+                which is the only reason the comparison row means anything. Flat
+                in a list of nine that fact arrives late; grouped, it arrives
+                before the reader opens the chooser a second time. */}
+            <optgroup label="Texts">
+              {SAMPLES.filter((s) => s.language === undefined).map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="One text, four languages">
+              {SAMPLES.filter((s) => s.language !== undefined).map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
+
+        {/* Only while there is something to put back, and it says how much so
+            the reader knows it is their paragraph and not a stale sample. */}
+        {restorable !== null ? (
+          <div className="field">
+            <span className="label" aria-hidden="true">
+              Your text
+            </span>
+            <button type="button" className="restore" onClick={onRestore}>
+              Restore {count(restorable.length)} characters
+            </button>
+          </div>
+        ) : null}
 
         <div className="field share" ref={shareRef}>
           <span className="label" aria-hidden="true">

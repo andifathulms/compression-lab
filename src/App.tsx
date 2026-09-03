@@ -10,8 +10,11 @@
  * bench. The specimen is the largest thing on the page and it stays visible
  * while it is being measured, because that is what this app is for.
  *
- * The staircase is pinned at the top of the apparatus column and never scrolls
- * away, because every other instrument is an elaboration of it.
+ * The rail is the anchor, not the staircase. The staircase was pinned once, on
+ * the argument that every other instrument elaborates it, and a thousand pixels
+ * of plot and table pinned under a ninety-pixel rail turned out to be the whole
+ * screen: see the note in App.css. The rail carries the reading, the coder and
+ * the order in ninety pixels instead.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -140,13 +143,35 @@ export function App(): JSX.Element {
     [copyLink],
   );
 
+  /**
+   * The reader's own text, kept when a sample replaces it.
+   *
+   * Loading a sample overwrites the surface, and the interface actively invites
+   * that: the parallel-corpus row is four buttons that each swap the text. The
+   * most valuable thing anyone does with this app is measure their own writing,
+   * and ordinary curiosity about Finnish was enough to destroy it. So the
+   * outgoing text is held and offered back. Not a dialog, not a confirmation
+   * step: a button that appears next to the chooser and says how much it has.
+   */
+  const [restorable, setRestorable] = useState<string | null>(null);
+
   const chooseSample = useCallback(
     (id: string) => {
       const chosen = sampleById(id);
-      if (chosen !== undefined) setText(chosen.text, chosen.id);
+      if (chosen === undefined) return;
+      if (state.sampleId === null && state.text.trim() !== '') {
+        setRestorable(state.text);
+      }
+      setText(chosen.text, chosen.id);
     },
-    [setText],
+    [setText, state.sampleId, state.text],
   );
+
+  const restoreText = useCallback(() => {
+    if (restorable === null) return;
+    setText(restorable, null);
+    setRestorable(null);
+  }, [restorable, setText]);
 
   /**
    * The rail is pinned at the top and the two columns are pinned underneath
@@ -184,6 +209,8 @@ export function App(): JSX.Element {
       <Masthead
         sampleId={state.sampleId}
         onSample={chooseSample}
+        restorable={restorable}
+        onRestore={restoreText}
         onCopyLink={onCopyLink}
         linkStatus={linkStatus}
         theme={theme}
@@ -219,6 +246,16 @@ export function App(): JSX.Element {
               Every character is coloured by its surprisal — the cost of coding it,{' '}
               <span className="data">-log2 p</span>, in bits. Predictable characters fade into
               the ground; surprising ones are fully drawn.
+            </p>
+            {/* Stated where the decision is made. The app is strict about this
+                — no network at all, samples bundled, typed text kept out of the
+                URL — and every word of that was written down in three places
+                the reader has not reached at the moment they are deciding
+                whether to paste something of their own. */}
+            <p className="assumption">
+              Nothing here is uploaded and nothing is fetched. What you type stays in this
+              browser, and stays out of the address bar unless you ask for a link that
+              includes it.
             </p>
             {sample !== undefined ? <p className="assumption">{sample.note}</p> : null}
           </div>
