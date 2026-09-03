@@ -22,10 +22,21 @@
 }
 
 .masthead h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
   font-size: var(--t-h2);
   color: var(--ink);
   /* Two words, and they are the app's name; they do not break across lines. */
   white-space: nowrap;
+}
+
+/* The mark sits on the name's optical centre rather than its baseline: it is
+ * a figure, not a letter, and hung off the baseline it reads as having
+ * dropped. */
+.mark {
+  flex: 0 0 auto;
+  display: block;
 }
 
 /*

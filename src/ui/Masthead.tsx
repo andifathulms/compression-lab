@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SAMPLES } from '../samples/index.ts';
 import type { ThemeHandle } from './theme.ts';
 import { ThemeToggle } from './ThemeToggle.tsx';
+import { Mark } from './Mark.tsx';
 import './Masthead.css';
 
 interface Props {
@@ -56,7 +57,10 @@ export function Masthead({
   return (
     <header className="masthead">
       <div className="masthead-identity">
-        <h1>Compression Lab</h1>
+        <h1>
+          <Mark />
+          Compression Lab
+        </h1>
         <p className="masthead-claim">
           Entropy is not a property of a text. It is a property of a text{' '}
           <em>under a model</em>.
