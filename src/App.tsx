@@ -323,6 +323,12 @@ export function App(): JSX.Element {
       </main>
 
       <footer className="app-foot">
+        {/* The way in, for anyone who arrived at the instrument first. It is a
+            static page and it is one level up in the same deployment, so the
+            link is relative rather than absolute. */}
+        <a className="app-foot-link" href="about/">
+          What this is, and what it measures
+        </a>
         <MakerSignature />
       </footer>
     </div>

@@ -1,12 +1,27 @@
 /// <reference types='vitest' />
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // base is the repo path so GitHub Pages serves assets correctly.
 export default defineConfig({
   base: process.env.VITE_BASE ?? '/compression-lab/',
   plugins: [react()],
-  build: { target: 'es2022', assetsInlineLimit: 0 },
+  build: {
+    target: 'es2022',
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      // Two pages. The app is the root; `about/` is the way in, and it is a
+      // static document with no bundle of its own beyond the shared CSS.
+      input: {
+        app: resolve(__dirname, 'index.html'),
+        about: resolve(__dirname, 'about/index.html'),
+      },
+    },
+  },
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],

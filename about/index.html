@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compression Lab — a better model has to be sent</title>
+    <meta
+      name="description"
+      content="Six models over one text, measured end to end: the entropy, the code stream, and the model a decoder needs."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131415" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Compression Lab — a better model has to be sent" />
+    <meta
+      property="og:description"
+      content="Six models over one text, measured end to end: the entropy, the code stream, and the model a decoder needs."
+    />
+    <meta property="og:url" content="https://andifathulms.github.io/compression-lab/about/" />
+    <meta property="og:image" content="https://andifathulms.github.io/compression-lab/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // The same resolution the app uses, and it reads the same key: someone
+      // who chose the bench in the lab does not get shown paper on the way in.
+      (function () {
+        try {
+          var stored = localStorage.getItem('compression-lab:theme');
+          var mode =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.dataset.theme = mode;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="./about.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the argument</a>
+
+    <header class="site-head">
+      <a class="site-name" href="../">
+        <svg class="mark" viewBox="0 0 100 100" width="18" height="18" aria-hidden="true">
+          <path d="M13 25 H33 V44 H51 V58 H67 V68 H87" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="square" />
+          <path d="M33 25 V44" fill="none" stroke="var(--model-cost)" stroke-width="9" stroke-linecap="square" />
+          <circle cx="33" cy="82" r="6.5" fill="var(--model-cost)" />
+        </svg>
+        Compression Lab
+      </a>
+      <a class="button-primary" href="../">Open the lab</a>
+    </header>
+
+    <main id="main">
+      <!-- Hero: asymmetric split. The visual is the real plot, drawn from the
+           figures the engine produces for the bundled English prose sample,
+           not a mock and not a screenshot. -->
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>
+            A better model predicts the text.
+            <span>Then you have to send the model.</span>
+          </h1>
+          <p class="lede">
+            Six models over one text, measured end to end: the entropy, the code stream,
+            and the model a decoder needs.
+          </p>
+          <div class="actions">
+            <a class="button-primary" href="../">Open the lab</a>
+            <a class="button-quiet" href="https://github.com/andifathulms/compression-lab">
+              Source on GitHub
+            </a>
+          </div>
+        </div>
+
+        <figure class="hero-figure">
+          <svg viewBox="0 0 560 356" class="plot" role="img"
+               aria-label="Two plots against model order. The total cost per character is 4.58 bits at order 0, falls to 4.51 at order 1, then rises to 8.27, 18.74, 33.86 and 49.31 bits at order 5. Below it, the conditional entropy falls from 4.44 bits at order 0 to 0.47 bits at order 5.">
+            <!-- top plot: total cost, code stream plus model description -->
+            <g class="axis">
+              <line x1="46" y1="182" x2="542" y2="182" />
+              <line class="grid" x1="46" y1="149.9" x2="542" y2="149.9" />
+              <line class="grid" x1="46" y1="117.7" x2="542" y2="117.7" />
+              <line class="grid" x1="46" y1="85.6" x2="542" y2="85.6" />
+              <line class="grid" x1="46" y1="53.4" x2="542" y2="53.4" />
+              <text class="tick" x="40" y="153.4">10</text>
+              <text class="tick" x="40" y="121.2">20</text>
+              <text class="tick" x="40" y="89.1">30</text>
+              <text class="tick" x="40" y="56.9">40</text>
+            </g>
+            <text class="plot-title" x="46" y="12">Total, bits per character</text>
+            <path class="total" d="M 87.3 167.3 L 170 167.5 L 252.7 155.4 L 335.3 121.8 L 418 73.2 L 500.7 23.5" />
+            <circle class="total-dot" cx="87.3" cy="167.3" r="3" />
+            <circle class="total-dot" cx="252.7" cy="155.4" r="3" />
+            <circle class="total-dot" cx="335.3" cy="121.8" r="3" />
+            <circle class="total-dot" cx="418" cy="73.2" r="3" />
+            <circle class="total-dot" cx="500.7" cy="23.5" r="3" />
+            <circle class="best-dot" cx="170" cy="167.5" r="4.5" />
+            <line class="leader" x1="170" y1="163" x2="170" y2="120" />
+            <text class="callout" x="176" y="118">4.51 at order 1, the lowest total</text>
+            <text class="callout callout-end" x="542" y="38">49.31</text>
+
+            <!-- bottom plot: the entropy staircase, its own scale -->
+            <g class="axis">
+              <line x1="46" y1="328" x2="542" y2="328" />
+              <line class="grid" x1="46" y1="287.9" x2="542" y2="287.9" />
+              <line class="grid" x1="46" y1="247.8" x2="542" y2="247.8" />
+              <text class="tick" x="40" y="291.4">2</text>
+              <text class="tick" x="40" y="251.3">4</text>
+            </g>
+            <text class="plot-title" x="46" y="226">Conditional entropy, bits per character</text>
+            <path class="steps" d="M 46 239.1 L 128.7 239.1 L 128.7 260.9 L 211.3 260.9 L 211.3 282.6 L 294 282.6 L 294 300.9 L 376.7 300.9 L 376.7 312.8 L 459.3 312.8 L 459.3 318.6 L 542 318.6" />
+            <g class="order-axis">
+              <text x="87.3" y="346">0</text>
+              <text x="170" y="346">1</text>
+              <text x="252.7" y="346">2</text>
+              <text x="335.3" y="346">3</text>
+              <text x="418" y="346">4</text>
+              <text x="500.7" y="346">5</text>
+            </g>
+          </svg>
+          <figcaption>
+            Model order along the bottom. English prose, 10,652 characters, static models,
+            measured by the app you are about to open. The two plots have different scales
+            because at one scale the staircase is four pixels tall.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- The turn, in three measured figures. -->
+      <section class="turn">
+        <div>
+          <p class="label">Order 5 predicts it at</p>
+          <p class="figure-xl data">0.47<span class="unit"> bits</span></p>
+          <p>Conditioned on the previous five characters, the text is almost no surprise at all.</p>
+        </div>
+        <div>
+          <p class="label">Storing it that way costs</p>
+          <p class="figure-xl data">49.31<span class="unit"> bits</span></p>
+          <p>The order-5 model has 6,345 contexts, and a decoder cannot rebuild them from nothing.</p>
+        </div>
+        <div>
+          <p class="label">The cheapest total is at</p>
+          <p class="figure-xl data">order 1<span class="unit"> · 4.51 bits</span></p>
+          <p>Barely under order 0. Paste a longer text and the minimum moves to the right.</p>
+        </div>
+      </section>
+
+      <!-- Six instruments, hanging labels rather than a card grid. -->
+      <section class="instruments">
+        <h2>What you get to look at</h2>
+        <dl>
+          <div>
+            <dt>The staircase</dt>
+            <dd>
+              Entropy at all six orders, the three coders' measured rates, and the total with
+              the model description included. The minimum is marked.
+            </dd>
+          </div>
+          <div>
+            <dt>The text</dt>
+            <dd>
+              Every character tinted by what it costs to code, in bits. Predictable characters
+              fade into the page. Raise the order and watch a repeated sentence disappear.
+            </dd>
+          </div>
+          <div>
+            <dt>Huffman</dt>
+            <dd>
+              The merge sequence, the canonical code table, and the waste plot: where a whole
+              number of bits overpays for a symbol whose true cost has a fraction in it.
+            </dd>
+          </div>
+          <div>
+            <dt>Arithmetic</dt>
+            <dd>
+              The interval narrowing symbol by symbol, drawn over the integer renormalization
+              that actually carries it. Both are in the trace, so neither is a story.
+            </dd>
+          </div>
+          <div>
+            <dt>LZ77</dt>
+            <dd>
+              The window, the look-ahead, and the match under the cursor. Greedy against lazy
+              matching, with the cost of each in bits.
+            </dd>
+          </div>
+          <div>
+            <dt>Four languages</dt>
+            <dd>
+              One text in four official translations, so a comparison between languages is not
+              secretly a comparison between subjects.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- Real measured data, four rows. -->
+      <section class="corpus">
+        <h2>What the parallel corpus says</h2>
+        <p class="prose">
+          The claim under test: affix-heavy and agglutinative languages carry more substring
+          redundancy than character-level entropy reveals, so LZ77 should beat the order-0
+          prediction by a wider margin. Measured over the Universal Declaration of Human
+          Rights, articles 1 to 30, at a 4,096-byte window.
+        </p>
+        <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Language</th>
+              <th scope="col">Order-0 entropy</th>
+              <th scope="col">LZ77</th>
+              <th scope="col">Margin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Indonesian</th>
+              <td class="data">4.17</td>
+              <td class="data">3.32</td>
+              <td class="data">
+                <span class="bar" style="--w: 100%"></span>0.851
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">German</th>
+              <td class="data">4.50</td>
+              <td class="data">3.81</td>
+              <td class="data"><span class="bar" style="--w: 81%"></span>0.690</td>
+            </tr>
+            <tr>
+              <th scope="row">English</th>
+              <td class="data">4.35</td>
+              <td class="data">3.72</td>
+              <td class="data"><span class="bar" style="--w: 75%"></span>0.636</td>
+            </tr>
+            <tr>
+              <th scope="row">Finnish</th>
+              <td class="data">4.25</td>
+              <td class="data">3.91</td>
+              <td class="data"><span class="bar" style="--w: 40%"></span>0.340</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="assumption">
+          Indonesian bears the claim out, widest margin and lowest order-0 entropy. Finnish
+          does not, despite being the most agglutinative of the four. Four texts of nine
+          thousand characters do not settle it, and the app says so where it shows them.
+        </p>
+      </section>
+
+      <!-- Editorial column. The credibility argument. -->
+      <section class="honesty">
+        <h2>Three numbers that could have been faked, and were not</h2>
+        <p class="prose">
+          <b>The model cost is a measurement.</b> The serialiser writes a real byte format and
+          the deserialiser reads it back. The tests assert that a decoder given only the code
+          stream and the model bytes reproduces the text, at every order, over the whole
+          corpus. Had that been a formula, the minimum on the total curve would be fiction.
+        </p>
+        <p class="prose">
+          <b>Every coder has a working decoder.</b> Decompression is not a feature anyone uses
+          here. It is tested anyway, because a coder without a decoder is a coder nobody has
+          checked. The arithmetic coder's output is asserted to be within two bits of its own
+          information content, and the tolerance has never been widened to make it pass.
+        </p>
+        <p class="prose">
+          <b>Three choices are arbitrary and change the numbers.</b> The smoothing constant,
+          the LZ77 token encoding, and the model serialisation format. Each one is stated in
+          the interface next to the figure it moves, because an app whose whole claim is that
+          its numbers are real cannot hide the places where it chose.
+        </p>
+      </section>
+
+      <section class="closing">
+        <h2>It recomputes while you type.</h2>
+        <p class="prose">
+          Paste your own writing. Nothing is uploaded, nothing is fetched, and what you type
+          stays out of the URL unless you ask for a link that includes it.
+        </p>
+        <a class="button-primary button-large" href="../">Open the lab</a>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <p class="foot-note">
+        Written from scratch: the models, the coders, the decoders and every chart.
+        <a href="https://github.com/andifathulms/compression-lab">Source on GitHub</a>
+      </p>
+      <div class="maker">
+        <p class="maker-line">
+          Designed &amp; built by
+          <a class="maker-name" href="https://andifathulms.github.io/en/" target="_blank" rel="noopener noreferrer">Andi Fathul Mukminin</a>
+          · <span class="data maker-year">© <span id="year">2026</span></span>
+        </p>
+        <ul class="maker-links">
+          <li>
+            <a href="https://andifathulms.github.io/en/" target="_blank" rel="noopener noreferrer" aria-label="Portfolio" title="Portfolio">
+              <svg class="maker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" /><path d="M3 12h18" />
+                <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/andifathulms" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+              <svg class="maker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" stroke="none" d="M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.49.09.67-.21.67-.47l-.01-1.83c-2.73.59-3.3-1.16-3.3-1.16-.45-1.13-1.09-1.43-1.09-1.43-.89-.61.07-.6.07-.6.98.07 1.5 1.01 1.5 1.01.88 1.5 2.3 1.07 2.86.82.09-.64.34-1.07.62-1.32-2.18-.25-4.47-1.09-4.47-4.85 0-1.07.38-1.95 1.01-2.64-.1-.25-.44-1.25.1-2.61 0 0 .82-.26 2.7 1.01a9.4 9.4 0 0 1 4.92 0c1.88-1.27 2.7-1.01 2.7-1.01.54 1.36.2 2.36.1 2.61.63.69 1.01 1.57 1.01 2.64 0 3.77-2.3 4.6-4.49 4.84.35.31.67.91.67 1.84l-.01 2.72c0 .26.18.57.68.47A9.8 9.8 0 0 0 12 2.2Z" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/andifathulmukminin/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+              <svg class="maker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" stroke="none" d="M4.98 3.5a2.02 2.02 0 1 0 0 4.04 2.02 2.02 0 0 0 0-4.04ZM3.2 9.06h3.56V21H3.2V9.06Zm5.81 0h3.41v1.63h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.26 2.37 4.26 5.45V21h-3.55v-5.99c0-1.43-.03-3.27-1.99-3.27-2 0-2.3 1.56-2.3 3.17V21H9.01V9.06Z" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/andifathulms/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+              <svg class="maker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" />
+                <circle cx="12" cy="12" r="4.1" />
+                <circle cx="17.1" cy="6.9" r="1.15" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+
+    <script>
+      // The year is the current one, and it is written rather than shipped as
+      // a literal that goes stale in January.
+      document.getElementById('year').textContent = String(new Date().getFullYear());
+    </script>
+  </body>
+</html>

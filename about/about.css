@@ -1,0 +1,698 @@
+/**
+ * The way in.
+ *
+ * One page, no app. It reuses the lab's tokens rather than defining a second
+ * palette, so the page a reader arrives on and the instrument they arrive at
+ * are the same material: same two grounds, same two voices, same gold meaning
+ * the model. Nothing here is a new colour, a new size or a new radius.
+ *
+ * There is no framework and no script beyond resolving the ground and writing
+ * the year. The one figure on the page is an SVG holding numbers this repo's
+ * own engine produced.
+ */
+
+@import '../src/styles/fonts.css';
+@import '../src/styles/tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.data,
+.label,
+.unit,
+th,
+td {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+h1,
+h2 {
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: var(--r-1);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s-2);
+  top: var(--s-2);
+  z-index: 20;
+  transform: translateY(-200%);
+  background: var(--surface);
+  border: 1px solid var(--ink);
+  border-radius: var(--r-2);
+  padding: 8px 12px;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.label {
+  font-size: var(--t-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.prose {
+  color: var(--ink-mid);
+  font-size: var(--t-text);
+  line-height: 1.65;
+  max-width: 34rem;
+  text-wrap: pretty;
+}
+
+.prose b {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
+/* The caveat treatment carries over from the app: hung off a rule, in the
+ * instrument voice, never collapsed behind a disclosure. */
+.assumption {
+  color: var(--ink-mid);
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  line-height: 1.65;
+  max-width: 44rem;
+  border-left: 2px solid var(--rule);
+  padding-left: var(--s-2);
+  text-wrap: pretty;
+}
+
+/* ---- Sections ----------------------------------------------------------- */
+
+main,
+.site-head,
+.site-foot {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding-left: var(--s-4);
+  padding-right: var(--s-4);
+}
+
+section {
+  padding: var(--s-5) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.hero {
+  border-top: 0;
+}
+
+section h2 {
+  font-family: var(--font-text);
+  font-size: var(--t-display);
+  font-weight: var(--weight-strong);
+  line-height: 1.1;
+  letter-spacing: var(--track-display);
+  max-width: 22ch;
+  margin-bottom: var(--s-2);
+}
+
+/* ---- Head --------------------------------------------------------------- */
+
+.site-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  height: 68px;
+}
+
+.site-name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--t-h2);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mark {
+  flex: 0 0 auto;
+  display: block;
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+
+/*
+ * Ink on paper and paper on ink. The primary action inverts the ground, which
+ * is the highest contrast the palette can produce without introducing a colour
+ * that would then have to mean something.
+ */
+.button-primary,
+.button-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  text-decoration: none;
+  border-radius: var(--r-2);
+  padding: 9px 15px;
+  transition:
+    background var(--d-fast) var(--ease-standard),
+    color var(--d-fast) var(--ease-standard),
+    border-color var(--d-fast) var(--ease-standard),
+    transform var(--d-fast) var(--ease-standard);
+}
+
+.button-primary {
+  background: var(--ink);
+  color: var(--page);
+  border: 1px solid var(--ink);
+}
+
+.button-primary:hover {
+  background: var(--ink-mid);
+  border-color: var(--ink-mid);
+}
+
+.button-quiet {
+  background: var(--surface);
+  color: var(--ink-mid);
+  border: 1px solid var(--rule);
+}
+
+.button-quiet:hover {
+  color: var(--ink);
+  border-color: var(--rule-strong);
+  background: var(--surface-hover);
+}
+
+/* A control that is pressed moves, once, by a pixel. */
+.button-primary:active,
+.button-quiet:active {
+  transform: translateY(1px);
+}
+
+.button-large {
+  font-size: var(--t-body);
+  padding: 12px 20px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin-top: var(--s-3);
+}
+
+/* ---- Hero --------------------------------------------------------------- */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: center;
+  gap: var(--s-4);
+  padding-top: var(--s-4);
+  padding-bottom: var(--s-5);
+}
+
+.hero h1 {
+  font-family: var(--font-text);
+  font-size: var(--t-display);
+  font-weight: var(--weight-strong);
+  line-height: 1.12;
+  letter-spacing: var(--track-display);
+}
+
+/* The second line is the turn in the argument, so it is the one that is
+ * allowed to be emphatic, and it gets there by weight rather than by colour. */
+.hero h1 span {
+  display: block;
+  color: var(--ink-mid);
+}
+
+.lede {
+  margin-top: var(--s-2);
+  max-width: 30rem;
+  color: var(--ink-mid);
+  font-size: var(--t-text);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.hero-figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.plot {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.hero-figure figcaption {
+  margin-top: var(--s-2);
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--ink-faint);
+  max-width: 40rem;
+}
+
+/* ---- The plot ----------------------------------------------------------- */
+
+.axis line {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.axis line.grid {
+  stroke: var(--rule);
+}
+
+.tick,
+.order-axis text,
+.plot-title,
+.callout {
+  font-family: var(--font-data);
+  fill: var(--ink-faint);
+}
+
+.tick {
+  font-size: 10.5px;
+  text-anchor: end;
+}
+
+.order-axis text {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: var(--ink-mid);
+}
+
+.plot-title {
+  font-size: 10.5px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  fill: var(--ink-faint);
+}
+
+.callout {
+  font-size: 11px;
+  fill: var(--ink);
+}
+
+.callout-end {
+  text-anchor: end;
+  fill: var(--model-cost);
+}
+
+/* Gold is the model, here as in the app: the total is the line the model
+ * description drags upward, so it is the line that carries the gold. */
+.total {
+  fill: none;
+  stroke: var(--model-cost);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.total-dot {
+  fill: var(--model-cost);
+}
+
+.best-dot {
+  fill: var(--page);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.leader {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.steps {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+
+/* ---- The turn ----------------------------------------------------------- */
+
+.turn {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-4);
+}
+
+/* Not cards. A hairline between columns, and the ground carries the rest. */
+.turn > div + div {
+  border-left: 1px solid var(--rule);
+  padding-left: var(--s-4);
+}
+
+.turn p:last-child {
+  margin-top: var(--s-1);
+  color: var(--ink-mid);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.figure-xl {
+  margin-top: var(--s-1);
+  font-size: var(--t-display);
+  font-weight: var(--weight-medium);
+  line-height: 1.05;
+  letter-spacing: var(--track-figure);
+  color: var(--ink);
+}
+
+.figure-xl .unit {
+  font-size: var(--t-data);
+  font-weight: var(--weight-text);
+  color: var(--ink-faint);
+  letter-spacing: 0;
+}
+
+/* ---- Instruments -------------------------------------------------------- */
+
+.instruments dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-4);
+  margin: var(--s-3) 0 0;
+}
+
+.instruments dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+  gap: var(--s-2);
+  align-items: baseline;
+}
+
+.instruments dt {
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.instruments dd {
+  margin: 0;
+  color: var(--ink-mid);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---- Corpus ------------------------------------------------------------- */
+
+.corpus table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 46rem;
+  margin: var(--s-3) 0;
+  font-size: var(--t-data);
+}
+
+.corpus th,
+.corpus td {
+  text-align: right;
+  padding: 9px var(--s-1);
+  white-space: nowrap;
+}
+
+.corpus th:first-child,
+.corpus td:first-child {
+  text-align: left;
+  padding-left: 0;
+}
+
+.corpus thead th {
+  font-size: var(--t-micro);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.corpus tbody th {
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  font-weight: var(--weight-text);
+  color: var(--ink);
+}
+
+.corpus tbody td {
+  color: var(--ink-mid);
+}
+
+.corpus tbody tr + tr th,
+.corpus tbody tr + tr td {
+  border-top: 1px solid var(--rule);
+}
+
+/* The margin column gets a bar and no track behind it: the comparison is
+ * between the four bars, and an empty channel behind each one would draw four
+ * boxes that mean nothing. */
+.bar {
+  display: inline-block;
+  width: var(--w);
+  max-width: 7rem;
+  height: 3px;
+  margin-right: var(--s-1);
+  vertical-align: middle;
+  background: var(--lz77);
+  border-radius: 2px;
+}
+
+/* ---- Honesty ------------------------------------------------------------ */
+
+.honesty {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.honesty h2 {
+  margin-bottom: var(--s-1);
+}
+
+/* ---- Closing ------------------------------------------------------------ */
+
+.closing {
+  padding-bottom: var(--s-5);
+}
+
+.closing .prose {
+  margin-bottom: var(--s-3);
+}
+
+/* ---- Foot --------------------------------------------------------------- */
+
+.site-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-1) var(--s-2);
+  flex-wrap: wrap;
+  padding-top: var(--s-2);
+  padding-bottom: var(--s-2);
+  border-top: 1px solid var(--rule);
+  background: var(--sunk);
+  max-width: none;
+}
+
+.foot-note {
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-faint);
+}
+
+.foot-note a {
+  color: var(--ink-mid);
+}
+
+/* The maker's mark, identical to the app's. */
+.maker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-1) var(--s-2);
+  flex-wrap: wrap;
+}
+
+.maker-line {
+  font-family: var(--font-text);
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+.maker-name {
+  color: var(--ink-mid);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+  transition:
+    color var(--d-fast) var(--ease-standard),
+    text-decoration-color var(--d-fast) var(--ease-standard);
+}
+
+.maker-name:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+
+.maker-year {
+  font-size: var(--t-small);
+  color: var(--ink-faint);
+}
+
+.maker-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.maker-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-2);
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition:
+    color var(--d-fast) var(--ease-standard),
+    background var(--d-fast) var(--ease-standard);
+}
+
+.maker-links a:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.maker-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+
+@media (max-width: 1020px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+  .hero-copy {
+    max-width: 40rem;
+  }
+}
+
+@media (max-width: 820px) {
+  .turn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* Stacked, the seam between figures runs along the top of each rather than
+   * down its left edge. */
+  .turn > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-left: 0;
+    padding-top: var(--s-3);
+  }
+  .instruments dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  main,
+  .site-head,
+  .site-foot {
+    padding-left: var(--s-2);
+    padding-right: var(--s-2);
+  }
+  section {
+    padding: var(--s-4) 0;
+  }
+  .instruments dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-0);
+  }
+  /* The corpus table is the one thing on the page that cannot reflow, so it
+   * scrolls inside a wrapper rather than widening the document. The scroll is
+   * on the wrapper and not on the table itself, because `display: block` on a
+   * table is how a table stops being one to a screen reader. */
+  .table-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .corpus table {
+    min-width: 30rem;
+  }
+  .site-foot {
+    justify-content: flex-start;
+  }
+  .maker {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
