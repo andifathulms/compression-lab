@@ -99,6 +99,34 @@ export function surprisals(index: TextIndex, model: FrequencyModel): Float64Arra
 }
 
 /** Total cost of coding the text under a model, in bits. */
+/**
+ * Per-position cost under an adaptive model, in bits.
+ *
+ * The static twin of this is `surprisals`, which asks a finished model what
+ * each character cost. An adaptive model has no finished state to ask: it
+ * knows only what it has already seen, so the cost of position i has to be
+ * taken before position i is observed, and the model is consumed by the walk.
+ *
+ * This is the measurement behind the claim that adaptive coding is not free.
+ * It transmits no counts, but it starts ignorant, and the opening characters
+ * are charged at close to log2 of the alphabet size.
+ */
+export function adaptiveSurprisals(
+  index: TextIndex,
+  model: FrequencyModel,
+): Float64Array {
+  const n = index.symbols.length;
+  const out = new Float64Array(n);
+  const contextIds = index.contexts[model.order].positionIds!;
+  for (let i = 0; i < n; i++) {
+    const id = contextIds[i];
+    const symbolId = index.symbolIds[i];
+    out[i] = -Math.log2(model.probabilityAt(id, symbolId));
+    model.observeAt(id, symbolId);
+  }
+  return out;
+}
+
 export function idealBits(index: TextIndex, model: FrequencyModel): number {
   const n = index.symbols.length;
   const contextIds = index.contexts[model.order].positionIds!;

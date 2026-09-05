@@ -14,6 +14,7 @@ export * from './huffman.ts';
 export * from './arithmetic.ts';
 export * from './lz77.ts';
 export * from './trace.ts';
+export * from './learning.ts';
 
 import {
   buildModelsFromIndex,
@@ -151,6 +152,79 @@ export function analyseText(text: string, adaptive: boolean): TextAnalysis {
     rampMaxBits: index.alphabet.length > 1 ? Math.min(8, Math.log2(index.alphabet.length)) : 1,
     models,
   };
+}
+
+/* ------------------------------------------------------- the length sweep */
+
+export interface SweepPoint {
+  /** Symbols in this prefix. */
+  length: number;
+  /** The order with the smallest total at this length. */
+  optimalOrder: Order;
+  /** Total bits per symbol at every order, so the crossings can be drawn. */
+  totals: number[];
+  bestTotalBits: number;
+}
+
+export interface LengthSweep {
+  points: SweepPoint[];
+  adaptive: boolean;
+  /** The shortest prefix measured. Below this the figures are not meaningful. */
+  floor: number;
+}
+
+/** The shortest prefix worth measuring. Under a couple of hundred symbols the
+ *  model tables are mostly singletons and the optimum is order 0 by default
+ *  rather than by argument. */
+const SWEEP_FLOOR = 200;
+
+/**
+ * The same text at a dozen lengths, and where the optimum sits at each.
+ *
+ * This is the one claim in the thesis the app could not previously show. The
+ * staircase says order N is cheapest *for this text at this length*, and the
+ * argument is that the N moves right as the text grows — but the only way to
+ * change the length was to paste a different text, which changes the text as
+ * well and so demonstrates nothing.
+ *
+ * Prefixes, not samples. The first tenth of a novel is a different register
+ * from the whole of it, so what this measures is how the optimum moves across
+ * *this text's* prefixes, not what a text of that length would generally cost.
+ * The interface has to say so; the measurement cannot.
+ *
+ * Log spacing keeps it affordable. Twelve points from 200 symbols to n sum to
+ * roughly three and a half times n, not twelve times, because most of the
+ * prefixes are short.
+ */
+export function lengthSweep(
+  text: string,
+  adaptive: boolean,
+  steps = 12,
+): LengthSweep {
+  const symbols = toSymbols(text);
+  const n = symbols.length;
+  if (n < SWEEP_FLOOR * 2) return { points: [], adaptive, floor: SWEEP_FLOOR };
+
+  const lengths: number[] = [];
+  const ratio = (n / SWEEP_FLOOR) ** (1 / (steps - 1));
+  for (let i = 0; i < steps; i++) {
+    const length = Math.round(SWEEP_FLOOR * ratio ** i);
+    const clamped = Math.min(n, length);
+    if (lengths[lengths.length - 1] !== clamped) lengths.push(clamped);
+  }
+  if (lengths[lengths.length - 1] !== n) lengths.push(n);
+
+  const points = lengths.map((length) => {
+    const analysis = analyseText(symbols.slice(0, length).join(''), adaptive);
+    return {
+      length,
+      optimalOrder: analysis.optimalOrder,
+      totals: analysis.rows.map((r) => r.totalBits),
+      bestTotalBits: analysis.rows[analysis.optimalOrder].totalBits,
+    };
+  });
+
+  return { points, adaptive, floor: SWEEP_FLOOR };
 }
 
 /* ------------------------------------------------------------ the coders */

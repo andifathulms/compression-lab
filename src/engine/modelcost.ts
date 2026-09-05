@@ -210,3 +210,169 @@ export function modelCosts(models: readonly FrequencyModel[]): ModelCost[] {
     };
   });
 }
+
+
+/* ----------------------------------------------- what the description holds */
+
+/** Bytes an unsigned LEB128 varint occupies, without writing one. */
+function varintSize(value: number): number {
+  let v = value;
+  let bytes = 1;
+  while (v >= 128) {
+    v = Math.floor(v / 128);
+    bytes++;
+  }
+  return bytes;
+}
+
+export interface ModelSection {
+  label: string;
+  bytes: number;
+  /** What this part of the description is for, in one line. */
+  note: string;
+}
+
+export interface ModelLayout {
+  totalBytes: number;
+  sections: ModelSection[];
+}
+
+/**
+ * The model description broken into the parts the format actually writes.
+ *
+ * "Model cost is measured, not estimated" is the load-bearing claim of the
+ * whole project, and it was the one figure in the interface with nothing
+ * behind it but a number. This is the number taken apart. The sections sum to
+ * `serialiseModel(model).length` exactly, and the interface asserts that they
+ * do rather than trusting it — a breakdown that does not reconcile would be
+ * worse than no breakdown at all.
+ */
+export function modelLayout(model: FrequencyModel): ModelLayout {
+  const sections: ModelSection[] = [];
+
+  sections.push({
+    label: 'magic and flags',
+    bytes: MAGIC.length + 1,
+    note: "Four bytes of 'CLM1', then the order and the adaptive bit.",
+  });
+
+  sections.push({
+    label: 'symbol count',
+    bytes: varintSize(model.symbolCount),
+    note: 'How many symbols to decode. Not a property of the distribution, but the decoder needs it to know when to stop.',
+  });
+
+  let alphabetBytes = varintSize(model.alphabet.length);
+  let previous = 0;
+  for (const symbol of model.alphabet) {
+    const point = symbol.codePointAt(0)!;
+    alphabetBytes += varintSize(point - previous);
+    previous = point;
+  }
+  sections.push({
+    label: 'alphabet',
+    bytes: alphabetBytes,
+    note: `${model.alphabet.length} code points, ascending and delta coded. An adaptive model still pays this.`,
+  });
+
+  if (model.adaptive) {
+    sections.push({
+      label: 'counts',
+      bytes: varintSize(0),
+      note: 'A single zero. The decoder rebuilds every count from the symbols it has already decoded, which is what adaptive coding buys.',
+    });
+  } else {
+    const rows = canonicalRows(model);
+    const index = new Map(model.alphabet.map((s, i) => [s, i]));
+    let contextBytes = varintSize(rows.length);
+    for (const { context, entries } of rows) {
+      contextBytes += varintSize(context.length);
+      for (const sym of context) contextBytes += varintSize(index.get(sym)!);
+      contextBytes += varintSize(entries.length);
+      let last = 0;
+      for (const [i, count] of entries) {
+        contextBytes += varintSize(i - last);
+        last = i;
+        contextBytes += varintSize(count);
+      }
+    }
+    sections.push({
+      label: 'counts',
+      bytes: contextBytes,
+      note: `${rows.length} contexts, each with the symbols that followed it and how often. This is the part that grows with order.`,
+    });
+  }
+
+  return {
+    totalBytes: sections.reduce((sum, part) => sum + part.bytes, 0),
+    sections,
+  };
+}
+
+export interface ContextCost {
+  /** The context itself, as text. Empty at order 0. */
+  context: string;
+  /** Distinct symbols observed after it. */
+  entries: number;
+  /** Times this context occurred in the text. */
+  occurrences: number;
+  /** What its row costs in the description. */
+  bytes: number;
+}
+
+export interface ContextBreakdown {
+  rows: ContextCost[];
+  /** Contexts seen exactly once. */
+  singletons: number;
+  /** What those cost, in bytes. */
+  singletonBytes: number;
+  totalContexts: number;
+  totalBytes: number;
+}
+
+/**
+ * Per-context cost, ranked by what each row costs.
+ *
+ * This is the mechanism behind the staircase's rising model curve. At order 3
+ * most contexts occur once or twice: each buys a table entry and saves almost
+ * nothing, and it is the accumulation of those that turns the model line
+ * upward. The staircase shows that the curve rises; this shows why.
+ */
+export function contextBreakdown(model: FrequencyModel, limit = 40): ContextBreakdown {
+  if (model.adaptive) {
+    return { rows: [], singletons: 0, singletonBytes: 0, totalContexts: 0, totalBytes: 0 };
+  }
+  const index = new Map(model.alphabet.map((s, i) => [s, i]));
+  const all: ContextCost[] = canonicalRows(model).map(({ context, entries }) => {
+    let bytes = varintSize(context.length);
+    for (const sym of context) bytes += varintSize(index.get(sym)!);
+    bytes += varintSize(entries.length);
+    let last = 0;
+    let occurrences = 0;
+    for (const [i, count] of entries) {
+      bytes += varintSize(i - last);
+      last = i;
+      bytes += varintSize(count);
+      occurrences += count;
+    }
+    return { context: context.join(''), entries: entries.length, occurrences, bytes };
+  });
+
+  let singletons = 0;
+  let singletonBytes = 0;
+  let totalBytes = 0;
+  for (const row of all) {
+    totalBytes += row.bytes;
+    if (row.occurrences === 1) {
+      singletons++;
+      singletonBytes += row.bytes;
+    }
+  }
+
+  const rows = all
+    .slice()
+    .sort((a, b) => b.bytes - a.bytes || b.occurrences - a.occurrences)
+    .slice(0, limit);
+
+  return { rows, singletons, singletonBytes, totalContexts: all.length, totalBytes };
+}
