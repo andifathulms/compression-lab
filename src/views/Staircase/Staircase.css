@@ -205,3 +205,22 @@
     min-width: 38rem;
   }
 }
+
+/*
+ * The uncompressed reference. It is not a coder and not a model, so it takes
+ * neither a coder colour nor the model gold: it is the ground the whole chart
+ * is measured against, and it is drawn as the quietest possible rule that can
+ * still be found.
+ */
+.stair-original {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  stroke-dasharray: 1 4;
+}
+
+.stair-original-label {
+  font-family: var(--font-data);
+  font-size: var(--t-plot-tick);
+  fill: var(--ink-faint);
+  letter-spacing: var(--track-label);
+}

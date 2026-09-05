@@ -75,6 +75,10 @@ export function Staircase({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, fit, huffman, arithmetic, lz77]);
 
+  /* The original's own rate, for the reference line. */
+  const originalRate =
+    analysis.symbolCount > 0 ? (analysis.byteCount * 8) / analysis.symbolCount : NaN;
+
   const clipped =
     fit === 'steps' && ORDERS.some((o) => rows[o].totalBits > maxBits);
 
@@ -206,10 +210,15 @@ export function Staircase({
         <h2>The staircase</h2>
         <span className="label">bits per symbol</span>
       </div>
+      {/* The app's thesis, at the one place on the page that demonstrates it.
+          It used to sit in the masthead, where it arrived before the reader
+          had anything to test it against. */}
       <p className="note">
-        Conditional entropy falls as the model conditions on more of the previous text, and the
-        description of that model grows. The total has a minimum, and where the minimum sits
-        depends on how long the text is.
+        <strong>Entropy is not a property of a text. It is a property of a text under a
+        model.</strong>{' '}
+        A longer context predicts the next character better, so the code gets cheaper — but
+        the model itself has to be sent, and it grows much faster. The two together have a
+        minimum, and that is the cheapest this text can honestly be made.
       </p>
 
       {empty ? (
@@ -296,6 +305,40 @@ export function Staircase({
               />
             ))}
 
+            {/*
+              * What the text costs uncompressed, in the same units as
+              * everything else on the plot.
+              *
+              * Without it the reader has to hold "8 bits per character" in
+              * their head to know which orders actually compress. With it,
+              * "below the line is smaller than what you started with" is the
+              * first thing the eye can do with the chart, and the order-5
+              * total being five times above it stops being an abstract number.
+              */}
+            {Number.isFinite(originalRate) && originalRate <= maxBits ? (
+              <g>
+                <line
+                  x1={PAD.left}
+                  x2={WIDTH - PAD.right}
+                  y1={y(originalRate)}
+                  y2={y(originalRate)}
+                  className="stair-original"
+                />
+                {/* Right-aligned at the end of its own rule. Anchored left it
+                    sat on top of the "lowest total" annotation, which lands
+                    near the middle whenever the minimum is at a low order —
+                    which is most of the time. */}
+                <text
+                  x={WIDTH - PAD.right - 4}
+                  y={y(originalRate) - 4}
+                  className="stair-original-label"
+                  textAnchor="end"
+                >
+                  uncompressed, {originalRate.toFixed(1)}
+                </text>
+              </g>
+            ) : null}
+
             {/* The minimum, annotated. When a longer text moves it right, the
                 annotation moves with it, and that movement is the thesis. */}
             <line
@@ -313,7 +356,7 @@ export function Staircase({
               className="stair-annotation"
               textAnchor="middle"
             >
-              lowest total
+              lowest total {rows[best].totalBits.toFixed(2)}
             </text>
 
             {points.map((p) => (

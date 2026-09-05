@@ -1,0 +1,44 @@
+.rampkey {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  margin: var(--s-2) 0 var(--s-1);
+}
+
+.rampkey-end {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/*
+ * The same five stops the characters are drawn from, evenly spaced, because
+ * the ramp's stops are evenly spaced in bits. The rule around it is not
+ * decoration: the low end of the ramp *is* the page colour, so without a
+ * border the bar would appear to start a third of the way along.
+ */
+.rampkey-bar {
+  flex: 1 1 8rem;
+  max-width: 16rem;
+  height: 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-1);
+  background: linear-gradient(
+    to right,
+    var(--ramp-0),
+    var(--ramp-2),
+    var(--ramp-4),
+    var(--ramp-6),
+    var(--ramp-8)
+  );
+}
+
+.rampkey-scale {
+  font-size: var(--t-micro);
+  color: var(--ink-faint);
+  white-space: nowrap;
+}

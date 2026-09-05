@@ -26,6 +26,7 @@ import { Masthead } from './ui/Masthead.tsx';
 import { Rail } from './ui/Rail.tsx';
 import { MakerSignature } from './ui/MakerSignature.tsx';
 import { useTheme } from './ui/theme.ts';
+import { RampKey } from './ui/RampKey.tsx';
 import { count } from './ui/format.ts';
 import { useAppState } from './state/appState.ts';
 import { useAnalysis } from './state/useAnalysis.ts';
@@ -242,16 +243,41 @@ export function App(): JSX.Element {
                 {count(analysis.symbolCount)} characters · {analysis.alphabet.length} distinct
               </span>
             </div>
+            {/* Plain language first, the name for it second. The old order
+                introduced "surprisal" and "-log2 p" before saying what the
+                reader was looking at, which explains an unfamiliar picture
+                with two more unfamiliar things. */}
             <p className="note">
-              Every character is coloured by its surprisal — the cost of coding it,{' '}
-              <span className="data">-log2 p</span>, in bits. Predictable characters fade into
-              the ground; surprising ones are fully drawn.
+              Each character is shaded by what it costs to code. The ones the model saw
+              coming fade into the page; the ones it did not are drawn in full ink. That
+              cost has a name — <em>surprisal</em> — and a formula,{' '}
+              <span className="data">-log2 p</span>, in bits.
             </p>
-            {/* Stated where the decision is made. The app is strict about this
-                — no network at all, samples bundled, typed text kept out of the
-                URL — and every word of that was written down in three places
-                the reader has not reached at the moment they are deciding
-                whether to paste something of their own. */}
+            <RampKey maxBits={analysis.rampMaxBits} />
+            <p className="note note-invite">
+              Editable — paste your own text and every figure remeasures.
+            </p>
+          </div>
+
+          {/*
+            * The two standing caveats: what happens to your text, and what
+            * this sample is.
+            *
+            * They are a sibling of the surface rather than part of its heading
+            * so that a narrow screen can put them after it. On a phone they
+            * were 176px of mono sitting between the explanation and the first
+            * line of actual text, which is a third of the one screen that has
+            * to make the case. Neither contains anything focusable, so the
+            * reorder cannot desynchronise the tab order from what is on
+            * screen.
+            *
+            * Stated where the decision is made, either way. The app is strict
+            * about this — no network at all, samples bundled, typed text kept
+            * out of the URL — and every word of that was written down in three
+            * places the reader has not reached at the moment they are deciding
+            * whether to paste something of their own.
+            */}
+          <div className="specimen-caveats">
             <p className="assumption">
               Nothing here is uploaded and nothing is fetched. What you type stays in this
               browser, and stays out of the address bar unless you ask for a link that

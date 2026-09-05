@@ -113,7 +113,22 @@ export function writeUrl(state: AppState, withText: boolean): string {
 export const INITIAL_STATE: AppState = {
   text: DEFAULT_SAMPLE.text,
   sampleId: DEFAULT_SAMPLE.id,
-  order: 2,
+  /*
+   * Order 1, not 2, and the reason is what a stranger sees in five seconds.
+   *
+   * At order 2 the model description of the default sample is larger than the
+   * code stream it pays for — 6.46 kB against 4.42 — so the total comes to
+   * 10.87 kB against a 10.4 kB original. The app's opening move was
+   * compression that made the file bigger, presented as a bare 1.045x that
+   * nobody could read as a failure. Meanwhile the staircase four hundred
+   * pixels away was already saying order 1 is the cheapest for this text. The
+   * app knew the good answer and opened on the bad one.
+   *
+   * Order 1 lands at about 0.56x, which needs no training to read. The
+   * paradox is still one click away, and it is a better surprise once there
+   * is a baseline to be surprised against.
+   */
+  order: 1,
   adaptive: false,
   coder: 'huffman',
   lz77: DEFAULT_LZ77_SETTINGS,

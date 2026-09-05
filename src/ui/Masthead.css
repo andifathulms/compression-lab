@@ -2,12 +2,21 @@
  * The masthead: the claim, and the chrome that is not a measurement.
  */
 
+/*
+ * Two columns: who this is on the left, the chrome on the right.
+ *
+ * It was one wrapping flex row with the name and the lead sharing a baseline.
+ * Once the lead grew into a real sentence at reading size, the two of them
+ * came to more than half the width, the tools wrapped onto a second row, and
+ * the masthead went from 95px to 174px — most of it empty. Stacking the name
+ * over the lead gives the tools their own column and puts the whole thing
+ * back under 120px.
+ */
 .masthead {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--s-3) var(--s-4);
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--s-2) var(--s-4);
   padding: var(--s-3) var(--s-4) var(--s-2);
   max-width: var(--max-width);
   background: var(--sunk);
@@ -15,9 +24,8 @@
 
 .masthead-identity {
   display: flex;
-  align-items: baseline;
-  gap: var(--s-2);
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--s-0);
   min-width: 0;
 }
 
@@ -40,22 +48,18 @@
 }
 
 /*
- * The claim, in the prose voice, sitting on the same baseline as the name. The
- * italic falls on "under a model", which is the two words the whole app exists
- * to argue for — the only emphasis in the interface, and it is on language,
- * never on a number.
+ * What the app does, in the prose voice, on the same baseline as the name. It
+ * is set in the reading size rather than the prose size: it is the one line a
+ * first-time visitor is guaranteed to read, and at prose size beside a
+ * nineteen-pixel wordmark it read as a subtitle to be skipped.
  */
-.masthead-claim {
+.masthead-lead {
   font-family: var(--font-text);
-  font-size: var(--t-body);
-  color: var(--ink-mid);
-  max-width: 42rem;
-  text-wrap: pretty;
-}
-
-.masthead-claim em {
+  font-size: var(--t-text);
+  line-height: 1.35;
   color: var(--ink);
-  font-style: italic;
+  max-width: 34rem;
+  text-wrap: pretty;
 }
 
 .masthead-tools {
@@ -183,9 +187,50 @@
   }
 }
 
+@media (max-width: 860px) {
+  /* One column: the tools go under the identity rather than beside it. */
+  .masthead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 720px) {
+  /*
+   * The tools collapse to one row of controls with no stacked labels.
+   *
+   * On a phone the masthead was 301px — a wordmark, a lead, and then three
+   * labelled fields stacked down the screen — and the specimen's first line
+   * of actual text landed at y=1126 on an 844px viewport. The entire first
+   * screen was chrome, so a phone visitor saw a settings form and never
+   * learned there was anything to look at.
+   *
+   * The labels go because each control already says what it is: the select
+   * shows the sample's name, the button says "Copy link", and the ground
+   * control is three conventional marks.
+   */
   .masthead-tools {
     width: 100%;
+    align-items: center;
+    gap: var(--s-1);
+  }
+  .masthead-tools .label {
+    /* Still read out; just not taking a line each. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .field {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--s-1);
+  }
+  .field select {
+    max-width: 11rem;
   }
   .share-menu {
     right: auto;

@@ -298,6 +298,24 @@ input[type='checkbox'] {
 /* ---- Prose ------------------------------------------------------------ */
 
 /* A term is introduced once, at the point of first use, in one sentence. */
+/* The one emphasis in the interface, and it is on language, never on a
+ * number: colour already means cost. */
+/* The invitation. Nothing on the page said the specimen was editable, and a
+ * textarea with no chrome around it does not announce itself. */
+.note-invite {
+  color: var(--ink);
+}
+
+.note em {
+  font-style: italic;
+  color: var(--ink);
+}
+
+.note strong {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
 .note {
   color: var(--ink-mid);
   font-family: var(--font-text);

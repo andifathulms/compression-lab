@@ -24,7 +24,7 @@
 import type { CoderResult, Order } from '../engine/index.ts';
 import { ORDERS } from '../engine/index.ts';
 import type { CoderChoice } from '../state/appState.ts';
-import { bytes, ratio } from './format.ts';
+import { bytes, ratio, ratioSense } from './format.ts';
 import './Rail.css';
 
 const CODERS: Array<{ value: CoderChoice; label: string }> = [
@@ -103,13 +103,23 @@ export function Rail({
             <dt title="of the UTF-8 original">
               of original<span className="visually-hidden"> UTF-8 bytes</span>
             </dt>
-            <dd>{empty ? '—' : ratio(result.totalBits, originalBytes)}</dd>
+            <dd>
+              {empty ? '—' : ratio(result.totalBits, originalBytes)}
+              {empty ? null : (
+                <span
+                  className="rail-sense"
+                  data-over={result.totalBits > originalBytes * 8 ? 'true' : undefined}
+                >
+                  {ratioSense(result.totalBits, originalBytes)}
+                </span>
+              )}
+            </dd>
           </div>
         </dl>
       </div>
 
       <div className="rail-controls">
-        <div className="rail-control">
+        <div className="rail-control rail-control-coder">
           <span className="label" id="coder-label">
             Coder
           </span>
@@ -129,6 +139,10 @@ export function Rail({
           </div>
         </div>
 
+        {/* A wrapper that is display:contents everywhere but the narrowest
+            screens, where it pairs these two controls into one row. It exists
+            for layout only and changes nothing about either control. */}
+        <div className="rail-controls-pair">
         <div className="rail-control rail-control-order">
           <label className="label" htmlFor="order">
             Model order
@@ -174,6 +188,7 @@ export function Rail({
               </span>
             </span>
           </label>
+        </div>
         </div>
       </div>
     </div>

@@ -20,6 +20,21 @@ export function ratio(totalBits: number, originalBytes: number): string {
   return `${(totalBits / (originalBytes * 8 || 1)).toFixed(3)}×`;
 }
 
+/**
+ * Which side of 1 the ratio fell on, in words.
+ *
+ * "1.045x" is not readable as a failure by anyone who has not already decided
+ * that smaller is the goal, and a compressed size larger than the original is
+ * the single most surprising thing this app can show. It should not depend on
+ * the reader supplying the direction themselves.
+ */
+export function ratioSense(totalBits: number, originalBytes: number): string {
+  const r = totalBits / (originalBytes * 8 || 1);
+  if (r > 1) return 'larger than the original';
+  if (r > 0.995) return 'the same size as the original';
+  return `${Math.round((1 - r) * 100)}% smaller`;
+}
+
 /** A count, grouped. */
 export function count(n: number): string {
   return n.toLocaleString('en-GB');

@@ -168,27 +168,40 @@ monospaced grid is what makes a distance of nine legible as nine.
 
 ### 3.1 Scale
 
-| Token | Size | Use |
-|---|---|---|
-| `--t-display` | `clamp(30px, 1.6rem + 1.1vw, 42px)` | The rail's reading. One per page. |
-| `--t-figure` | 23px | A panel's leading figure. |
-| `--t-h2` | 17px | The app name; the specimen's hover glyph. |
-| `--t-text` | 17px | The specimen. Larger than typical UI, because it is meant to be read. |
-| `--t-body` | 15px | Prose notes. |
-| `--t-data` | 13px | Table cells, controls, readouts. |
-| `--t-small` | 11.5px | Panel headings, assumptions. |
-| `--t-micro` | 10.5px | Field labels, axis numerals. |
+One ratio, 1.2, from a 16px base. Six steps, plus a clamped display.
+
+| Token | Size | Derivation | Use |
+|---|---|---|---|
+| `--t-display` | `clamp(27.65px, 1.5rem + 1vw, 39.81px)` | 16 × 1.2³ → 1.2⁵ | The rail's reading. One per page. |
+| `--t-headline` | 27.65px | 16 × 1.2³ | A panel's headline figure. |
+| `--t-figure` | 23.04px | 16 × 1.2² | A panel's leading figure. |
+| `--t-text` | 19.2px | 16 × 1.2 | The specimen, and the app name. |
+| `--t-body` | 16px | base | Prose notes. |
+| `--t-data` | 13.33px | 16 ÷ 1.2 | Table cells, controls, readouts, assumptions. |
+| `--t-micro` | 11.11px | 16 ÷ 1.2² | Panel headings, field labels, axis numerals. |
+
+Plot glyphs are on their own two-step ratio — `--t-plot` (10) and `--t-plot-tick` (8.33) —
+because those are viewBox units that scale with the chart rather than pixels on the page.
+
+This replaced nine ad-hoc sizes. Two pairs were effectively the same size (10.5 and 11.5,
+17 and 17) and three sat on no ratio at all; eight more sizes were hardcoded in component
+CSS, which is the thing tokens exist to prevent. A scale with a duplicate in it is not a
+scale, it is a list.
+
+**Prose sits at 16px, and the specimen at 19.2px.** They were 15 and 17. Both are read
+rather than scanned, and 15px is below the floor for that.
 
 Tracking is a token too: display numerals are tightened (`-0.02em`) or a five-digit figure
 reads as a serial number; micro labels are opened out (`0.08em`–`0.11em`) or uppercase mono
-at 10.5px sets solid.
+at 11px sets solid.
 
 ### 3.2 Prohibitions
 
 Sentence case throughout, except the tracked uppercase micro-labels, which are a machine
 convention and not a heading. No word in a heading accented in colour or weight — colour
-already means cost. One italic in the whole interface, on "under a model" in the claim; it
-is on language, never on a number. Every number carries its unit.
+already means cost. Emphasis is on language, never on a number: the italic on
+*surprisal* where the term is introduced, and the bold on the thesis sentence at the head of
+the staircase. Every number carries its unit.
 
 ---
 
@@ -386,6 +399,52 @@ is a moment behind is better than a number that disappears while you type.
 
 `prefers-reduced-motion: reduce` zeroes every duration token, turns the interval zoom into
 a stepper, and says so in the interface rather than silently changing behaviour.
+
+---
+
+## 6a. The first five seconds
+
+Everything above describes a page for someone who already knows what it is. This section is
+the audit of what a stranger sees, and what was changed because of it.
+
+**What the landing view used to say.** A wordmark, an aphorism — *"Entropy is not a property
+of a text. It is a property of a text under a model."* — a big `8.36`, a wall of mottled
+prose, and a chart climbing to 50. Read cold, that is an academic paper, a broken font, or a
+dev tool for someone else. The word *compression* appeared nowhere but the wordmark, nothing
+said the specimen was editable, and the aphorism corrected a misconception the visitor did
+not hold yet: it is the last line of the argument used as the first.
+
+**The lead states the job.** "Measure what a text costs to compress — and why that answer
+depends on the model." A verb, an object, a payoff. The thesis moved to the head of the
+staircase, which is the one place on the page that demonstrates it.
+
+**The default is a working compression, not a failure.** Order 1, not 2. At order 2 the
+model description of the default sample is larger than the code stream it pays for, so the
+total came to 10.87 kB against a 10.4 kB original: the app opened by making the file bigger,
+presented as a bare `1.045×` that nobody could read as a failure — while the staircase four
+hundred pixels away already said order 1 was cheapest. The app knew the good answer and
+opened on the bad one. Order 1 lands at 0.569×, and the ratio now says which side of 1 it
+fell on in words: *43% smaller*, or *larger than the original* in the model-cost gold.
+
+**The ramp has a key.** The colouring is the best idea in the app and the first thing that
+looks broken; its only explanation named a coined term and a logarithm, which explains an
+unfamiliar picture with two more unfamiliar things. There is now a gradient key drawn from
+the ramp tokens themselves, and the sentence leads with the plain-language version and
+introduces *surprisal* second, as the name for what you are already looking at.
+
+**The chart has a floor.** A dotted rule at what the text costs uncompressed, and the
+minimum annotation carries its value. Charts are read shape-first: the shape argued "up"
+while the caption argued "minimum", and shape wins. With the rule, *below this line is
+smaller than what you started with* is the first thing the eye can do with it.
+
+**The phone gets a demonstration.** The first line of coloured text was at y=1126 on an
+844px viewport — the whole first screen was chrome, so a phone visitor saw a settings form.
+The masthead's tools collapse to one row of unlabelled controls, the order slider and the
+adaptive switch pair into one row rather than stacking, and the two standing caveats move
+under the surface they qualify. First line of text now lands at 769.
+
+Footnotes belong at the foot. Neither caveat contains anything focusable, so reordering them
+with CSS cannot desynchronise the tab order from what is on screen.
 
 ---
 

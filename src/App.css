@@ -42,6 +42,12 @@
   min-height: 0;
 }
 
+/* The caveats sit with the heading by default; the narrow breakpoint moves
+ * them under the surface. See App.tsx. */
+.specimen-caveats {
+  flex: 0 0 auto;
+}
+
 .app-specimen {
   position: sticky;
   /* Under the rail, not behind it. */
@@ -291,6 +297,34 @@
    */
   .app-rail {
     position: static;
+  }
+}
+
+/*
+ * On a phone the caveats go under the text they qualify.
+ *
+ * Footnotes belong at the foot: heading, then what the colours mean, then the
+ * key, then the invitation, then the text — and only then what happens to it
+ * and where the sample came from. Above the surface they were a third of the
+ * first screen, in the mono voice, before the reader had seen anything.
+ */
+@media (max-width: 720px) {
+  .app-specimen {
+    display: flex;
+    flex-direction: column;
+  }
+  .specimen-head {
+    order: 1;
+  }
+  .ts {
+    order: 2;
+  }
+  .specimen-caveats {
+    order: 3;
+    margin-top: var(--s-2);
+  }
+  .specimen-readout {
+    order: 4;
   }
 }
 

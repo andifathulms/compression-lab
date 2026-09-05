@@ -72,6 +72,25 @@
 /* The compare caveat sits under the coder's name rather than replacing the
  * label above it, so the column is as wide as "lowest of three" and not as
  * wide as that plus a heading. */
+/*
+ * Which side of 1 the ratio fell on, said in words under the multiplier. It
+ * is the same micro voice as the compare caveat, except when the total came
+ * out larger than the original — the one reading in this app that is a
+ * failure, and the one worth colouring.
+ */
+.rail-sense {
+  display: block;
+  font-size: var(--t-micro);
+  font-weight: var(--weight-text);
+  color: var(--ink-faint);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.rail-sense[data-over='true'] {
+  color: var(--model-cost);
+}
+
 .rail-caveat {
   display: block;
   font-size: var(--t-micro);
@@ -305,6 +324,41 @@
   .rail-controls {
     justify-content: flex-start;
     flex: 1 1 100%;
+  }
+}
+
+/* Layout-only wrapper: invisible to the flex row it sits in, until the
+ * narrow breakpoint gives it a job. */
+.rail-controls-pair {
+  display: contents;
+}
+
+/*
+ * The order slider and the adaptive switch sit side by side rather than
+ * stacked. They are the two controls a phone reader needs least urgently —
+ * the reading and the coder are the demonstration — and stacked they cost
+ * about a hundred and ten pixels of the one screen that has to make the case.
+ *
+ * Side by side, not hidden: dropping a control on a small screen is how an app
+ * ends up with a phone version that cannot do what the page promises.
+ */
+@media (max-width: 720px) {
+  .rail-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+  .rail-control-coder {
+    grid-column: 1 / -1;
+  }
+  .rail-controls-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--s-2);
+    align-items: start;
+  }
+  .rail-control-order {
+    max-width: none;
   }
 }
 

@@ -67,9 +67,23 @@ export function Masthead({
           <Mark />
           Compression Lab
         </h1>
-        <p className="masthead-claim">
-          Entropy is not a property of a text. It is a property of a text{' '}
-          <em>under a model</em>.
+        {/*
+          * The job, not the thesis.
+          *
+          * This used to read "Entropy is not a property of a text. It is a
+          * property of a text under a model." That is the last line of the
+          * argument used as the first: it corrects a misconception the visitor
+          * does not hold yet, presupposes what entropy and a model are, and
+          * never says the app measures anything or that you can put your own
+          * writing in it. It has moved to the staircase, which is where it is
+          * actually demonstrated.
+          *
+          * What is left is the verb, the object and the payoff, which is all
+          * five seconds buys.
+          */}
+        <p className="masthead-lead">
+          Measure what a text costs to compress — and why that answer depends on the
+          model.
         </p>
       </div>
 
