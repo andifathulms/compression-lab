@@ -1,0 +1,117 @@
+/*
+ * Two lines and a crossing.
+ *
+ * Neither line takes a coder colour, because neither is a coder: they are two
+ * ways of paying for the same model. Static is drawn in ink, adaptive in the
+ * model gold — gold means the model everywhere in this app, and the whole
+ * point of the adaptive line is what it does to the model's cost.
+ */
+
+.learn-plot {
+  margin: var(--s-2) 0 var(--s-1);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--page);
+  padding: var(--s-1);
+  overflow-x: auto;
+}
+
+.learn-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 22rem;
+}
+
+.learn-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.learn-axis {
+  font-family: var(--font-data);
+  font-size: var(--t-plot);
+  fill: var(--ink-faint);
+}
+
+.learn-static {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+}
+
+.learn-adaptive {
+  fill: none;
+  stroke: var(--model-cost);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+}
+
+.learn-cross {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.learn-cross-label {
+  font-family: var(--font-data);
+  font-size: var(--t-plot-tick);
+  fill: var(--ink-faint);
+  letter-spacing: var(--track-label);
+}
+
+.learn-key {
+  font-family: var(--font-data);
+  font-size: var(--t-plot);
+}
+
+.learn-key-static {
+  fill: var(--ink);
+}
+
+.learn-key-adaptive {
+  fill: var(--model-cost);
+}
+
+/* The sentence the plot is drawn to support. It reads at body size because it
+ * is the finding, not a caption. */
+.learn-verdict {
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  color: var(--ink-mid);
+  max-width: 44rem;
+  margin-top: var(--s-2);
+  text-wrap: pretty;
+}
+
+.learn-verdict strong {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
+.learn-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-2) 0 0;
+  max-width: 44rem;
+}
+
+.learn-figures dt {
+  color: var(--ink-faint);
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  min-height: 2.4em;
+}
+
+.learn-figures dd {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}

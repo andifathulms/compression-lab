@@ -1,0 +1,126 @@
+/*
+ * The model, so gold throughout. Gold means the model everywhere in this app —
+ * in the mark, on the staircase's rising line, on the hatched half of the size
+ * bar — and this panel is entirely about that one quantity.
+ */
+
+.model-sections {
+  list-style: none;
+  margin: var(--s-2) 0 var(--s-1);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  max-width: 44rem;
+}
+
+.model-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.model-section-label {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+
+.model-section-bytes {
+  font-size: var(--t-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* Share of the whole description, on a track so the empty part is visible.
+ * The counts being nearly all of it is the finding; a bar scaled to the
+ * largest section would show counts as full width whatever it cost. */
+.model-section-track {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-1);
+  margin: 4px 0 6px;
+  background: linear-gradient(var(--rule), var(--rule)) left center / 100% 6px no-repeat;
+}
+
+.model-section-bar {
+  height: 6px;
+  min-width: 2px;
+  border-radius: 2px;
+  background: var(--rule-strong);
+}
+
+.model-section-share {
+  font-size: var(--t-micro);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+.model-section-bar[data-part='counts'] {
+  background: var(--model-cost);
+}
+
+.model-section-note {
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  margin: 0;
+  line-height: 1.55;
+  color: var(--ink-mid);
+  text-wrap: pretty;
+}
+
+/* The check, stated rather than assumed. If these two numbers ever disagree
+ * the panel is decoration and should say so out loud. */
+.model-reconcile {
+  font-size: var(--t-micro);
+  color: var(--ink-faint);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  margin-top: var(--s-1);
+}
+
+.model-sub {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin: var(--s-3) 0 var(--s-1);
+}
+
+.model-table {
+  margin: var(--s-2) 0 0;
+  max-height: 15rem;
+  max-width: 34rem;
+}
+
+.model-context {
+  font-family: var(--font-data);
+  white-space: pre;
+}
+
+.model-bytes {
+  margin-top: var(--s-3);
+}
+
+.model-hex {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  line-height: 1.7;
+  color: var(--ink-mid);
+  background: var(--page);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--s-2);
+  margin: var(--s-1) 0;
+  max-width: 44rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

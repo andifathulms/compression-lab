@@ -68,6 +68,11 @@ who is not ready to operate the instrument, and links into it.
 ## Capabilities and Constraints
 
 **Confirmed functionality.** Order-0 through order-5 models, static and adaptive.
+A length sweep measuring where the cheapest order sits across a dozen prefixes of the same
+text; a breakdown of the model description into the parts the format writes, reconciled to
+the serialised byte length; a learning curve comparing static and adaptive running totals
+with both descriptions included; and a CSV export of every figure carrying the rules that
+produced it.
 Huffman, arithmetic coding and LZ77, each with a tested decoder. Conditional entropy at
 every order, per-character surprisal, measured coder rates, measured model description
 cost, and the total. Six instruments: the staircase, the surprisal-coloured text surface,
@@ -97,7 +102,13 @@ sentence, at the point of first use. There is no glossary page.
 
 **Undecided.** Whether the Indonesian stemmer calibration control (PRD §4.3, running the
 Indonesian sample through Kupas to strip affixes and re-measuring) is ever built. It is a
-nice-to-have and was never part of v1.
+nice-to-have and was never part of v1. An ideation pass weighed it and declined: a stemmer
+is a large, opinionated, language-specific artifact whose correctness the app would then be
+claiming, it applies to one sample of nine, and it answers a question about morphology
+rather than about what compression costs.
+
+**Also declined, and why:** batch mode over a corpus the reader brings, which needs file
+upload — a committed non-goal — and would turn an explainer into a research apparatus.
 
 ## Brand Commitments
 

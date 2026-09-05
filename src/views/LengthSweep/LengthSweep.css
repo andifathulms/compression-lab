@@ -1,0 +1,99 @@
+/*
+ * A step plot of the argmin. It carries no coder colour and no model gold: it
+ * is neither a coder nor a model, it is the choice between models, so it is
+ * drawn in ink.
+ */
+
+.sweep-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin: var(--s-2) 0;
+}
+
+.sweep-empty {
+  display: block;
+  margin: var(--s-2) 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  color: var(--ink-mid);
+  max-width: 44rem;
+}
+
+.sweep-plot {
+  margin: var(--s-1) 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--page);
+  padding: var(--s-1);
+  overflow-x: auto;
+}
+
+/* The text moved on and these points did not. Faded rather than hidden: a
+ * measurement that is a moment behind is more use than an empty box, as long
+ * as it says which it is. */
+.sweep-plot[data-stale='true'] {
+  opacity: 0.45;
+}
+
+.sweep-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 22rem;
+}
+
+.sweep-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.sweep-grid-on {
+  stroke: var(--rule-strong);
+}
+
+.sweep-axis {
+  font-family: var(--font-data);
+  font-size: var(--t-plot);
+  fill: var(--ink-faint);
+}
+
+.sweep-axis-on {
+  fill: var(--ink);
+}
+
+.sweep-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.sweep-dot {
+  fill: var(--ink);
+}
+
+.sweep-verdict {
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  color: var(--ink-mid);
+  max-width: 44rem;
+  margin-top: var(--s-2);
+  text-wrap: pretty;
+}
+
+.sweep-verdict strong {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
+.sweep-table {
+  margin: var(--s-2) 0 0;
+  max-height: 14rem;
+  max-width: 30rem;
+}

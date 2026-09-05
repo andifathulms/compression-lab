@@ -27,6 +27,10 @@ import { Rail } from './ui/Rail.tsx';
 import { MakerSignature } from './ui/MakerSignature.tsx';
 import { useTheme } from './ui/theme.ts';
 import { RampKey } from './ui/RampKey.tsx';
+import { LearningCurve } from './views/LearningCurve/LearningCurve.tsx';
+import { LengthSweep } from './views/LengthSweep/LengthSweep.tsx';
+import { ModelPanel } from './views/ModelPanel/ModelPanel.tsx';
+import { measurementsCsv, measurementsFilename } from './ui/exportRows.ts';
 import { count } from './ui/format.ts';
 import { useAppState } from './state/appState.ts';
 import { useAnalysis } from './state/useAnalysis.ts';
@@ -195,6 +199,31 @@ export function App(): JSX.Element {
     return () => observer.disconnect();
   }, []);
 
+  /**
+   * The measurements as a file the reader saved themselves. Nothing is
+   * uploaded and nothing is fetched — a blob built in the page and handed to
+   * the browser's own download is not a contradiction of that, and the label
+   * beside the control says what it contains.
+   */
+  const onDownload = useCallback(() => {
+    const csv = measurementsCsv({
+      analysis,
+      lz77Settings: state.lz77,
+      results: {
+        huffman: huffman.result,
+        arithmetic: arithmetic.result,
+        lz77: lz77.result,
+      },
+      sampleId: state.sampleId,
+    });
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = measurementsFilename(state.sampleId);
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [analysis, state.lz77, state.sampleId, huffman, arithmetic, lz77]);
+
   const [huffmanSymbol, setHuffmanSymbol] = useState<string | null>(null);
   const [windowRanges, setWindowRanges] = useState<{
     lookahead: [number, number] | null;
@@ -359,7 +388,27 @@ export function App(): JSX.Element {
             />
           </div>
 
+          {/*
+            * Three panels between the staircase and the coders, in the order
+            * the questions arrive: where the minimum moves (the staircase over
+            * a second axis), what the model description actually holds (its
+            * rising line, opened up), and what adaptive costs (the toggle,
+            * which otherwise makes a high-order model look free — the exact
+            * misconception PRD 7.1 exists to prevent).
+            */}
           <div className="app-bay">
+            <LengthSweep
+              analysis={analysis}
+              adaptive={state.adaptive}
+              order={state.order}
+              onOrder={(o) => set('order', o)}
+            />
+            <ModelPanel analysis={analysis} order={state.order} />
+            <LearningCurve
+              analysis={analysis}
+              order={state.order}
+              adaptive={state.adaptive}
+            />
             <CoderBay
               analysis={analysis}
               state={state}
@@ -381,6 +430,19 @@ export function App(): JSX.Element {
               {analysis.alphabet.length} symbols that occur in this text. The entropy steps use
               the unsmoothed counts, which is why a coder never quite reaches its step.
             </p>
+
+            {/* For the reader who came to check rather than to read. The file
+                carries the same arbitrary choices the interface states, because
+                a number in a spreadsheet with no provenance is the thing this
+                app exists not to produce. */}
+            <div className="app-export">
+              <button type="button" onClick={onDownload}>
+                Download these measurements
+              </button>
+              <span className="label">
+                CSV · the staircase and all three coders, with the rules that produced them
+              </span>
+            </div>
           </div>
         </section>
       </main>

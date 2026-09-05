@@ -448,6 +448,75 @@ with CSS cannot desynchronise the tab order from what is on screen.
 
 ---
 
+## 6b. Three panels between the staircase and the coders
+
+Added after an ideation pass that asked which additions follow from the concept rather than
+from the category. Each of these is a step of the thesis the app was asserting in prose and
+could not draw.
+
+### Where the minimum moves
+
+The staircase says order N is cheapest *for this text at this length*, and the argument is
+that the N moves right as the text grows. The only way to change the length was to paste a
+different text, which changes the text as well and so demonstrates nothing. This measures
+the same text at a dozen log-spaced prefixes and steps the optimum against length.
+
+Drawn as a step, not a slope, for the same reason the staircase is: there is no order 0.6,
+and a line between integer orders asserts a continuity that does not exist.
+
+It is the one control in the interface that is not instant. Twelve analyses come to about
+three and a half times one full analysis rather than twelve times, because most of the
+prefixes are short — but that is still far too much for the typing path, so it runs on an
+explicit action and the button says what it is about to do.
+
+**Prefixes are not samples.** The first tenth of a novel is a different register from the
+whole of it. The panel says so, because the measurement cannot.
+
+### The model description
+
+"Model cost is measured, not estimated" is the project's load-bearing claim and the model
+was the one figure in the interface with nothing behind it but a number. The panel takes the
+number apart into the parts the format actually writes, and prints both totals side by side
+with the word `reconciled` between them. The sections sum to `serialiseModel().length`
+exactly; a test asserts it at every order.
+
+The section bars are share of the whole description, not share of the largest section. At
+order 1 the counts are 95% of it and everything else is a rounding error — that is the
+finding, and a bar scaled to the largest section would show counts at full width whatever
+they cost.
+
+The singleton argument is conditional. At order 3 most contexts occur once and their
+accumulation is what turns the model line upward; at order 1 three contexts out of
+fifty-four are singletons and saying the same thing there would be false. The copy checks
+the share before making the claim.
+
+Showing the format invites the reader to judge the format, and sometimes they will be right.
+That is stated in the panel rather than defended.
+
+### What adaptive costs
+
+The adaptive toggle was quietly breaking §7.1. Flip it and the model description collapses,
+the order-5 total falls off a cliff, and the honest conclusion a reader draws is that a
+high-order model is free after all — the exact misconception the app exists to remove,
+re-created inside the app that removes it.
+
+Two running totals, both description-inclusive, so neither side is given anything the other
+pays for. Static charges its whole count table before the first character; adaptive charges
+its alphabet, and then pays in the code stream for what it does not yet know.
+
+**The rate axis is logarithmic and has to be.** These are running averages, so at character
+one a static order-1 model has spent its entire 1.28 kB on a single symbol: ten thousand
+bits per symbol. On a linear axis that one point sets the scale and everything anyone came
+to see collapses onto the floor. The spike is real and worth showing — it is what "paid up
+front" looks like — so the axis is logarithmic, ticked at decades, and labelled as such.
+
+The verdict has three cases, not two. "Overtakes at character 1" is what the measurement
+says when the static model has already spent kilobytes before coding anything, and it reads
+as though adaptive won a race that was in fact over before it started. That gets its own
+sentence: *cheaper at every length*.
+
+---
+
 ## 7. Copy
 
 English. Sentence case. No exclamation marks.
