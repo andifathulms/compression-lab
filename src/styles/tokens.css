@@ -91,24 +91,39 @@
   --font-data: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo,
     Consolas, monospace;
 
-  /* Ratio 1.25 at the display end, 1.15 through the working sizes. Base 17px
-   * for the specimen: larger than typical UI, because it is meant to be read. */
-  --t-display: clamp(30px, 1.6rem + 1.1vw, 42px);
-  --t-figure: 23px;
-  --t-h2: 17px;
-  --t-h3: 14px;
-  --t-text: 17px;
-  --t-body: 15px;
-  --t-data: 13px;
-  --t-small: 11.5px;
-  --t-micro: 10.5px;
+  /*
+   * One scale, one ratio: 1.2, from a 16px base.
+   *
+   *   11.11  16 / 1.2^2   every uppercase tracked label
+   *   13.33  16 / 1.2     tables, controls, mono values, assumptions
+   *   16     base         prose
+   *   19.2   16 x 1.2     the specimen, and the wordmark
+   *   23.04  16 x 1.2^2   a figure inside a panel
+   *   27.65  16 x 1.2^3   a panel's headline figure
+   *   39.81  16 x 1.2^5   the rail's reading, the one hero number
+   *
+   * It replaces nine ad-hoc sizes, of which two pairs were a pixel apart
+   * (10.5/11.5 and 17/17) and three were off any ratio. Six steps is enough
+   * for a page with four levels of voice, and a scale with a duplicate in it
+   * is not a scale, it is a list.
+   *
+   * Prose sits at 16px. It was 15, which is below the floor for something a
+   * reader is expected to read rather than scan.
+   */
+  --t-micro: 11.11px;
+  --t-data: 13.33px;
+  --t-body: 16px;
+  --t-text: 19.2px;
+  --t-figure: 23.04px;
+  --t-headline: 27.65px;
+  --t-display: clamp(27.65px, 1.5rem + 1vw, 39.81px);
 
-  /* Tracking. Mono at small sizes needs opening up; display numerals need
-   * tightening, or a five-digit figure reads as a serial number. */
-  --track-display: -0.02em;
-  --track-figure: -0.01em;
-  --track-label: 0.08em;
-  --track-micro: 0.11em;
+  /*
+   * Plot space. These are viewBox units, not pixels: they scale with the
+   * chart, so they are on their own 1.2 ratio rather than on the page's.
+   */
+  --t-plot: 10px;
+  --t-plot-tick: 8.33px;
 
   --weight-text: 400;
   --weight-medium: 500;

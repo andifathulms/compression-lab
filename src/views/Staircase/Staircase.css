@@ -28,7 +28,7 @@
  */
 .stair-headline .display {
   color: var(--ink);
-  font-size: 28px;
+  font-size: var(--t-headline);
 }
 
 .stair-headline .unit {
@@ -103,7 +103,7 @@
 
 .stair-axis {
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: var(--t-plot);
   font-variant-numeric: tabular-nums;
   fill: var(--ink-faint);
 }
@@ -115,14 +115,14 @@
 
 .stair-key {
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: var(--t-plot);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 .stair-annotation {
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: var(--t-plot);
   font-weight: 500;
   fill: var(--ink);
 }

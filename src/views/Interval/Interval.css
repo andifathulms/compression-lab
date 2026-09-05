@@ -43,7 +43,7 @@
 
 .interval-label {
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: var(--t-plot-tick);
   font-variant-numeric: tabular-nums;
   fill: var(--ink-mid);
 }
@@ -124,7 +124,7 @@
   display: grid;
   gap: 2px;
   margin: var(--s-1) 0 0;
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
 }
 
 .interval-integers dt {

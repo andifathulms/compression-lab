@@ -123,7 +123,7 @@
 
 .app-foot-link {
   font-family: var(--font-text);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   color: var(--ink-mid);
   text-decoration-color: var(--rule-strong);
 }
@@ -149,7 +149,7 @@
 }
 
 .specimen-readout-symbol {
-  font-size: var(--t-h2);
+  font-size: var(--t-text);
   color: var(--ink);
   font-weight: var(--weight-medium);
 }

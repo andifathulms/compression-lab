@@ -45,7 +45,7 @@
 
 .waste-axis {
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: var(--t-plot);
   font-variant-numeric: tabular-nums;
   fill: var(--ink-faint);
 }

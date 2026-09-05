@@ -85,14 +85,14 @@ h3 {
 
 h1 {
   font-family: var(--font-text);
-  font-size: var(--t-h2);
+  font-size: var(--t-text);
   font-weight: var(--weight-strong);
   letter-spacing: -0.01em;
 }
 
 h2 {
   font-family: var(--font-data);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   font-weight: var(--weight-strong);
   line-height: 1.4;
   letter-spacing: var(--track-label);
@@ -317,7 +317,7 @@ input[type='checkbox'] {
 .assumption {
   color: var(--ink-mid);
   font-family: var(--font-data);
-  font-size: var(--t-small);
+  font-size: var(--t-data);
   line-height: 1.65;
   max-width: 44rem;
   border-left: 2px solid var(--rule);
@@ -344,13 +344,13 @@ input[type='checkbox'] {
 
 .unit {
   font-family: var(--font-data);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   color: var(--ink-mid);
 }
 
 .label {
   font-family: var(--font-data);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-label);
   text-transform: uppercase;

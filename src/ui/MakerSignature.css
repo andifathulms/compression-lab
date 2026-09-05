@@ -17,7 +17,7 @@
 
 .maker-line {
   font-family: var(--font-text);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   line-height: 1.5;
   color: var(--ink-faint);
   text-wrap: pretty;
@@ -39,7 +39,7 @@
 }
 
 .maker-year {
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   color: var(--ink-faint);
 }
 

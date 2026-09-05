@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   gap: var(--s-1);
-  font-size: var(--t-h2);
+  font-size: var(--t-text);
   color: var(--ink);
   /* Two words, and they are the app's name; they do not break across lines. */
   white-space: nowrap;
@@ -124,7 +124,7 @@
  * puts someone's private writing in the address bar and it has to say so. */
 .share-option-note {
   font-family: var(--font-text);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   line-height: 1.45;
   color: var(--ink-mid);
 }
@@ -166,7 +166,7 @@
   flex: 1 1 100%;
   min-height: 1.2em;
   font-family: var(--font-data);
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   color: var(--ink-mid);
 }
 

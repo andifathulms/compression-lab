@@ -23,7 +23,7 @@
 
 .ht-bit {
   font-family: var(--font-data);
-  font-size: 8px;
+  font-size: var(--t-plot-tick);
   fill: var(--ink-faint);
   text-anchor: middle;
 }
@@ -54,7 +54,7 @@
 
 .ht-leaf {
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: var(--t-plot-tick);
   fill: var(--ink-mid);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .ht-code {
-  font-size: var(--t-small);
+  font-size: var(--t-micro);
   color: var(--huffman);
 }
 
