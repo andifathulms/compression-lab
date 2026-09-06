@@ -118,12 +118,13 @@ export function LearningCurve({ analysis, order, adaptive }: Props): JSX.Element
         <span className="label">bits per symbol, running</span>
       </div>
 
+      {/* The claim, and only the claim. How the comparison is kept fair is a
+          methods statement and belongs with the other methods statements, at
+          the foot of the panel. */}
       <p className="note">
         An adaptive model sends no counts, so its description is nearly free — but it starts
         knowing nothing, and pays for that in the code stream while it learns. A static model
-        pays everything up front and then predicts well from the first character. Both lines
-        below carry their own description, so neither is being given something the other
-        pays for.
+        pays everything up front and predicts well from the first character.
       </p>
 
       <div className="learn-plot">
@@ -249,8 +250,9 @@ export function LearningCurve({ analysis, order, adaptive }: Props): JSX.Element
       </dl>
 
       <p className="assumption">
-        “Learned the hard way” is the extra code the adaptive model spent relative to one that
-        was handed the finished distribution — the price of transmitting nothing. Both
+        Both lines carry their own description, so neither is given something the other pays
+        for. “Learned the hard way” is the extra code the adaptive model spent relative to one
+        that was handed the finished distribution — the price of transmitting nothing. Both
         descriptions are measured by serialising the model, not estimated. The adaptive
         description is not zero because the alphabet and the symbol count really are sent.
       </p>

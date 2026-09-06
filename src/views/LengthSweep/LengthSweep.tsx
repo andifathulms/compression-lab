@@ -98,11 +98,13 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
         <span className="label">cheapest order by length</span>
       </div>
 
+      {/* The claim first. The staircase's note above already carries the
+          general argument, and the procedure — cut to 200, then 300, then 500 —
+          is something the plot shows better than a sentence can. */}
       <p className="note">
-        The staircase answers this for the text you have. This answers it for the same text at
-        a dozen lengths: cut it to the first 200 characters, then 300, then 500, and measure
-        where the total bottoms out each time. A short text cannot pay for a big model, so the
-        cheapest order climbs as the text grows.
+        A short text cannot pay for a big model, so the cheapest order climbs as the text
+        grows. This measures the same text at a dozen lengths and marks where the total
+        bottoms out at each.
       </p>
 
       {tooShort ? (
