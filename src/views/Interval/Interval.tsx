@@ -19,6 +19,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ArithmeticStep, TextAnalysis } from '../../engine/index.ts';
 import { PRECISION } from '../../engine/index.ts';
 import { display } from '../BitLedger/BitLedger.tsx';
+import { intervalDurationMs, useReducedMotion } from '../../ui/useReducedMotion.ts';
 import './Interval.css';
 
 interface Props {
@@ -41,9 +42,7 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
   const raf = useRef<number | null>(null);
   const startedAt = useRef(0);
 
-  const reduced =
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+  const reduced = useReducedMotion();
 
   const step = steps[cursor];
 
@@ -56,7 +55,10 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
     }
     startedAt.current = performance.now();
     setPhase(0);
-    const duration = 420 / speed;
+    // The token, not a copy of it. 420 was written out here and again as
+    // --d-interval in tokens.css, so the two could disagree and only the CSS
+    // one was under the reduced-motion media query.
+    const duration = intervalDurationMs() / speed;
     const tick = (now: number): void => {
       const t = Math.min(1, (now - startedAt.current) / duration);
       setPhase(t);
