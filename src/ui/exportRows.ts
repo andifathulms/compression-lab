@@ -58,7 +58,7 @@ export function measurementsCsv(input: ExportInput): string {
   lines.push(`# distinct symbols: ${analysis.alphabet.length}`);
   lines.push(`# UTF-8 bytes: ${analysis.byteCount}`);
   lines.push(`# model: ${analysis.adaptive ? 'adaptive' : 'static'}`);
-  lines.push(`# cheapest order: ${analysis.optimalOrder}`);
+  lines.push(`# lowest total at order: ${analysis.optimalOrder}`);
   lines.push('#');
   lines.push('# Arbitrary choices that move these numbers, all stated in the interface:');
   lines.push(`#   probabilities use add-constant smoothing, alpha = ${ALPHA},`);

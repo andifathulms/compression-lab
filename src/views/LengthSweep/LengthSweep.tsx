@@ -1,8 +1,8 @@
 /**
  * Where the minimum moves.
  *
- * The staircase says order N is cheapest *for this text at this length*, and
- * the app's whole argument is that the N moves right as the text grows. Until
+ * The staircase says order N has the lowest total *for this text at this length*,
+ * and the app's whole argument is that the N moves right as the text grows. Until
  * now the only way to change the length was to paste a different text — which
  * changes the text as well, so it demonstrated nothing. This measures the same
  * text at a dozen prefixes and plots where the optimum sits at each.
@@ -95,22 +95,23 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
     <section className="sweep panel" aria-labelledby="sweep-heading">
       <div className="panel-heading">
         <h3 id="sweep-heading">Where the minimum moves</h3>
-        <span className="label">cheapest order by length</span>
+        <span className="label">lowest total, by length</span>
       </div>
 
       {/* The claim first. The staircase's note above already carries the
           general argument, and the procedure — cut to 200, then 300, then 500 —
           is something the plot shows better than a sentence can. */}
       <p className="note">
-        A short text cannot pay for a big model, so the cheapest order climbs as the text
-        grows. This measures the same text at a dozen lengths and marks where the total
-        bottoms out at each.
+        A short text cannot pay for a big model, so the order with the lowest total climbs
+        as the text grows. This measures the same text at a dozen lengths and marks where the
+        total bottoms out at each.
       </p>
 
       {tooShort ? (
         <p className="sweep-empty label">
           This text is too short to sweep. Below about four hundred characters the model tables
-          are mostly contexts seen once, and order 0 wins by default rather than by argument.
+          are mostly contexts seen once, and order 0 has the lowest total by default rather than
+          by argument.
         </p>
       ) : (
         <div className="sweep-controls">
@@ -136,11 +137,11 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
               className="sweep-svg"
               viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
               role="img"
-              aria-label={`Cheapest model order against text length. At ${count(
+              aria-label={`The order with the lowest total, against text length. At ${count(
                 first.length,
-              )} characters the cheapest order is ${first.optimalOrder}; at ${count(
+              )} characters it is order ${first.optimalOrder}; at ${count(
                 last.length,
-              )} it is ${last.optimalOrder}.`}
+              )} it is order ${last.optimalOrder}.`}
             >
               {ORDERS.map((o) => (
                 <g key={o}>
@@ -200,15 +201,15 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
             {first.optimalOrder === last.optimalOrder ? (
               <>
                 Across every length measured, order{' '}
-                <strong>{last.optimalOrder}</strong> stays cheapest. This text does not grow
+                <strong>{last.optimalOrder}</strong> keeps the lowest total. This text does not grow
                 enough to buy a bigger model — paste more of it and the step should come.
               </>
             ) : (
               <>
-                At {count(first.length)} characters this text is cheapest at order{' '}
-                <strong>{first.optimalOrder}</strong>; by {count(last.length)} it is cheapest at
-                order <strong>{last.optimalOrder}</strong>. Nothing about the text changed but
-                its length.
+                At {count(first.length)} characters this text has its lowest total at order{' '}
+                <strong>{first.optimalOrder}</strong>; by {count(last.length)} the lowest total
+                is at order <strong>{last.optimalOrder}</strong>. Nothing about the text changed
+                but its length.
               </>
             )}
           </p>
@@ -216,12 +217,13 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
           <div className="sweep-table scroll-box">
             <table>
               <caption className="visually-hidden">
-                Cheapest model order and its total, at each prefix length measured
+                The order with the lowest total, and that total, at each prefix length
+                measured
               </caption>
               <thead>
                 <tr>
                   <th scope="col">Characters</th>
-                  <th scope="col">Cheapest</th>
+                  <th scope="col">Lowest total at</th>
                   <th scope="col">Total, bits/symbol</th>
                 </tr>
               </thead>
