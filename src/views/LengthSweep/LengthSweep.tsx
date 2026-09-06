@@ -243,16 +243,21 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
               </tbody>
             </table>
           </div>
+
+          {/* Inside the guard, with the measurement it qualifies. Outside it,
+              this was the first thing a reader met in the panel: a caveat about
+              prefixes, standing next to no prefixes, answering a question
+              nobody had asked yet. A caveat only means something beside the
+              number it is about. */}
+          <p className="assumption">
+            These are prefixes of this text, not samples of texts that length. The first tenth
+            of a novel is a different register from the whole of it, so what this shows is how
+            the optimum moves across <em>this text&apos;s</em> openings — not what any text of
+            that length would cost. The sweep uses the model setting selected when it ran
+            {sweep?.adaptive === true ? ' (adaptive)' : ' (static)'}.
+          </p>
         </>
       ) : null}
-
-      <p className="assumption">
-        These are prefixes of this text, not samples of texts that length. The first tenth of a
-        novel is a different register from the whole of it, so what this shows is how the
-        optimum moves across <em>this text&apos;s</em> openings — not what any text of that
-        length would cost. The sweep uses the model setting currently selected
-        {adaptive ? ' (adaptive)' : ' (static)'}.
-      </p>
     </section>
   );
 }
