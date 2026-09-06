@@ -117,7 +117,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         className="ht-svg"
         viewBox={`0 0 ${WIDTH} ${height}`}
         role="img"
-        aria-label={`Huffman tree over ${leaves} symbols, ${trace.merges.length} merges.`}
+        aria-label={`Huffman tree over ${leaves} symbols, ${trace.merges.length} merges. Every symbol and its code is in the table below.`}
       >
         {placed.map((p) => {
           if (p.parent === null) return null;
@@ -153,28 +153,30 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
                 cx={px(p)}
                 cy={py(p)}
                 r={isLeaf ? 5 : 3}
-                className={
-                  isSelected ? 'ht-node ht-node-on' : inMerge ? 'ht-node ht-node-merge' : 'ht-node'
-                }
+                className={[
+                  'ht-node',
+                  isSelected ? 'ht-node-on' : inMerge ? 'ht-node-merge' : '',
+                  isLeaf ? 'ht-leaf-hit' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                /*
+                 * A pointer affordance, and only that.
+                 *
+                 * These leaves used to carry tabIndex, role="button" and a
+                 * label each. On this text that was fifty-three of the page's
+                 * hundred and ninety-seven tab stops — a keyboard user pressed
+                 * Tab fifty-three times through twelve-by-twelve-pixel targets
+                 * to get past the tree, and every one of them selected a symbol
+                 * that the code table directly below already selects with a
+                 * real button.
+                 *
+                 * Twelve pixels also fails the twenty-four-pixel minimum, and
+                 * growing them would mean inventing a hit radius unrelated to
+                 * what the drawing needs. The table is the keyboard path the
+                 * PRD asks every instrument to have; the tree is the picture.
+                 */
                 onClick={isLeaf ? () => toggle(p.node.symbol!) : undefined}
-                onKeyDown={
-                  isLeaf
-                    ? (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          toggle(p.node.symbol!);
-                        }
-                      }
-                    : undefined
-                }
-                tabIndex={isLeaf ? 0 : undefined}
-                role={isLeaf ? 'button' : undefined}
-                aria-pressed={isLeaf ? isSelected : undefined}
-                aria-label={
-                  isLeaf
-                    ? `${display(p.node.symbol!)}, code ${trace.codes.get(p.node.symbol!) ?? ''}`
-                    : undefined
-                }
               />
               {isLeaf ? (
                 <text x={px(p)} y={py(p) + 16} className="ht-leaf" textAnchor="middle">

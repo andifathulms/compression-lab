@@ -30,7 +30,7 @@
 
 .ht-node {
   fill: var(--ink-mid);
-  cursor: pointer;
+  cursor: default;
   /* A merge is a discrete step, so it gets a timed transition. */
   transition:
     fill var(--d-merge) var(--ease-standard),
@@ -39,6 +39,10 @@
 
 .ht-node:hover {
   fill: var(--ink);
+}
+
+.ht-leaf-hit {
+  cursor: pointer;
 }
 
 .ht-node-on {
