@@ -242,10 +242,17 @@ select:hover {
  * with a grip and nothing else: no fill animation, no tooltip, no easing. The
  * grip is where the pointer is, on the frame the pointer is there.
  */
+/*
+ * The track is transparent and the thumb is fifteen pixels, so the visible
+ * control is small — but the element is the target, and it was twenty pixels
+ * tall. The author-styled thumb means the user-agent exception in WCAG 2.5.8
+ * does not apply here, so the box grows to the minimum while the track and the
+ * thumb stay exactly as drawn.
+ */
 input[type='range'] {
   appearance: none;
   width: 100%;
-  height: 20px;
+  height: var(--target-min);
   margin: 0;
   background: transparent;
   cursor: grab;
@@ -436,6 +443,13 @@ td {
   white-space: nowrap;
 }
 
+/* The button supplies the row's height here, so the cell does not add to it. */
+th:has(> .row-button),
+td:has(> .row-button) {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 th:first-child,
 td:first-child {
   text-align: left;
@@ -474,9 +488,22 @@ tbody tr[aria-current='true'] > :first-child {
 
 /* Table rows carry a real button rather than a click handler on the row, so
  * every selection in the app is on the keyboard path. */
+/*
+ * A button inside a table cell.
+ *
+ * These were the app's smallest targets by a distance: "H0" in the sweep's
+ * table measured eight pixels by twenty-one, and there are a hundred and ten
+ * of them across six tables. WCAG 2.5.8 asks for twenty-four in both
+ * directions, and the spacing exception does not rescue them because the rows
+ * above and below are targets too.
+ *
+ * The fix is to let the button fill its cell rather than hug its text, so the
+ * target grows without the table getting wider or the type getting bigger. The
+ * underline still marks only the words, because that is what says "this is a
+ * control" — the rest of the cell is hit area, not decoration.
+ */
 .row-button {
   border: 0;
-  padding: 0;
   background: none;
   font: inherit;
   font-family: var(--font-data);
@@ -486,6 +513,35 @@ tbody tr[aria-current='true'] > :first-child {
   text-decoration: underline;
   text-decoration-color: var(--rule-strong);
   text-underline-offset: 3px;
+
+  display: block;
+  width: 100%;
+  min-height: var(--target-min);
+  padding: 0;
+  /* Vertical centring without a fixed line box, so a wrapped cell still
+   * grows rather than clipping. */
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * A checkbox with its words beside it. The label is the target — clicking the
+ * text toggles it — so the label carries the minimum, not the thirteen-pixel
+ * box the browser draws.
+ */
+.bar-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: var(--target-min);
+  cursor: pointer;
+}
+
+/* A right-aligned column keeps its alignment when the button fills the cell. */
+td:not(:first-child) > .row-button,
+th:not(:first-child) > .row-button {
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .row-button:hover {
