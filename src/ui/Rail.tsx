@@ -21,6 +21,7 @@
  * transition. That is the house rule and this is where it is most visible.
  */
 
+import { useEffect, useState } from 'react';
 import type { CoderResult, Order } from '../engine/index.ts';
 import { ORDERS } from '../engine/index.ts';
 import type { CoderChoice } from '../state/appState.ts';
@@ -69,8 +70,41 @@ export function Rail({
 }: Props): JSX.Element {
   const empty = symbolCount === 0;
 
+  /*
+   * The reading, as one sentence, for a screen reader.
+   *
+   * Everything in the rail is a fragment — a figure, a unit on two lines, three
+   * label/value pairs — which reads well and announces badly. And it was not
+   * announced at all: switching coder rewrote the headline from 4.55 bits per
+   * symbol to 4.42, along with the total and the ratio, in silence. That is the
+   * app's primary output changing with no status message (WCAG 4.1.3).
+   *
+   * The announcement is deferred rather than live-bound, because the model
+   * order is a continuous control: bound directly, dragging it would queue one
+   * utterance per frame. A short settle means one drag produces one sentence.
+   */
+  const sentence = empty
+    ? 'No text to measure.'
+    : `${resultLabel}${resultCaveat === null ? '' : `, ${resultCaveat}`}: ` +
+      `${result.bitsPerSymbol.toFixed(2)} bits per symbol, ` +
+      `${bytes(result.totalBits)} in total, ` +
+      `${ratioSense(result.totalBits, originalBytes)}.`;
+
+  const [announced, setAnnounced] = useState('');
+  useEffect(() => {
+    const id = window.setTimeout(() => setAnnounced(sentence), 700);
+    return () => window.clearTimeout(id);
+  }, [sentence]);
+
   return (
     <div className={stale ? 'rail rail-stale' : 'rail'}>
+      {/* The rail's figures are aria-hidden from this announcement's point of
+          view only in the sense that they are not a live region; they stay in
+          the reading order for anyone who navigates to them directly. */}
+      <p className="visually-hidden" aria-live="polite">
+        {announced}
+      </p>
+
       <div className="rail-reading">
         <p className="rail-figure">
           <span className="display">{empty ? '—' : result.bitsPerSymbol.toFixed(2)}</span>
