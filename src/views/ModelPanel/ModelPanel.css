@@ -14,6 +14,12 @@
   max-width: 44rem;
 }
 
+.model-sections li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .model-section-head {
   display: flex;
   align-items: baseline;
@@ -65,12 +71,26 @@
   background: var(--model-cost);
 }
 
+/*
+ * A caption on a bar, one scale step below the panel's lead.
+ *
+ * These were set at prose size, identical to the .note above them, so four
+ * captions carried the same weight as the paragraph they were supporting and
+ * the panel had no internal hierarchy — which is most of why it was twelve
+ * hundred pixels tall, second only to the coder bay, for a supporting role.
+ *
+ * This puts explanatory prose below the sixteen-pixel floor set for body copy.
+ * The reading is that these annotate a chart rather than being read as prose,
+ * which is the same category as .assumption; if that reading is wrong the fix
+ * is one token.
+ */
 .model-section-note {
   font-family: var(--font-text);
-  font-size: var(--t-body);
+  font-size: var(--t-data);
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--ink-mid);
+  max-width: 40rem;
   text-wrap: pretty;
 }
 
