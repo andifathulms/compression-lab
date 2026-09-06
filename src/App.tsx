@@ -264,10 +264,13 @@ export function App(): JSX.Element {
       </div>
 
       <main className="app-main">
-        <section className="app-specimen" aria-label="The text surface">
+        {/* Named by its heading. The aria-label here said "The text surface"
+            while the heading said "The text", so the region and the heading
+            gave a screen reader two different names for one thing. */}
+        <section className="app-specimen" aria-labelledby="specimen-heading">
           <div className="specimen-head">
             <div className="panel-heading">
-              <h2>The text</h2>
+              <h2 id="specimen-heading">The text</h2>
               <span className="label">
                 {count(analysis.symbolCount)} characters · {analysis.alphabet.length} distinct
               </span>

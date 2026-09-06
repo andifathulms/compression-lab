@@ -1,6 +1,11 @@
 /**
  * The coder bay: one constant anchor above it, one interchangeable part here.
  *
+ * Each panel is named by its own heading rather than by a repeated
+ * aria-label. The label used to restate the heading word for word, so a screen
+ * reader's region list and its heading list disagreed about nothing while
+ * costing a second string to keep in step.
+ *
  * Switching the coder swaps the instrument. The staircase and the text surface
  * do not change, because a constant anchor is what makes a set of views read
  * as one subject rather than as four unrelated screens.
@@ -51,9 +56,9 @@ export function CoderBay({
 
   if (state.coder === 'compare') {
     return (
-      <section className="panel" aria-label="All three coders">
+      <section className="panel" aria-labelledby="coder-compare-heading">
         <div className="panel-heading">
-          <h3>All three</h3>
+          <h3 id="coder-compare-heading">All three</h3>
         </div>
         <p className="note">
           The same text under all three, at order {state.order}. There is no winner here: each has
@@ -79,9 +84,9 @@ export function CoderBay({
 
   if (state.coder === 'arithmetic') {
     return (
-      <section className="panel" aria-label="Arithmetic coding">
+      <section className="panel" aria-labelledby="coder-arithmetic-heading">
         <div className="panel-heading">
-          <h3>Arithmetic coding</h3>
+          <h3 id="coder-arithmetic-heading">Arithmetic coding</h3>
           <span className="label">order {state.order}</span>
         </div>
         <p className="note">
@@ -117,9 +122,9 @@ export function CoderBay({
 
   if (state.coder === 'lz77') {
     return (
-      <section className="panel" aria-label="LZ77">
+      <section className="panel" aria-labelledby="coder-lz77-heading">
         <div className="panel-heading">
-          <h3>LZ77</h3>
+          <h3 id="coder-lz77-heading">LZ77</h3>
           <span className="label">
             window {state.lz77.windowSize} · look-ahead {state.lz77.lookahead}
           </span>
@@ -148,9 +153,9 @@ export function CoderBay({
   }
 
   return (
-    <section className="panel" aria-label="Huffman coding">
+    <section className="panel" aria-labelledby="coder-huffman-heading">
       <div className="panel-heading">
-        <h3>Huffman coding</h3>
+        <h3 id="coder-huffman-heading">Huffman coding</h3>
         <span className="label">order {state.order}</span>
       </div>
       <p className="note">
