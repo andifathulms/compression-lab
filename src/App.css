@@ -218,6 +218,13 @@
 
 /* Same geometry as the staircase's split, so the same four quantities line up
  * in the same four columns wherever they appear. */
+/* The parallel corpus table. Same treatment as every other table in the app;
+ * it was the one that had been missed. */
+.parallel-table {
+  margin: var(--s-2) 0;
+  max-width: 44rem;
+}
+
 /* The export control: an action and a sentence saying what it will contain,
  * on the same pattern as the share menu — nothing about where the reader's
  * text goes happens without a label. */
