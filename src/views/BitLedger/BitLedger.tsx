@@ -31,7 +31,7 @@ export function BitLedger({ steps, cursor, onSelect }: Props): JSX.Element {
   return (
     <div className="ledger">
       <div className="panel-heading">
-        <h3 className="label">Bit ledger</h3>
+        <h4 className="label">Bit ledger</h4>
         <span className="label">
           {steps.length.toLocaleString()} symbols traced
         </span>

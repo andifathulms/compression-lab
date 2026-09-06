@@ -42,6 +42,34 @@
   min-height: 0;
 }
 
+/*
+ * A group of panels.
+ *
+ * The device is a rule heavier than a panel's own, plus a title in full ink
+ * and more space above it than any panel gets. That is enough: the apparatus
+ * is an instrument, not a document, and it does not want chapter openings.
+ */
+.app-group + .app-group {
+  margin-top: var(--s-5);
+}
+
+.app-group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  padding-bottom: var(--s-1);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* The first panel under a group title has the title's rule above it already. */
+.app-group .app-stair .panel,
+.app-group .app-bay > .panel:first-child {
+  border-top: 0;
+  padding-top: var(--s-3);
+}
+
 /* The caveats sit with the heading by default; the narrow breakpoint moves
  * them under the surface. See App.tsx. */
 .specimen-caveats {

@@ -184,7 +184,7 @@ export function Interval({ steps, analysis, cursor, onCursor }: Props): JSX.Elem
         </div>
 
         <div className="interval-renorm">
-          <h3 className="label">Renormalization</h3>
+          <h4 className="label">Renormalization</h4>
           <p className="assumption">
             When the top bits of the integer low and high agree they can never change again, so they
             leave the register and the interval doubles. When the interval straddles the midpoint

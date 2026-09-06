@@ -376,17 +376,33 @@ export function App(): JSX.Element {
         </section>
 
         <section className="app-apparatus" id="apparatus" aria-label="The instruments">
-          <div className="app-stair">
-            <Staircase
-              analysis={analysis}
-              order={state.order}
-              coder={state.coder}
-              huffman={huffman.result}
-              arithmetic={arithmetic.result}
-              lz77={lz77.result}
-              onOrder={(order) => set('order', order)}
-            />
-          </div>
+          {/*
+            * Two groups, because the six panels below are not six peers.
+            *
+            * The first four are one argument: the staircase, then where its
+            * minimum moves with length, then what its model line is actually
+            * made of, then what the adaptive toggle does to it. The last two
+            * are a different subject. Across nearly six thousand pixels with
+            * one heading style and one hairline between everything, a reader
+            * had no way to know that.
+            */}
+          <div className="app-group">
+            <div className="app-group-head">
+              <h2>The model, and what it costs</h2>
+              <span className="label">why the total has a minimum</span>
+            </div>
+
+            <div className="app-stair">
+              <Staircase
+                analysis={analysis}
+                order={state.order}
+                coder={state.coder}
+                huffman={huffman.result}
+                arithmetic={arithmetic.result}
+                lz77={lz77.result}
+                onOrder={(order) => set('order', order)}
+              />
+            </div>
 
           {/*
             * Three panels between the staircase and the coders, in the order
@@ -396,54 +412,65 @@ export function App(): JSX.Element {
             * which otherwise makes a high-order model look free — the exact
             * misconception PRD 7.1 exists to prevent).
             */}
-          <div className="app-bay">
-            <LengthSweep
-              analysis={analysis}
-              adaptive={state.adaptive}
-              order={state.order}
-              onOrder={(o) => set('order', o)}
-            />
-            <ModelPanel analysis={analysis} order={state.order} />
-            <LearningCurve
-              analysis={analysis}
-              order={state.order}
-              adaptive={state.adaptive}
-            />
-            <CoderBay
-              analysis={analysis}
-              state={state}
-              huffman={huffman}
-              arithmetic={arithmetic}
-              lz77={lz77}
-              onLz77={(lz) => set('lz77', lz)}
-              onSelectSymbol={setHuffmanSymbol}
-              selectedSymbol={huffmanSymbol}
-              onWindowRanges={setWindowRanges}
-            />
-            <ParallelRow
-              lz77={state.lz77}
-              currentSampleId={state.sampleId}
-              onChoose={chooseSample}
-            />
-            <p className="assumption">
-              Probabilities use add-constant smoothing, alpha = {ALPHA}, over the{' '}
-              {analysis.alphabet.length} symbols that occur in this text. The entropy steps use
-              the unsmoothed counts, which is why a coder never quite reaches its step.
-            </p>
-
-            {/* For the reader who came to check rather than to read. The file
-                carries the same arbitrary choices the interface states, because
-                a number in a spreadsheet with no provenance is the thing this
-                app exists not to produce. */}
-            <div className="app-export">
-              <button type="button" onClick={onDownload}>
-                Download these measurements
-              </button>
-              <span className="label">
-                CSV · the staircase and all three coders, with the rules that produced them
-              </span>
+            <div className="app-bay">
+              <LengthSweep
+                analysis={analysis}
+                adaptive={state.adaptive}
+                order={state.order}
+                onOrder={(o) => set('order', o)}
+              />
+              <ModelPanel analysis={analysis} order={state.order} />
+              <LearningCurve
+                analysis={analysis}
+                order={state.order}
+                adaptive={state.adaptive}
+              />
             </div>
           </div>
+
+          <div className="app-group">
+            <div className="app-group-head">
+              <h2>The coders</h2>
+              <span className="label">what a real coder achieves</span>
+            </div>
+
+            <div className="app-bay">
+              <CoderBay
+                analysis={analysis}
+                state={state}
+                huffman={huffman}
+                arithmetic={arithmetic}
+                lz77={lz77}
+                onLz77={(lz) => set('lz77', lz)}
+                onSelectSymbol={setHuffmanSymbol}
+                selectedSymbol={huffmanSymbol}
+                onWindowRanges={setWindowRanges}
+              />
+              <ParallelRow
+                lz77={state.lz77}
+                currentSampleId={state.sampleId}
+                onChoose={chooseSample}
+              />
+              <p className="assumption">
+                Probabilities use add-constant smoothing, alpha = {ALPHA}, over the{' '}
+                {analysis.alphabet.length} symbols that occur in this text. The entropy steps use
+                the unsmoothed counts, which is why a coder never quite reaches its step.
+              </p>
+
+              {/* For the reader who came to check rather than to read. The file
+                  carries the same arbitrary choices the interface states, because
+                  a number in a spreadsheet with no provenance is the thing this
+                  app exists not to produce. */}
+              <div className="app-export">
+                <button type="button" onClick={onDownload}>
+                  Download these measurements
+                </button>
+                <span className="label">
+                  CSV · the staircase and all three coders, with the rules that produced them
+                </span>
+              </div>
+            </div>
+            </div>
         </section>
       </main>
 

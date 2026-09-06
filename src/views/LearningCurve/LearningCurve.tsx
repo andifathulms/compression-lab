@@ -114,7 +114,7 @@ export function LearningCurve({ analysis, order, adaptive }: Props): JSX.Element
   return (
     <section className="learn panel" aria-labelledby="learn-heading">
       <div className="panel-heading">
-        <h2 id="learn-heading">What adaptive costs</h2>
+        <h3 id="learn-heading">What adaptive costs</h3>
         <span className="label">bits per symbol, running</span>
       </div>
 

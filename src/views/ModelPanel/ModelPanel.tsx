@@ -64,7 +64,7 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
   return (
     <section className="modelpanel panel" aria-labelledby="model-heading">
       <div className="panel-heading">
-        <h2 id="model-heading">The model description</h2>
+        <h3 id="model-heading">The model description</h3>
         <span className="label">
           order {order} · {bytes(totalBytes * 8)}
         </span>
@@ -115,7 +115,7 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
         </p>
       ) : (
         <>
-          <h3 className="model-sub">What the counts are spent on</h3>
+          <h4 className="model-sub">What the counts are spent on</h4>
           <p className="note">
             {count(breakdown.totalContexts)} contexts at order {order}, of which{' '}
             <strong>{count(breakdown.singletons)}</strong> were seen exactly once — costing{' '}

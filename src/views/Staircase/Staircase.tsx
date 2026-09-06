@@ -207,7 +207,7 @@ export function Staircase({
   return (
     <section className="stair panel" aria-label="The staircase">
       <div className="panel-heading">
-        <h2>The staircase</h2>
+        <h3>The staircase</h3>
         <span className="label">bits per symbol</span>
       </div>
       {/* The app's thesis, at the one place on the page that demonstrates it.

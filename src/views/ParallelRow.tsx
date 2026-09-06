@@ -54,7 +54,7 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
   return (
     <section className="panel" aria-label="The parallel corpus">
       <div className="panel-heading">
-        <h2>The same text, four languages</h2>
+        <h3>The same text, four languages</h3>
         <span className="label">bits per symbol</span>
       </div>
       <p className="note">

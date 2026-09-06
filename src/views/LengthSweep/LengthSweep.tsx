@@ -94,7 +94,7 @@ export function LengthSweep({ analysis, adaptive, order, onOrder }: Props): JSX.
   return (
     <section className="sweep panel" aria-labelledby="sweep-heading">
       <div className="panel-heading">
-        <h2 id="sweep-heading">Where the minimum moves</h2>
+        <h3 id="sweep-heading">Where the minimum moves</h3>
         <span className="label">cheapest order by length</span>
       </div>
 

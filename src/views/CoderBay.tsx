@@ -53,25 +53,25 @@ export function CoderBay({
     return (
       <section className="panel" aria-label="All three coders">
         <div className="panel-heading">
-          <h2>All three</h2>
+          <h3>All three</h3>
         </div>
         <p className="note">
           The same text under all three, at order {state.order}. There is no winner here: each has
           a regime, and the point is to make the regimes visible.
         </p>
-        <h3 className="label">Huffman</h3>
+        <h4 className="label">Huffman</h4>
         <SizeSplit
           result={huffman.result}
           originalBytes={analysis.byteCount}
           colour="var(--huffman)"
         />
-        <h3 className="label">Arithmetic</h3>
+        <h4 className="label">Arithmetic</h4>
         <SizeSplit
           result={arithmetic.result}
           originalBytes={analysis.byteCount}
           colour="var(--arithmetic)"
         />
-        <h3 className="label">LZ77</h3>
+        <h4 className="label">LZ77</h4>
         <SizeSplit result={lz77.result} originalBytes={analysis.byteCount} colour="var(--lz77)" />
       </section>
     );
@@ -81,7 +81,7 @@ export function CoderBay({
     return (
       <section className="panel" aria-label="Arithmetic coding">
         <div className="panel-heading">
-          <h2>Arithmetic coding</h2>
+          <h3>Arithmetic coding</h3>
           <span className="label">order {state.order}</span>
         </div>
         <p className="note">
@@ -119,7 +119,7 @@ export function CoderBay({
     return (
       <section className="panel" aria-label="LZ77">
         <div className="panel-heading">
-          <h2>LZ77</h2>
+          <h3>LZ77</h3>
           <span className="label">
             window {state.lz77.windowSize} · look-ahead {state.lz77.lookahead}
           </span>
@@ -150,7 +150,7 @@ export function CoderBay({
   return (
     <section className="panel" aria-label="Huffman coding">
       <div className="panel-heading">
-        <h2>Huffman coding</h2>
+        <h3>Huffman coding</h3>
         <span className="label">order {state.order}</span>
       </div>
       <p className="note">
@@ -174,7 +174,7 @@ export function CoderBay({
         selected={selectedSymbol}
         onSelect={onSelectSymbol}
       />
-      <h3 className="label">What the whole bits cost</h3>
+      <h4 className="label">What the whole bits cost</h4>
       <WastePlot
         entries={huffman.waste}
         wasteBits={huffman.wasteBits}

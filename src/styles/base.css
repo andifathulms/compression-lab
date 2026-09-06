@@ -75,7 +75,8 @@ kbd {
  */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   margin: 0;
   font-weight: var(--weight-strong);
   /* Sentence case throughout, and no word in a heading accented in colour or
@@ -90,7 +91,34 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+/*
+ * Three levels, and the apparatus column needed all three.
+ *
+ * It had six panels of between four hundred and sixteen hundred pixels, every
+ * one of them introduced by the same micro-caps label, across nearly six
+ * thousand pixels of scroll. Nothing said that three of those panels elaborate
+ * the staircase while the rest are a different subject, so the column read as
+ * a flat list of six equal things and a reader had no map of it.
+ *
+ *   h2  a group of panels, in full ink        THE MODEL, AND WHAT IT COSTS
+ *   h3  a panel                               THE STAIRCASE
+ *   h4  a section inside a panel              RENORMALIZATION
+ *
+ * All three stay in the instrument voice, because a group title is a signpost
+ * on an apparatus and not a chapter opening. What separates them is weight,
+ * size and how much ink they are allowed.
+ */
 h2 {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-weight: var(--weight-strong);
+  line-height: 1.3;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+h3 {
   font-family: var(--font-data);
   font-size: var(--t-micro);
   font-weight: var(--weight-strong);
@@ -100,7 +128,7 @@ h2 {
   color: var(--ink-mid);
 }
 
-h3 {
+h4 {
   font-family: var(--font-data);
   font-size: var(--t-micro);
   font-weight: var(--weight-medium);
