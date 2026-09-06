@@ -189,7 +189,11 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
       </svg>
       </div>
 
-      <div className="ht-queue" aria-label="The priority queue">
+      {/* No aria-label. It sat on a bare div with no role, where every screen
+          reader drops it — so it named nothing while looking as though it did.
+          The visible "queue, N" beside the chips is the label, and it is read
+          by everybody. */}
+      <div className="ht-queue">
         <span className="label">queue, {queue.length}</span>
         {queue.slice(0, 40).map((node) => (
           <span key={node.id} className="ht-chip data">

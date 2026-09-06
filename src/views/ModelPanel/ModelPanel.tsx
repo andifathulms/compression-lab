@@ -177,7 +177,10 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
         </button>
         {showBytes ? (
           <>
-            <pre className="model-hex" aria-label="The first bytes of the model description">
+            {/* Same reason: aria-label on a <pre> has no role to attach to and
+                is dropped. The button above says what this is, and the
+                paragraph below reads the bytes out in words. */}
+            <pre className="model-hex">
               {preview.map((b) => b.toString(16).padStart(2, '0')).join(' ')}
               {totalBytes > PREVIEW_BYTES ? ` … (${count(totalBytes)} B total)` : ''}
             </pre>
