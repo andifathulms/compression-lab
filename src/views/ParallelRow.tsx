@@ -52,9 +52,12 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
   );
 
   return (
-    <section className="panel" aria-label="The parallel corpus">
+    <section className="panel" aria-labelledby="parallel-heading">
+      {/* Named by its heading, like the rest. This one said "The parallel
+          corpus" while the heading said "The same text, four languages" — the
+          same two-names-for-one-region problem the coder panels had. */}
       <div className="panel-heading">
-        <h3>The same text, four languages</h3>
+        <h3 id="parallel-heading">The same text, four languages</h3>
         <span className="label">bits per symbol</span>
       </div>
       <p className="note">
