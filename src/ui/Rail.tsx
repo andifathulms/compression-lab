@@ -205,17 +205,34 @@ export function Rail({
         </div>
 
         <div className="rail-control">
-          <span className="label">Model</span>
+          {/*
+            * The switch is named "Model" and nothing else.
+            *
+            * The label used to wrap the state word and its consequence, so the
+            * checkbox was called "Static model is transmitted" and renamed
+            * itself to "Adaptive model costs nothing" when you toggled it. A
+            * control whose name changes with its own state is a control a
+            * screen-reader user cannot refer to twice (WCAG 4.1.2): the state
+            * belongs in checked, which the checkbox already reports.
+            *
+            * The visible words are unchanged. They describe the state, so they
+            * are the description rather than the name.
+            */}
+          <span className="label" id="model-switch-label">
+            Model
+          </span>
           <label className="switch">
             <input
               type="checkbox"
               checked={adaptive}
               onChange={(e) => onAdaptive(e.target.checked)}
+              aria-labelledby="model-switch-label"
+              aria-describedby="model-switch-state"
             />
             <span className="switch-track" aria-hidden="true">
               <span className="switch-grip" />
             </span>
-            <span className="switch-text">
+            <span className="switch-text" id="model-switch-state">
               {adaptive ? 'Adaptive' : 'Static'}
               <span className="switch-consequence">
                 {adaptive ? 'model costs nothing' : 'model is transmitted'}
