@@ -277,9 +277,26 @@ input[type='checkbox'] {
  * cards. No shadow: this is a page of readings, not a set of tiles. The only
  * radius in the app is on things a pointer touches.
  */
+/*
+ * Panels are separated by space and a hairline, not by cards — but the space
+ * has to scale with what it separates. Twenty-four pixels above and below read
+ * as a seam between two short panels and as an accident between a
+ * four-hundred-pixel one and a sixteen-hundred-pixel one, which is what the
+ * apparatus column now holds.
+ *
+ * More between, less within: the gap above a panel is what tells you a new
+ * subject started, and it has to beat the gaps inside the previous one.
+ */
 .panel {
   border-top: 1px solid var(--rule);
-  padding: var(--s-3) 0;
+  padding: var(--s-4) 0 var(--s-3);
+}
+
+/* The first panel in a column sits under the column's own top edge, so it
+ * takes neither the rule nor the extra space. */
+.panel:first-child {
+  border-top: 0;
+  padding-top: var(--s-2);
 }
 
 .panel:first-child {

@@ -8,10 +8,6 @@
  * chart.
  */
 
-.stair {
-  border-top: 0;
-  padding-top: var(--s-2);
-}
 
 .stair-headline {
   display: flex;
