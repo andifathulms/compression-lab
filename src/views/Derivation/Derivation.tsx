@@ -135,6 +135,21 @@ export function Derivation({ analysis, order, position }: Props): JSX.Element | 
         character. It is worth following once.
       </p>
 
+      {/*
+        * What the app assumes you already have, said once, where the assuming
+        * starts. The rule about introducing each term at first use covers the
+        * vocabulary — surprisal, prefix code, renormalization — and says
+        * nothing about the arithmetic underneath it, which was assumed
+        * silently.
+        */}
+      <p className="assumption">
+        It needs three things from you and nothing else: that a probability here is just a
+        count divided by a count; that a “bit” can be fractional, because it is an average
+        price rather than a physical 0 or 1; and that log2 counts halvings, which the
+        control further down will show you if it does not. No other mathematics is assumed
+        anywhere in this app.
+      </p>
+
       <ol className="deriv-steps">
         <li>
           <span className="deriv-step-label">the character</span>
