@@ -11,12 +11,8 @@ const p=await b.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:2})
 const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
 await p.addInitScript(()=>localStorage.setItem('compression-lab:theme','light'));
 await p.goto('http://localhost:4230/compression-lab/',{waitUntil:'networkidle'}); await p.waitForTimeout(1700);
-console.log(JSON.stringify(await p.evaluate(()=>{
-  const h=s=>{const e=document.querySelector(s);return e?Math.round(e.getBoundingClientRect().height):null};
-  return {specimen:h('.app-specimen'), head:h('.specimen-head'), deriv:h('.deriv'), ts:h('.ts'), readout:h('.specimen-readout')};
-})));
-const d=await p.$('.deriv');
-if(d){ await d.scrollIntoViewIfNeeded(); await p.waitForTimeout(400); await d.screenshot({path:'/tmp/shots/deriv.png'});
+const d=await p.$('.stair-two');
+if(d){ await d.scrollIntoViewIfNeeded(); await p.waitForTimeout(400); await d.screenshot({path:'/tmp/shots/two.png'});
   console.log('text:', (await d.innerText()).replace(/\n+/g,' | ').slice(0,600)); }
 else console.log('NO .deriv');
 await b.close(); server.close();

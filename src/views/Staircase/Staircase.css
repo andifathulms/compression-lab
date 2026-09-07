@@ -220,3 +220,61 @@
   fill: var(--ink-faint);
   letter-spacing: var(--track-label);
 }
+
+/*
+ * H against the code stream, side by side.
+ *
+ * Two numbers for what reads as one idea. Setting them as a pair rather than
+ * as prose is the point: the reader is meant to compare them, and the gap
+ * between them is named underneath.
+ */
+.stair-two {
+  margin: var(--s-3) 0 var(--s-2);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
+  max-width: 46rem;
+}
+
+.stair-two-heading {
+  margin-bottom: var(--s-2);
+}
+
+.stair-two-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s-2) var(--s-3);
+  margin: 0;
+}
+
+.stair-two-pair dt {
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.stair-two-pair dd {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--t-data);
+  line-height: 1.5;
+  color: var(--ink-mid);
+  text-wrap: pretty;
+}
+
+.stair-two-gap {
+  margin-top: var(--s-2);
+  font-family: var(--font-text);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-mid);
+  text-wrap: pretty;
+}
+
+.stair-two-gap strong {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}

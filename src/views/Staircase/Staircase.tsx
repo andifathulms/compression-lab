@@ -524,13 +524,54 @@ export function Staircase({
           </table>
           </div>
 
+          {/*
+            * H and the code stream are two numbers for what a newcomer reads as
+            * one idea, and the difference between them used to be a
+            * subordinate clause at the foot of the column, thousands of pixels
+            * from either line. It is the difference between the floor and the
+            * bill, which is close to this app's whole subject.
+            */}
+          <div className="stair-two">
+            <h4 className="stair-two-heading">Why H and the code stream are not the same number</h4>
+            <dl className="stair-two-pair">
+              <div>
+                <dt>H{order}, {rows[order].entropyBits.toFixed(3)} bits/symbol</dt>
+                <dd>
+                  What the counts say this text is worth, measured on the counts themselves.
+                  It assumes the next character will behave exactly like the ones already
+                  seen, so it holds nothing back for a symbol that has not turned up yet.
+                  It is a floor, not a bill.
+                </dd>
+              </div>
+              <div>
+                <dt>code stream, {rows[order].codeBits.toFixed(3)} bits/symbol</dt>
+                <dd>
+                  What an ideal coder actually pays against a model it could hand to a
+                  decoder. That model is smoothed, so it reserves a little probability for
+                  every symbol that has not followed this context — and probability spent on
+                  what did not happen is paid for by what did.
+                </dd>
+              </div>
+            </dl>
+            <p className="stair-two-gap">
+              The gap is{' '}
+              <strong>
+                {(rows[order].codeBits - rows[order].entropyBits).toFixed(3)} bits per symbol
+              </strong>{' '}
+              at this order: the price of not knowing the future. It is why a coder never
+              quite reaches its step, and why the two lines converge as the text gets longer
+              and the counts stop being guesses.
+            </p>
+          </div>
+
           <p className="assumption">
             H{order} is the entropy of this text conditional on the {order} previous{' '}
-            {order === 1 ? 'character' : 'characters'}, measured over this text. The model line is
-            the serialised description in bytes, measured, not estimated. The total is that
-            description plus the code stream an ideal coder would produce against the same model.
-            LZ77 is drawn as a rule across every order because it has no model order: its model is
-            the text it has already emitted, and it transmits none of it.
+            {order === 1 ? 'character' : 'characters'}, measured over this text with unsmoothed
+            counts. The model line is the serialised description in bytes, measured, not
+            estimated. The total is that description plus the code stream an ideal coder would
+            produce against the same model. LZ77 is drawn as a rule across every order because
+            it has no model order: its model is the text it has already emitted, and it
+            transmits none of it.
           </p>
         </>
       )}
