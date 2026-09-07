@@ -27,6 +27,7 @@ import { Rail } from './ui/Rail.tsx';
 import { MakerSignature } from './ui/MakerSignature.tsx';
 import { useTheme } from './ui/theme.ts';
 import { RampKey } from './ui/RampKey.tsx';
+import { Derivation } from './views/Derivation/Derivation.tsx';
 import { LearningCurve } from './views/LearningCurve/LearningCurve.tsx';
 import { LengthSweep } from './views/LengthSweep/LengthSweep.tsx';
 import { ModelPanel } from './views/ModelPanel/ModelPanel.tsx';
@@ -394,6 +395,19 @@ export function App(): JSX.Element {
               <h2>The model, and what it costs</h2>
               <span className="label">why the total has a minimum</span>
             </div>
+
+            {/*
+              * The atom, at the head of the group that aggregates it.
+              *
+              * It wants to be beside the specimen, since it explains the tint
+              * on it and follows the pointer across it — but the specimen
+              * column is a pinned pane with a fixed height, and putting nine
+              * hundred pixels of worked example in it squeezed the text itself
+              * down to two hundred and fifty. It sits at the top of the
+              * apparatus instead: immediately to the right of the text, first
+              * thing in the column, and still live to the pointer.
+              */}
+            <Derivation analysis={analysis} order={state.order} position={hover} />
 
             <div className="app-stair">
               <Staircase
