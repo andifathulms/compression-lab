@@ -24,6 +24,9 @@ import './TextSurface.css';
 export const FULL_RENDER_LIMIT = 12000;
 const OVERSCAN_LINES = 40;
 
+/** Shared empty spacer table, so the unvirtualised path allocates nothing. */
+const EMPTY_OFFSETS = new Float64Array(0);
+
 export interface HoverReadout {
   position: number;
   symbol: string;
@@ -111,14 +114,20 @@ export function TextSurface({
   // browser once the layer has laid out, because prose wraps and a line is not
   // one row.
   const [rowsPerLine, setRowsPerLine] = useState<number[]>([]);
+  /*
+   * Only the virtualised path reads these. Below the render limit the spacers
+   * are zero, the visible range is every line, and lineHeight is unused — so
+   * building a float array over every line on each keystroke bought nothing.
+   */
   const offsets = useMemo(() => {
+    if (!virtualised) return EMPTY_OFFSETS;
     const out = new Float64Array(lines.length + 1);
     for (let i = 0; i < lines.length; i++) {
       const rows = rowsPerLine[i] ?? Math.max(1, Math.ceil((lines[i].end - lines[i].start) / 66));
       out[i + 1] = out[i] + rows * lineHeight;
     }
     return out;
-  }, [lines, rowsPerLine, lineHeight]);
+  }, [virtualised, lines, rowsPerLine, lineHeight]);
 
   const [firstLine, lastLine] = useMemo(() => {
     if (!virtualised) return [0, lines.length];
@@ -156,6 +165,14 @@ export function TextSurface({
   useLayoutEffect(() => {
     const layer = layerRef.current;
     if (layer === null) return;
+    /*
+     * The probe is a forced layout: it reads a rectangle immediately after
+     * React has rewritten the surface, so the browser flushes layout for every
+     * span before it can answer. That was eight or nine milliseconds on every
+     * keystroke — for a measurement only the virtualised path consumes.
+     */
+    if (!virtualised) return;
+
     const probe = layer.querySelector<HTMLElement>('.ts-line');
     if (probe !== null) {
       const single = probe.getBoundingClientRect().height;
@@ -163,7 +180,6 @@ export function TextSurface({
         setLineHeight(single);
       }
     }
-    if (!virtualised) return;
     const measured = rowsPerLine.slice();
     let changed = false;
     for (const el of layer.querySelectorAll<HTMLElement>('.ts-line')) {
