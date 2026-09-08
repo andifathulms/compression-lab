@@ -22,7 +22,7 @@
 
 import { useMemo, useState } from 'react';
 import type { Order, TextAnalysis } from '../../engine/index.ts';
-import { contextBreakdown, modelLayout, serialiseModel } from '../../engine/index.ts';
+import { modelReport, serialiseModel } from '../../engine/index.ts';
 import { bytes, count } from '../../ui/format.ts';
 import './ModelPanel.css';
 
@@ -38,15 +38,23 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
   const [showBytes, setShowBytes] = useState(false);
   const model = analysis.models[order];
 
-  const { layout, breakdown, preview, totalBytes } = useMemo(() => {
-    const bytesOut = serialiseModel(model);
-    return {
-      layout: modelLayout(model),
-      breakdown: contextBreakdown(model),
-      preview: Array.from(bytesOut.slice(0, PREVIEW_BYTES)),
-      totalBytes: bytesOut.length,
-    };
-  }, [model]);
+  /*
+   * One walk over the model's contexts, not four.
+   *
+   * This was calling serialiseModel, modelLayout and contextBreakdown, each of
+   * which sorts every context in the model — so changing the order sorted two
+   * thousand contexts three times and serialised the model a fourth, for
+   * answers that were identical every time. It was fifty-two milliseconds of a
+   * hundred-and-twenty-six millisecond frame.
+   */
+  const { layout, breakdown, totalBytes } = useMemo(() => modelReport(model), [model]);
+
+  // The bytes are behind a disclosure, so they are serialised when it opens
+  // rather than on every order change for a panel nobody has expanded.
+  const preview = useMemo(
+    () => (showBytes ? Array.from(serialiseModel(model).slice(0, PREVIEW_BYTES)) : []),
+    [showBytes, model],
+  );
 
   // Share of the total, not of the largest section. At order 1 the counts are
   // 95% of the description and the header parts are a few bytes each — which

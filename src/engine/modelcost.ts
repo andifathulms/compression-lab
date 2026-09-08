@@ -247,7 +247,7 @@ export interface ModelLayout {
  * do rather than trusting it — a breakdown that does not reconcile would be
  * worse than no breakdown at all.
  */
-export function modelLayout(model: FrequencyModel): ModelLayout {
+export function modelLayout(model: FrequencyModel, precomputed?: Row[]): ModelLayout {
   const sections: ModelSection[] = [];
 
   sections.push({
@@ -282,7 +282,7 @@ export function modelLayout(model: FrequencyModel): ModelLayout {
       note: 'A single zero. The decoder rebuilds every count from the symbols it has already decoded, which is what adaptive coding buys.',
     });
   } else {
-    const rows = canonicalRows(model);
+    const rows = precomputed ?? canonicalRows(model);
     const index = new Map(model.alphabet.map((s, i) => [s, i]));
     let contextBytes = varintSize(rows.length);
     for (const { context, entries } of rows) {
@@ -338,12 +338,16 @@ export interface ContextBreakdown {
  * nothing, and it is the accumulation of those that turns the model line
  * upward. The staircase shows that the curve rises; this shows why.
  */
-export function contextBreakdown(model: FrequencyModel, limit = 40): ContextBreakdown {
+export function contextBreakdown(
+  model: FrequencyModel,
+  limit = 40,
+  precomputed?: Row[],
+): ContextBreakdown {
   if (model.adaptive) {
     return { rows: [], singletons: 0, singletonBytes: 0, totalContexts: 0, totalBytes: 0 };
   }
   const index = new Map(model.alphabet.map((s, i) => [s, i]));
-  const all: ContextCost[] = canonicalRows(model).map(({ context, entries }) => {
+  const all: ContextCost[] = (precomputed ?? canonicalRows(model)).map(({ context, entries }) => {
     let bytes = varintSize(context.length);
     for (const sym of context) bytes += varintSize(index.get(sym)!);
     bytes += varintSize(entries.length);
@@ -376,3 +380,40 @@ export function contextBreakdown(model: FrequencyModel, limit = 40): ContextBrea
 
   return { rows, singletons, singletonBytes, totalContexts: all.length, totalBytes };
 }
+
+/* ---------------------------------------- everything a panel needs, once */
+
+export interface ModelReport {
+  /** What `serialiseModel` would produce, in bytes. */
+  totalBytes: number;
+  layout: ModelLayout;
+  breakdown: ContextBreakdown;
+}
+
+/**
+ * The layout and the per-context costs from a single pass.
+ *
+ * Each of `serialiseModel`, `modelLayout` and `contextBreakdown` walks
+ * `canonicalRows`, which sorts every context in the model. The panel that
+ * shows the description was calling all three, so one order change sorted the
+ * same two thousand contexts three times and serialised the model a fourth —
+ * fifty-two milliseconds of a hundred and twenty-six millisecond frame, for an
+ * answer that was already identical each time.
+ *
+ * This walks it once. No caching and no memoisation: the same model still
+ * produces the same numbers by the same arithmetic, which is the property this
+ * file exists to protect.
+ */
+export function modelReport(model: FrequencyModel, limit = 40): ModelReport {
+  const rows = model.adaptive ? [] : canonicalRows(model);
+  const layout = modelLayout(model, rows);
+  return {
+    // The sections sum to what serialiseModel writes — asserted at every
+    // order in modelcost's tests, so this is the measured length and not a
+    // second opinion about it.
+    totalBytes: layout.totalBytes,
+    layout,
+    breakdown: contextBreakdown(model, limit, rows),
+  };
+}
+
