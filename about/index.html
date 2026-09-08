@@ -3,27 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Compression Lab — a better model has to be sent</title>
-    <meta
-      name="description"
-      content="Six models over one text, measured end to end: the entropy, the code stream, and the model a decoder needs."
-    />
+    <title>__TITLE__</title>
+    <meta name="description" content="__DESCRIPTION__" />
     <meta name="color-scheme" content="light dark" />
+    <!-- One address per page. Without it a link carrying settings in the query
+         string reads as a separate page to a crawler, and this app puts the
+         sample, the order and the coder in the query string. -->
+    <link rel="canonical" href="__URL__" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#131415" media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Compression Lab — a better model has to be sent" />
-    <meta
-      property="og:description"
-      content="Six models over one text, measured end to end: the entropy, the code stream, and the model a decoder needs."
-    />
-    <meta property="og:url" content="https://andifathulms.github.io/compression-lab/about/" />
-    <meta property="og:image" content="https://andifathulms.github.io/compression-lab/og.png" />
+    <meta property="og:title" content="__TITLE__" />
+    <meta property="og:description" content="__DESCRIPTION__" />
+    <meta property="og:url" content="__URL__" />
+    <meta property="og:image" content="__IMAGE__" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="__IMAGE_ALT__" />
+    <meta property="og:site_name" content="__SITE_NAME__" />
+    <meta property="og:locale" content="__LOCALE__" />
     <meta name="twitter:card" content="summary_large_image" />
     <script>
       // The same resolution the app uses, and it reads the same key: someone
@@ -70,10 +71,9 @@
             A better model predicts the text.
             <span>Then you have to send the model.</span>
           </h1>
-          <p class="lede">
-            Six models over one text, measured end to end: the entropy, the code stream,
-            and the model a decoder needs.
-          </p>
+          <!-- Same string as the description in the head; both come from
+               src/copy.ts. -->
+          <p class="lede">__DESCRIPTION__</p>
           <div class="actions">
             <a class="button-primary" href="../">Open the lab</a>
             <a class="button-quiet" href="https://github.com/andifathulms/compression-lab">

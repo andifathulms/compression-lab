@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { APP_PAGE } from '../copy.ts';
 import { SAMPLES } from '../samples/index.ts';
 import { count } from './format.ts';
 import type { ThemeHandle } from './theme.ts';
@@ -81,10 +82,7 @@ export function Masthead({
           * What is left is the verb, the object and the payoff, which is all
           * five seconds buys.
           */}
-        <p className="masthead-lead">
-          Measure what a text costs to compress — and why that answer depends on the
-          model.
-        </p>
+        <p className="masthead-lead">{APP_PAGE.lead}</p>
       </div>
 
       <div className="masthead-tools">

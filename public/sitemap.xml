@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Two URLs. The app carries its settings in the query string — sample, order,
+  coder, window — and every one of those addresses is the same page with the
+  same content, which is what the canonical link in each document says.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://andifathulms.github.io/compression-lab/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://andifathulms.github.io/compression-lab/about/</loc>
+    <priority>0.8</priority>
+  </url>
+</urlset>

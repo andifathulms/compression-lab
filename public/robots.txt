@@ -1,0 +1,7 @@
+# Two pages, both worth indexing. Nothing here is generated per visitor and
+# nothing is behind a query string that changes the content, so there is
+# nothing to keep a crawler away from.
+User-agent: *
+Allow: /
+
+Sitemap: https://andifathulms.github.io/compression-lab/sitemap.xml
