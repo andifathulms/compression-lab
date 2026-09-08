@@ -391,3 +391,11 @@
     margin-left: 0;
   }
 }
+
+/* The parallel corpus while its four analyses are still running. Below the
+ * fold and resolved within a frame of load, so this is a correctness detail
+ * rather than something a reader is expected to see. */
+.parallel-pending {
+  text-align: left;
+  color: var(--ink-faint);
+}

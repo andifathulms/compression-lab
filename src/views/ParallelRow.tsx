@@ -13,12 +13,8 @@
  * a row, deliberately: any more and it becomes a research apparatus.
  */
 
-import { useMemo } from 'react';
-import {
-  analyseText,
-  runLz77,
-  type Lz77Options,
-} from '../engine/index.ts';
+import { useEffect, useState } from 'react';
+import { analyseText, runLz77, type Lz77Options } from '../engine/index.ts';
 import { PARALLEL_SAMPLES } from '../samples/index.ts';
 
 interface Props {
@@ -27,10 +23,32 @@ interface Props {
   onChoose: (id: string) => void;
 }
 
-export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Element {
-  const rows = useMemo(
-    () =>
-      PARALLEL_SAMPLES.map((sample) => {
+interface Row {
+  id: string;
+  language: string;
+  symbols: number;
+  h0: number;
+  h2: number;
+  lz: number;
+  /** How far LZ77 landed below the order-0 entropy of the same text. */
+  margin: number;
+}
+
+/**
+ * Four full analyses of four nine-thousand-character texts.
+ *
+ * On the first render that was ninety-five milliseconds of a three-hundred
+ * millisecond load — the single most expensive component on the page — for a
+ * table that sits seven thousand pixels down and is the last thing anyone
+ * reaches.
+ *
+ * So it is computed when the browser is next idle rather than during the
+ * render that puts the app on screen. The arithmetic is identical and the
+ * result is the same object; only its timing moved, and it moved to a moment
+ * nobody is looking at this panel.
+ */
+function measure(lz77: Lz77Options): Row[] {
+  return PARALLEL_SAMPLES.map((sample) => {
         const analysis = analyseText(sample.text, false);
         const run = runLz77(analysis, lz77);
         const h0 = analysis.rows[0].entropyBits;
@@ -46,10 +64,31 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
           // text, which is the thing that looks impossible if you believe in a
           // floor.
           margin: h0 - lz,
-        };
-      }),
-    [lz77],
-  );
+    };
+  });
+}
+
+export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Element {
+  const [rows, setRows] = useState<Row[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = (): void => {
+      if (!cancelled) setRows(measure(lz77));
+    };
+    // requestIdleCallback where it exists; a timeout everywhere else. Either
+    // way the work lands after the frame that draws the page.
+    const idle = window.requestIdleCallback;
+    const id =
+      typeof idle === 'function'
+        ? idle(run, { timeout: 1000 })
+        : window.setTimeout(run, 1);
+    return () => {
+      cancelled = true;
+      if (typeof idle === 'function') window.cancelIdleCallback?.(id as number);
+      else window.clearTimeout(id as number);
+    };
+  }, [lz77]);
 
   return (
     <section className="panel" aria-labelledby="parallel-heading">
@@ -85,7 +124,17 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {/* The header and the shape of the table are in the document from
+                the first paint, so the outline, browser find and the tab order
+                do not depend on when the arithmetic lands. */}
+            {rows === null ? (
+              <tr>
+                <td colSpan={6} className="parallel-pending label">
+                  Measuring four translations…
+                </td>
+              </tr>
+            ) : null}
+            {(rows ?? []).map((row) => (
               <tr key={row.id} aria-current={row.id === currentSampleId ? 'true' : undefined}>
                 <th scope="row">
                   <button
