@@ -1,20 +1,15 @@
 /**
  * The shell.
  *
- * Three bands, and the order they are in is the argument.
+ * A brand row, a pinned readout bar, then two columns on two grounds: the
+ * specimen on warm paper on the left, and the apparatus on cool steel on the
+ * right. The readout bar carries the answer — what this text costs, right
+ * now, under the current model — together with the controls that move it.
  *
- * The masthead states the claim. The rail underneath it is pinned and carries
- * the answer — what this text costs, right now, under the current model —
- * together with the three controls that move it. Below that the page splits:
- * the specimen on the left, on paper, and the apparatus on the right, on the
- * bench. The specimen is the largest thing on the page and it stays visible
- * while it is being measured, because that is what this app is for.
- *
- * The rail is the anchor, not the staircase. The staircase was pinned once, on
- * the argument that every other instrument elaborates it, and a thousand pixels
- * of plot and table pinned under a ninety-pixel rail turned out to be the whole
- * screen: see the note in App.css. The rail carries the reading, the coder and
- * the order in ninety pixels instead.
+ * The apparatus is five chapters rather than one column. It used to stack
+ * eight panels into about 7,700 pixels, and the staircase, the app's centre,
+ * began eleven hundred pixels down. The chapters run in the order of the
+ * argument and the app opens on the staircase; see state/chapter.ts.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -24,6 +19,9 @@ import { CoderBay } from './views/CoderBay.tsx';
 import { ParallelRow } from './views/ParallelRow.tsx';
 import { Masthead } from './ui/Masthead.tsx';
 import { Rail } from './ui/Rail.tsx';
+import { Lens } from './ui/Lens.tsx';
+import { ChapterNav, chapterPanelId, chapterTabId } from './ui/ChapterNav.tsx';
+import { useChapter, type ChapterId } from './state/chapter.ts';
 import { MakerSignature } from './ui/MakerSignature.tsx';
 import { useTheme } from './ui/theme.ts';
 import { RampKey } from './ui/RampKey.tsx';
@@ -39,7 +37,6 @@ import {
   cachedArithmetic,
   cachedHuffman,
   cachedLz77,
-  contextAt,
   MAX_INPUT,
   surprisals,
   ALPHA,
@@ -53,6 +50,13 @@ const CODER_NAMES: Record<string, string> = {
   huffman: 'Huffman',
   arithmetic: 'Arithmetic',
   lz77: 'LZ77',
+};
+
+const CODER_COLOURS: Record<string, string> = {
+  huffman: 'var(--huffman)',
+  arithmetic: 'var(--arithmetic)',
+  lz77: 'var(--lz77)',
+  compare: 'var(--ink)',
 };
 
 export function App(): JSX.Element {
@@ -119,19 +123,6 @@ export function App(): JSX.Element {
 
   const sample = sampleById(state.sampleId);
 
-  const readout = useMemo(() => {
-    if (hover === null || hover >= analysis.symbolCount) return null;
-    const model = analysis.models[state.order];
-    const context = contextAt(analysis.symbols, hover, state.order);
-    const probability = model.probability(context, analysis.symbols[hover]);
-    return {
-      symbol: analysis.symbols[hover],
-      context: context.join(''),
-      probability,
-      bits: -Math.log2(probability),
-    };
-  }, [hover, analysis, state.order]);
-
   const onCopyLink = useCallback(
     (withText: boolean) => {
       const url = copyLink(withText);
@@ -180,7 +171,7 @@ export function App(): JSX.Element {
   }, [restorable, setText]);
 
   /**
-   * The rail is pinned at the top and the two columns are pinned underneath
+   * The header is pinned at the top and the two columns are pinned underneath
    * it, so they need to know how tall it is. It wraps differently at every
    * width and with every reading, so it is measured rather than guessed and
    * published as a custom property the layout reads.
@@ -225,6 +216,25 @@ export function App(): JSX.Element {
     URL.revokeObjectURL(url);
   }, [analysis, state.lz77, state.sampleId, huffman, arithmetic, lz77]);
 
+  const [chapter, setChapter] = useChapter();
+
+  /*
+   * Changing chapter keeps the reader's place on the page: if they had
+   * scrolled down into a long chapter, the next one starts at its top rather
+   * than somewhere in its middle.
+   */
+  const apparatusRef = useRef<HTMLElement>(null);
+  const goChapter = useCallback(
+    (id: ChapterId) => {
+      setChapter(id);
+      const el = apparatusRef.current;
+      if (el === null) return;
+      const top = el.getBoundingClientRect().top;
+      if (top < 0) window.scrollTo({ top: window.scrollY + top, behavior: 'auto' });
+    },
+    [setChapter],
+  );
+
   const [huffmanSymbol, setHuffmanSymbol] = useState<string | null>(null);
   const [windowRanges, setWindowRanges] = useState<{
     lookahead: [number, number] | null;
@@ -237,6 +247,10 @@ export function App(): JSX.Element {
         Skip to the instruments
       </a>
 
+      {/* The brand row and the readout bar are pinned together. Pinned apart,
+          the brand row scrolled away and the specimen, sized to the viewport
+          under the rail alone, started with its lens below the fold. */}
+      <div className="app-head" ref={railRef}>
       <Masthead
         sampleId={state.sampleId}
         onSample={chooseSample}
@@ -245,16 +259,18 @@ export function App(): JSX.Element {
         onCopyLink={onCopyLink}
         linkStatus={linkStatus}
         theme={theme}
+        coder={state.coder}
+        onCoder={(coder) => set('coder', coder)}
+        onDownload={onDownload}
       />
 
-      <div className="app-rail" ref={railRef}>
+      <div className="app-rail">
         <Rail
           order={state.order}
           onOrder={(order) => set('order', order)}
           adaptive={state.adaptive}
           onAdaptive={(adaptive) => set('adaptive', adaptive)}
           coder={state.coder}
-          onCoder={(coder) => set('coder', coder)}
           result={reading.result}
           resultLabel={reading.label}
           resultCaveat={reading.caveat}
@@ -263,11 +279,11 @@ export function App(): JSX.Element {
           stale={stale}
         />
       </div>
+      </div>
 
       <main className="app-main">
-        {/* Named by its heading. The aria-label here said "The text surface"
-            while the heading said "The text", so the region and the heading
-            gave a screen reader two different names for one thing. */}
+        {/* Named by its heading, so the region and the heading give a screen
+            reader one name for one thing. */}
         <section className="app-specimen" aria-labelledby="specimen-heading">
           <div className="specimen-head">
             <div className="panel-heading">
@@ -276,10 +292,8 @@ export function App(): JSX.Element {
                 {count(analysis.symbolCount)} characters · {analysis.alphabet.length} distinct
               </span>
             </div>
-            {/* Plain language first, the name for it second. The old order
-                introduced "surprisal" and "-log2 p" before saying what the
-                reader was looking at, which explains an unfamiliar picture
-                with two more unfamiliar things. */}
+            {/* Plain language first, the name for it second: the picture is
+                explained before the coined term and the logarithm. */}
             <p className="note">
               Each character is shaded by what it costs to code. The ones the model saw
               coming fade into the page; the ones it did not are drawn in full ink. That
@@ -287,36 +301,20 @@ export function App(): JSX.Element {
               <span className="data">-log2 p</span>, in bits.
             </p>
             <RampKey maxBits={analysis.rampMaxBits} />
-            <p className="note note-invite">
-              Editable — paste your own text and every figure remeasures.
-            </p>
           </div>
 
           {/*
             * The two standing caveats: what happens to your text, and what
-            * this sample is.
-            *
-            * They are a sibling of the surface rather than part of its heading
-            * so that a narrow screen can put them after it. On a phone they
-            * were 176px of mono sitting between the explanation and the first
-            * line of actual text, which is a third of the one screen that has
-            * to make the case. Neither contains anything focusable, so the
-            * reorder cannot desynchronise the tab order from what is on
-            * screen.
-            *
-            * Stated where the decision is made, either way. The app is strict
-            * about this — no network at all, samples bundled, typed text kept
-            * out of the URL — and every word of that was written down in three
-            * places the reader has not reached at the moment they are deciding
-            * whether to paste something of their own.
+            * this sample is. Stated where the decision to paste is made, and
+            * short, because above the text they cost lines of it.
             */}
           <div className="specimen-caveats">
-            <p className="assumption">
-              Nothing here is uploaded and nothing is fetched. What you type stays in this
-              browser, and stays out of the address bar unless you ask for a link that
-              includes it.
+            <p className="caveat">
+              <strong>Editable.</strong> Paste your own text and every figure remeasures.
+              Nothing is uploaded, and your text stays out of the address bar unless you ask
+              for a link that includes it.
             </p>
-            {sample !== undefined ? <p className="assumption">{sample.note}</p> : null}
+            {sample !== undefined ? <p className="caveat">{sample.note}</p> : null}
           </div>
 
           {overflow !== null ? (
@@ -327,13 +325,13 @@ export function App(): JSX.Element {
             </p>
           ) : null}
           {deferred ? (
-            <p className="assumption">
+            <p className="caveat">
               Above {count(50000)} characters the figures are recomputed when you stop typing
               rather than on every keystroke.{stale ? ' Recomputing.' : ''}
             </p>
           ) : null}
           {analysis.symbolCount > FULL_RENDER_LIMIT ? (
-            <p className="assumption">
+            <p className="caveat">
               Only the visible part of the text is drawn, so the browser&apos;s find will not
               reach past it.
             </p>
@@ -349,109 +347,82 @@ export function App(): JSX.Element {
             onHover={setHover}
             hoverPosition={hover}
             onCaret={setHover}
-            highlightSymbol={huffmanSymbol}
-            highlightRange={windowRanges.lookahead}
-            matchRange={windowRanges.match}
+            // Marks belong to the instrument that made them, and only the coders
+            // chapter has one mounted.
+            highlightSymbol={chapter === 'coders' ? huffmanSymbol : null}
+            highlightRange={chapter === 'coders' ? windowRanges.lookahead : null}
+            matchRange={chapter === 'coders' ? windowRanges.match : null}
             order={state.order}
             placeholder="Paste some text, or choose a sample."
           />
 
-          <div className="specimen-readout" aria-live="polite">
-            {readout !== null ? (
-              <>
-                <span className="specimen-readout-symbol data">
-                  {JSON.stringify(readout.symbol)}
-                </span>
-                <span className="specimen-readout-body data">
-                  after {JSON.stringify(readout.context)} · p ={' '}
-                  {readout.probability.toFixed(4)}
-                </span>
-                <span className="specimen-readout-cost data">
-                  {readout.bits.toFixed(2)}
-                  <span className="unit"> bits</span>
-                </span>
-              </>
-            ) : (
-              <span className="label">
-                Point at a character, or move the caret, to see its cost
-              </span>
-            )}
+          <div className="specimen-lens">
+            <Lens
+              analysis={analysis}
+              order={state.order}
+              position={hover}
+              colour={CODER_COLOURS[state.coder]}
+            />
           </div>
         </section>
 
-        <section className="app-apparatus" id="apparatus" aria-label="The instruments">
-          {/*
-            * Two groups, because the six panels below are not six peers.
-            *
-            * The first four are one argument: the staircase, then where its
-            * minimum moves with length, then what its model line is actually
-            * made of, then what the adaptive toggle does to it. The last two
-            * are a different subject. Across nearly six thousand pixels with
-            * one heading style and one hairline between everything, a reader
-            * had no way to know that.
-            */}
-          <div className="app-group">
-            <div className="app-group-head">
-              <h2>The model, and what it costs</h2>
-              <span className="label">why the total has a minimum</span>
-            </div>
+        <section
+          className="app-apparatus"
+          id="apparatus"
+          aria-label="The instruments"
+          ref={apparatusRef}
+        >
+          <ChapterNav chapter={chapter} onChapter={goChapter} />
 
-            {/*
-              * The atom, at the head of the group that aggregates it.
-              *
-              * It wants to be beside the specimen, since it explains the tint
-              * on it and follows the pointer across it — but the specimen
-              * column is a pinned pane with a fixed height, and putting nine
-              * hundred pixels of worked example in it squeezed the text itself
-              * down to two hundred and fifty. It sits at the top of the
-              * apparatus instead: immediately to the right of the text, first
-              * thing in the column, and still live to the pointer.
-              */}
-            <Derivation analysis={analysis} order={state.order} position={hover} />
+          <div
+            className="chapter"
+            role="tabpanel"
+            id={chapterPanelId(chapter)}
+            aria-labelledby={chapterTabId(chapter)}
+            key={chapter}
+          >
+            {chapter === 'counting' ? (
+              <Derivation analysis={analysis} order={state.order} position={hover} />
+            ) : null}
 
-            <div className="app-stair">
-              <Staircase
-                analysis={analysis}
-                order={state.order}
-                coder={state.coder}
-                huffman={huffman.result}
-                arithmetic={arithmetic.result}
-                lz77={lz77.result}
-                onOrder={(order) => set('order', order)}
-              />
-            </div>
+            {chapter === 'staircase' ? (
+              <>
+                <Staircase
+                  analysis={analysis}
+                  order={state.order}
+                  coder={state.coder}
+                  huffman={huffman.result}
+                  arithmetic={arithmetic.result}
+                  lz77={lz77.result}
+                  onOrder={(order) => set('order', order)}
+                />
+                <p className="assumption">
+                  <strong>Assumption: add-one smoothing.</strong> Probabilities use
+                  add-constant smoothing, alpha = {ALPHA}, over the {analysis.alphabet.length}{' '}
+                  symbols that occur in this text. The entropy steps use the unsmoothed counts,
+                  which is why a coder never quite reaches its step.
+                </p>
+              </>
+            ) : null}
 
-          {/*
-            * Three panels between the staircase and the coders, in the order
-            * the questions arrive: where the minimum moves (the staircase over
-            * a second axis), what the model description actually holds (its
-            * rising line, opened up), and what adaptive costs (the toggle,
-            * which otherwise makes a high-order model look free — the exact
-            * misconception PRD 7.1 exists to prevent).
-            */}
-            <div className="app-bay">
-              <LengthSweep
-                analysis={analysis}
-                adaptive={state.adaptive}
-                order={state.order}
-                onOrder={(o) => set('order', o)}
-              />
-              <ModelPanel analysis={analysis} order={state.order} />
-              <LearningCurve
-                analysis={analysis}
-                order={state.order}
-                adaptive={state.adaptive}
-              />
-            </div>
-          </div>
+            {chapter === 'model' ? (
+              <>
+                <ModelPanel analysis={analysis} order={state.order} />
+                <LengthSweep
+                  analysis={analysis}
+                  adaptive={state.adaptive}
+                  order={state.order}
+                  onOrder={(o) => set('order', o)}
+                />
+                <LearningCurve
+                  analysis={analysis}
+                  order={state.order}
+                  adaptive={state.adaptive}
+                />
+              </>
+            ) : null}
 
-          <div className="app-group">
-            <div className="app-group-head">
-              <h2>The coders</h2>
-              <span className="label">what a real coder achieves</span>
-            </div>
-
-            <div className="app-bay">
+            {chapter === 'coders' ? (
               <CoderBay
                 analysis={analysis}
                 state={state}
@@ -463,38 +434,23 @@ export function App(): JSX.Element {
                 selectedSymbol={huffmanSymbol}
                 onWindowRanges={setWindowRanges}
               />
+            ) : null}
+
+            {chapter === 'languages' ? (
               <ParallelRow
                 lz77={state.lz77}
                 currentSampleId={state.sampleId}
                 onChoose={chooseSample}
               />
-              <p className="assumption">
-                Probabilities use add-constant smoothing, alpha = {ALPHA}, over the{' '}
-                {analysis.alphabet.length} symbols that occur in this text. The entropy steps use
-                the unsmoothed counts, which is why a coder never quite reaches its step.
-              </p>
-
-              {/* For the reader who came to check rather than to read. The file
-                  carries the same arbitrary choices the interface states, because
-                  a number in a spreadsheet with no provenance is the thing this
-                  app exists not to produce. */}
-              <div className="app-export">
-                <button type="button" onClick={onDownload}>
-                  Download these measurements
-                </button>
-                <span className="label">
-                  CSV · the staircase and all three coders, with the rules that produced them
-                </span>
-              </div>
-            </div>
-            </div>
+            ) : null}
+          </div>
         </section>
       </main>
 
       <footer className="app-foot">
         {/* The way in, for anyone who arrived at the instrument first. It is a
-            static page and it is one level up in the same deployment, so the
-            link is relative rather than absolute. */}
+            static page one level up in the same deployment, so the link is
+            relative rather than absolute. */}
         <a className="app-foot-link" href="about/">
           What this is, and what it measures
         </a>

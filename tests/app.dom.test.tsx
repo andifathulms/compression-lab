@@ -61,8 +61,8 @@ describe('the app in a browser', () => {
       container.querySelectorAll<HTMLElement>('.ts-layer [data-i]'),
     ).map((s) => s.style.color);
 
-    // A continuous control: the change is applied on the frame, not queued.
-    fireEvent.change(document.getElementById('order')!, { target: { value: '4' } });
+    // Six named orders in one radio group; the change is applied at once.
+    fireEvent.click(within(document.getElementById('order')!).getByRole('radio', { name: 'H4' }));
 
     const after = Array.from(
       container.querySelectorAll<HTMLElement>('.ts-layer [data-i]'),
@@ -91,6 +91,8 @@ describe('the app in a browser', () => {
     const user = userEvent.setup({ delay: null });
     const before = document.querySelector('.stair-headline')?.textContent;
 
+    // The instruments are a chapter of their own now; the staircase is another.
+    await user.click(screen.getByRole('tab', { name: /the coders/i }));
     await user.click(screen.getByRole('button', { name: 'Arithmetic' }));
     expect(screen.getByRole('heading', { name: /arithmetic coding/i })).toBeTruthy();
     expect(screen.getByText(/idealised real-number interval/i)).toBeTruthy();
@@ -99,12 +101,14 @@ describe('the app in a browser', () => {
     expect(screen.getByRole('heading', { name: 'LZ77' })).toBeTruthy();
     expect(screen.getByLabelText(/^window/i)).toBeTruthy();
 
+    await user.click(screen.getByRole('tab', { name: /the staircase/i }));
     expect(document.querySelector('.stair-headline')?.textContent).toBe(before);
   }, 120_000);
 
   it('marks every occurrence of a symbol picked out of the Huffman tree', async () => {
     const { container } = render(<App />);
     const user = userEvent.setup({ delay: null });
+    await user.click(screen.getByRole('tab', { name: /the coders/i }));
     const table = container.querySelector('.ht-table')!;
     const buttons = within(table as HTMLElement).getAllByRole('button');
     await user.click(buttons[0]);

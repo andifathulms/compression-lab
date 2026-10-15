@@ -174,17 +174,20 @@ export function useAppState(): AppStateHandle {
   }, []);
 
   // The URL follows the state, without the text, and without pushing history
-  // entries for a slider drag.
+  // entries for a slider drag. The fragment is the chapter in view, which is
+  // not this hook's business, so it is carried over rather than dropped.
   useEffect(() => {
     if (first.current) {
       first.current = false;
       return;
     }
-    window.history.replaceState(null, '', writeUrl(state, false));
+    window.history.replaceState(null, '', writeUrl(state, false) + window.location.hash);
   }, [state]);
 
+  // A shared link opens on the chapter the sender was looking at.
   const copyLink = useCallback(
-    (withText: boolean) => `${window.location.origin}${window.location.pathname}${writeUrl(state, withText)}`,
+    (withText: boolean) =>
+      `${window.location.origin}${window.location.pathname}${writeUrl(state, withText)}${window.location.hash}`,
     [state],
   );
 

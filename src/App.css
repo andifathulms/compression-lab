@@ -1,11 +1,11 @@
 /**
- * The shell: three bands, then two columns.
+ * The shell: a brand row, a pinned readout bar, then two columns.
  *
- * The two columns are two grounds. The left is paper and carries the specimen;
- * the right is the recessed bench and carries the apparatus. The seam between
- * them is a real edge — a hairline and a change of material — because the
- * distinction between the thing being measured and the thing doing the
- * measuring is the app's whole subject.
+ * The two columns are two grounds. The left is warm paper and carries the
+ * specimen; the right is cool steel and carries the apparatus. The seam
+ * between them is a real edge — a hairline and a change of temperature —
+ * because the distinction between the thing being measured and the thing
+ * doing the measuring is the app's whole subject.
  */
 
 .app {
@@ -15,65 +15,37 @@
   background: var(--sunk);
   /* Replaced by the measured height of the rail as soon as it has laid out.
    * The fallback is what an unwrapped rail comes to at a desktop width. */
-  --rail-h: 90px;
+  --rail-h: 150px;
 }
 
-/* ---- The pinned rail ---------------------------------------------------- */
+/* ---- The pinned header -------------------------------------------------- */
 
-.app-rail {
+.app-head {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--page);
-  border-bottom: 1px solid var(--rule);
-  /* Only when it has something above it to shadow. */
-  box-shadow: var(--shadow-1);
+}
+
+.app-rail {
+  background: var(--sunk);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule-strong);
 }
 
 /* ---- The two columns ---------------------------------------------------- */
 
+/*
+ * The specimen is held to its reading measure plus gutters, about 40% of a
+ * desktop screen; the apparatus takes the rest, because charts need width and
+ * prose does not. It was nearer half and half, which gave the text more room
+ * than a 62-character line can use and the plots less than they needed.
+ */
 .app-main {
   flex: 1;
   display: grid;
-  /* The specimen is fixed at its measure plus its gutters; the apparatus takes
-   * whatever is left. The text is the specimen, the rest is the bench. */
-  grid-template-columns: minmax(28rem, 44rem) minmax(0, 1fr);
+  grid-template-columns: minmax(26rem, 36rem) minmax(0, 1fr);
   align-items: start;
   min-height: 0;
-}
-
-/*
- * A group of panels.
- *
- * The device is a rule heavier than a panel's own, plus a title in full ink
- * and more space above it than any panel gets. That is enough: the apparatus
- * is an instrument, not a document, and it does not want chapter openings.
- */
-.app-group + .app-group {
-  margin-top: var(--s-5);
-}
-
-.app-group-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-2);
-  flex-wrap: wrap;
-  padding-bottom: var(--s-1);
-  border-bottom: 2px solid var(--ink);
-}
-
-/* The first panel under a group title has the title's rule above it already. */
-.app-group .app-stair .panel,
-.app-group .app-bay > .panel:first-child {
-  border-top: 0;
-  padding-top: var(--s-3);
-}
-
-/* The caveats sit with the heading by default; the narrow breakpoint moves
- * them under the surface. See App.tsx. */
-.specimen-caveats {
-  flex: 0 0 auto;
 }
 
 .app-specimen {
@@ -85,54 +57,90 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  /* dvh, with vh underneath it for anything that does not know the unit. On
-   * iOS the two differ by the address bar, and the specimen is only sticky
-   * above 980px, which a tablet in landscape reaches. */
+  /* dvh, with vh underneath it for anything that does not know the unit. */
   max-height: calc(100vh - var(--rail-h));
   max-height: calc(100dvh - var(--rail-h));
   padding: var(--s-3) var(--s-4) 0;
   background: var(--page);
-  border-right: 1px solid var(--rule);
+  border-right: 1px solid var(--rule-strong);
 }
 
 .specimen-head {
   flex: 0 0 auto;
-  padding-bottom: var(--s-2);
+  padding-bottom: var(--s-1);
 }
 
 .specimen-head .panel-heading {
   margin-bottom: var(--s-1);
 }
 
+.specimen-head .note {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* The standing caveats: short, quiet, in the interface voice. */
+.specimen-caveats {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--s-2);
+}
+
+.caveat {
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  line-height: 1.5;
+  color: var(--ink-faint);
+  max-width: var(--measure);
+}
+
+.caveat strong {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+}
+
+/* The lens floats over the foot of the text's scroll fade. */
+.specimen-lens {
+  flex: 0 0 auto;
+  position: relative;
+  margin-top: -1.25rem;
+  padding: 0 0 var(--s-2);
+}
+
 .app-apparatus {
   min-width: 0;
-  padding: var(--s-3) var(--s-4) var(--s-6);
+  padding: 0 var(--s-4) var(--s-6);
   background: var(--sunk);
 }
 
 /*
- * The staircase is NOT pinned, and this is the one place the original design
- * has to give.
- *
- * The idea was that it is the anchor every other instrument elaborates, so it
- * should never scroll away. But it is a thousand pixels tall — plot, order
- * control, split, table, assumption — and the rail above it is another ninety.
- * Pinned together in a nine-hundred-pixel viewport they are the entire screen:
- * the scrollbar runs, nothing moves, and the bottom of the staircase is never
- * reachable at all because a sticky element taller than its own slot never
- * releases.
- *
- * The rail is the anchor instead. It carries the reading, the coder and the
- * order — everything the old anchor was for — in ninety pixels rather than a
- * thousand, and it is genuinely constant while the instrument below it
- * changes.
+ * A chapter. Only one is mounted at a time, so it starts at the top of its
+ * own column, and a discrete change of chapter gets a short timed entrance —
+ * from a visible resting state, so a reduced-motion reader loses nothing.
  */
-.app-stair {
-  padding-bottom: var(--s-2);
+.chapter {
+  padding-top: var(--s-3);
+  animation: chapter-in var(--d-coder) var(--ease-decisive);
 }
 
-.app-bay {
-  min-width: 0;
+@keyframes chapter-in {
+  from {
+    opacity: 0.35;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The first panel in a chapter sits under the tab row, which is its rule. */
+.chapter > .panel:first-child,
+.chapter > :first-child .panel:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 /* ---- The foot ----------------------------------------------------------- */
@@ -162,48 +170,6 @@
   text-decoration-color: var(--rule-strong);
 }
 
-/* ---- The readout under the specimen ------------------------------------- */
-
-/*
- * The hover readout is pinned to the bottom of the specimen rather than
- * floating over the character it describes. A tooltip that follows the pointer
- * across 200,000 characters is a tooltip that is always in the way of the next
- * character you wanted to look at.
- */
-.specimen-readout {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: baseline;
-  gap: var(--s-2);
-  min-height: 3.2rem;
-  padding: var(--s-1) 0 var(--s-2);
-  border-top: 1px solid var(--rule);
-  font-size: var(--t-data);
-  color: var(--ink-mid);
-}
-
-.specimen-readout-symbol {
-  font-size: var(--t-text);
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-}
-
-.specimen-readout-body {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.specimen-readout-cost {
-  font-size: var(--t-figure);
-  font-weight: var(--weight-medium);
-  color: var(--ink);
-  letter-spacing: var(--track-figure);
-  margin-left: auto;
-}
-
 .app-warning {
   border-left: 2px solid var(--huffman);
   background: var(--huffman-tint);
@@ -225,55 +191,9 @@
   max-width: 44rem;
 }
 
-/* The export control: an action and a sentence saying what it will contain,
- * on the same pattern as the share menu — nothing about where the reader's
- * text goes happens without a label. */
-.app-export {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  flex-wrap: wrap;
-  margin-top: var(--s-3);
-  padding-top: var(--s-3);
-  border-top: 1px solid var(--rule);
-}
-
 .split {
   margin: var(--s-2) 0 var(--s-3);
   max-width: 44rem;
-}
-
-.split-bar {
-  display: flex;
-  height: 14px;
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-1);
-  overflow: hidden;
-}
-
-.split-code {
-  display: block;
-  height: 100%;
-}
-
-/*
- * The model description is hatched, not filled.
- *
- * It is the only fill in the app that is not solid, and that is the point: the
- * model is overhead rather than output, and a solid block beside the code
- * stream would read as more of the same substance. The hatch is drawn in the
- * model-cost token so it still follows the theme.
- */
-.split-model {
-  display: block;
-  height: 100%;
-  background-color: color-mix(in srgb, var(--model-cost) 22%, transparent);
-  background-image: repeating-linear-gradient(
-    -45deg,
-    var(--model-cost) 0 1.5px,
-    transparent 1.5px 5px
-  );
 }
 
 .split-figures {
@@ -312,7 +232,7 @@
     padding-right: var(--s-3);
   }
   .app-main {
-    grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+    grid-template-columns: minmax(22rem, 30rem) minmax(0, 1fr);
   }
 }
 
@@ -329,51 +249,21 @@
     position: static;
     max-height: none;
     border-right: 0;
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--rule-strong);
   }
-  .app-stair {
-    position: static;
-    box-shadow: none;
-  }
-  .app-apparatus {
-    padding-top: var(--s-2);
+  .app-specimen .ts {
+    max-height: 60vh;
   }
   /*
    * The rail stops being pinned. Stacked, it is most of a phone screen tall,
    * and a sticky element that leaves a third of the viewport for the thing it
    * describes is worse than one you scroll back to.
    */
-  .app-rail {
+  .app-head {
     position: static;
   }
-}
-
-/*
- * On a phone the caveats go under the text they qualify.
- *
- * Footnotes belong at the foot: heading, then what the colours mean, then the
- * key, then the invitation, then the text — and only then what happens to it
- * and where the sample came from. Above the surface they were a third of the
- * first screen, in the mono voice, before the reader had seen anything.
- */
-@media (max-width: 720px) {
-  .app-specimen {
-    display: flex;
-    flex-direction: column;
-  }
-  .specimen-head {
-    order: 1;
-  }
-  .ts {
-    order: 2;
-  }
-  .specimen-caveats {
-    order: 3;
-    margin-top: var(--s-2);
-  }
-  .specimen-readout {
-    order: 4;
+  .chapters {
+    top: 0;
   }
 }
 
@@ -383,13 +273,6 @@
   .app-foot {
     padding-left: var(--s-2);
     padding-right: var(--s-2);
-  }
-  .specimen-readout {
-    flex-wrap: wrap;
-    gap: var(--s-1);
-  }
-  .specimen-readout-cost {
-    margin-left: 0;
   }
 }
 

@@ -9,6 +9,7 @@
  */
 
 import type { CoderResult } from '../engine/index.ts';
+import { ByteBar } from '../ui/ByteBar.tsx';
 
 interface Props {
   result: CoderResult;
@@ -21,16 +22,13 @@ export function SizeSplit({ result, originalBytes, colour }: Props): JSX.Element
   const original = originalBytes * 8;
   return (
     <div className="split">
-      <div className="split-bar" role="img" aria-label={label(result, original)}>
-        <span
-          className="split-code"
-          style={{ width: pct(result.codeBits, original), background: colour }}
-        />
-        <span
-          className="split-model"
-          style={{ width: pct(result.modelBits, original) }}
-        />
-      </div>
+      <ByteBar
+        codeBits={result.codeBits}
+        modelBits={result.modelBits}
+        originalBits={original}
+        colour={colour}
+        label={label(result, original)}
+      />
       <dl className="split-figures data">
         <div>
           <dt>code stream</dt>
@@ -54,10 +52,6 @@ export function SizeSplit({ result, originalBytes, colour }: Props): JSX.Element
       </dl>
     </div>
   );
-}
-
-function pct(bits: number, original: number): string {
-  return `${Math.min(100, (bits / (original || 1)) * 100).toFixed(2)}%`;
 }
 
 function bytes(bits: number): string {

@@ -1,0 +1,110 @@
+/*
+ * Pinned under the readout bar, on the steel, so the reader always knows which
+ * chapter they are in and what else there is.
+ */
+.chapters {
+  position: sticky;
+  top: var(--rail-h);
+  z-index: 5;
+  background: var(--sunk);
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 12px var(--s-4) 0;
+  margin: 0 calc(-1 * var(--s-4));
+}
+
+.chapter-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chapter-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.chapter-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 12px 12px;
+  border: 0;
+  border-radius: var(--r-2) var(--r-2) 0 0;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: var(--t-data);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+.chapter-tab:hover:not([aria-selected='true']) {
+  border: 0;
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.chapter-tab[aria-selected='true'] {
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+  background: transparent;
+  border: 0;
+}
+
+.chapter-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.chapter-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 5px;
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+}
+
+.chapter-tab[aria-selected='true'] .chapter-key {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--sunk);
+}
+
+.chapter-summary {
+  padding: 8px 12px 12px;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
+  color: var(--ink-faint);
+  border-top: 1px solid var(--rule);
+}
+
+@media (max-width: 1180px) {
+  .chapters {
+    padding-left: var(--s-3);
+    padding-right: var(--s-3);
+    margin: 0 calc(-1 * var(--s-3));
+  }
+}
+
+@media (max-width: 560px) {
+  .chapters {
+    padding-left: var(--s-2);
+    padding-right: var(--s-2);
+    margin: 0 calc(-1 * var(--s-2));
+  }
+}

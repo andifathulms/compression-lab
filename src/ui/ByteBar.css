@@ -1,0 +1,47 @@
+.bytebar {
+  position: relative;
+  display: flex;
+  height: 14px;
+  background: var(--surface);
+  border-radius: var(--r-1);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+  overflow: hidden;
+}
+
+.bytebar-large {
+  height: 16px;
+}
+
+.bytebar-code,
+.bytebar-model {
+  display: block;
+  height: 100%;
+  flex: 0 0 auto;
+  /* A discrete change — a new coder, a new sample — so it eases. The order
+   * control is discrete too now; nothing continuous drives this bar. */
+  transition: width var(--d-coder) var(--ease-decisive);
+}
+
+/*
+ * The hatch. It is the only fill in the app that is not solid, and it takes
+ * the model-cost token so it follows the theme.
+ */
+.bytebar-model {
+  background-color: var(--model-cost-tint);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--model-cost) 0 1.5px,
+    transparent 1.5px 5px
+  );
+  box-shadow: inset 0 0 0 1px var(--model-cost);
+}
+
+/* Where the original ends, when the total runs past it. */
+.bytebar-original {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+}

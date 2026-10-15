@@ -1,32 +1,26 @@
 /**
- * The rail: the reading, and the three controls that move it.
+ * The readout bar: the reading, its size to scale, and the three controls
+ * that move it. It sits on the steel, because it is apparatus.
  */
 
 .rail {
-  display: flex;
-  align-items: stretch;
-  gap: var(--s-4);
-  flex-wrap: wrap;
-  padding: var(--s-2) var(--s-4);
-  max-width: var(--max-width);
+  display: grid;
+  grid-template-columns: auto minmax(16rem, 1fr) auto;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  padding: 12px var(--s-4);
 }
 
 /* ---- The reading -------------------------------------------------------- */
 
 .rail-reading {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s-3);
-  /* Shrinkable, or on a narrow screen the longest label sets a floor the
-   * whole rail cannot get under and the facts run off the edge. */
-  flex: 0 1 auto;
   min-width: 0;
 }
 
 .rail-figure {
   display: flex;
-  align-items: baseline;
-  gap: var(--s-1);
+  align-items: center;
+  gap: 10px;
 }
 
 .rail-figure .display {
@@ -37,88 +31,82 @@
 }
 
 .rail-unit {
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-ui);
   font-size: var(--t-label);
-  line-height: 1.25;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink-faint);
-  align-self: flex-end;
-  padding-bottom: 2px;
-  /* Two lines, and the break is the one in the markup. */
-  white-space: nowrap;
   font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 
-.rail-facts {
+/* The coder names itself once, here, in its own colour. */
+.rail-coder {
+  font-weight: var(--weight-strong);
+  color: var(--ink);
+}
+
+.rail-coder[data-coder='huffman'] {
+  color: var(--huffman);
+}
+.rail-coder[data-coder='arithmetic'] {
+  color: var(--arithmetic);
+}
+.rail-coder[data-coder='lz77'] {
+  color: var(--lz77);
+}
+
+.rail-caveat {
+  font-weight: var(--weight-medium);
+  color: var(--ink-faint);
+}
+
+/* ---- The size, to scale ------------------------------------------------- */
+
+.rail-size {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-1) var(--s-3);
-  margin: 0;
-  padding-left: var(--s-3);
-  border-left: 1px solid var(--rule);
-  align-self: center;
+  flex-direction: column;
+  gap: 7px;
   min-width: 0;
 }
 
-.rail-facts dt {
+.rail-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s-2);
   font-family: var(--font-ui);
   font-size: var(--t-label);
-  letter-spacing: 0;
-  text-transform: none;
+  font-weight: var(--weight-medium);
   color: var(--ink-faint);
-  white-space: nowrap;
-  font-weight: var(--weight-strong);
 }
 
-/* The compare caveat sits under the coder's name rather than replacing the
- * label above it, so the column is as wide as "lowest of three" and not as
- * wide as that plus a heading. */
+.rail-legend .data {
+  font-size: var(--t-label);
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
 /*
- * Which side of 1 the ratio fell on, said in words under the multiplier. It
- * is the same micro voice as the compare caveat, except when the total came
- * out larger than the original — the one reading in this app that is a
- * failure, and the one worth colouring.
+ * Which side of 1 the ratio fell on, said in words. A chip, because it is the
+ * verdict, and coloured only when the total came out larger than the original
+ * — the one reading in this app that is a failure.
  */
 .rail-sense {
-  display: block;
-  font-size: var(--t-micro);
-  font-weight: var(--weight-text);
-  color: var(--ink-faint);
-  letter-spacing: 0;
-  text-transform: none;
+  margin-left: auto;
+  padding: 1px 9px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: var(--weight-strong);
+  white-space: nowrap;
 }
 
 .rail-sense[data-over='true'] {
   color: var(--model-cost);
-}
-
-.rail-caveat {
-  display: block;
-  font-size: var(--t-micro);
-  font-weight: var(--weight-text);
-  color: var(--ink-faint);
-  letter-spacing: 0;
-}
-
-.rail-facts dd {
-  margin: 3px 0 0;
-  font-family: var(--font-data);
-  font-size: var(--t-data);
-  font-weight: var(--weight-medium);
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-/* The coder's own colour, on the one line that names it. */
-.rail-facts dd[data-coder='huffman'] {
-  color: var(--huffman);
-}
-.rail-facts dd[data-coder='arithmetic'] {
-  color: var(--arithmetic);
-}
-.rail-facts dd[data-coder='lz77'] {
-  color: var(--lz77);
+  border-color: var(--model-cost);
 }
 
 /*
@@ -126,20 +114,26 @@
  * by fading rather than by blanking. A number that disappears while you type
  * is worse than a number you can see is a moment behind.
  */
-.rail-stale .rail-reading {
+.rail-stale .rail-reading,
+.rail-stale .rail-size {
   opacity: 0.45;
   transition: opacity var(--d-coder) var(--ease-standard);
 }
 
 /* ---- The controls ------------------------------------------------------- */
 
+.coder-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
 .rail-controls {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: var(--s-3);
-  flex: 1 1 32rem;
-  justify-content: flex-end;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .rail-control {
@@ -148,104 +142,98 @@
   gap: 5px;
 }
 
-.rail-control-order {
-  flex: 1 1 15rem;
-  max-width: 22rem;
-  min-width: 11rem;
-}
-
-.rail-slider {
-  display: flex;
-  flex-direction: column;
-}
-
-.rail-ticks {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  color: var(--ink-faint);
-  /* The grip is 15px wide, so the end ticks sit half a grip in from the ends
-   * of the track and the numbers line up with the positions they name. */
-  padding: 0 6px;
-  margin-top: -3px;
-}
-
-.rail-tick-on {
-  color: var(--ink);
-  font-weight: var(--weight-strong);
-}
-
 /* ---- The segmented control ---------------------------------------------- */
 
 /*
- * One control, four exclusive states, drawn as one object rather than four
- * buttons. Each coder keeps its own colour on the underline, which is the same
- * colour its line takes on the staircase and its panel takes in the bay — so
- * the control, the plot and the instrument all agree without a legend.
+ * One control, exclusive states, drawn as one object rather than several
+ * buttons. Each coder keeps its own colour on its dot and on the underline,
+ * which is the same colour its line takes on the staircase and its panel takes
+ * in the bay — so the control, the plot and the instrument agree.
  */
 .segmented {
   display: inline-flex;
-  background: var(--sunk);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-2);
-  padding: 2px;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-3);
+  padding: 3px;
   gap: 2px;
 }
 
 .segmented-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 30px;
   border: 0;
-  border-radius: var(--r-1);
+  border-radius: 7px;
   background: transparent;
-  padding: 5px 10px;
-  color: var(--ink-faint);
+  padding: 5px 11px;
+  color: var(--ink-mid);
+  font-weight: var(--weight-medium);
   white-space: nowrap;
 }
 
-.segmented-item:hover:not([aria-pressed='true']) {
-  background: transparent;
-  color: var(--ink-mid);
+.segmented-item:hover:not([aria-pressed='true']):not([aria-checked='true']) {
+  background: var(--surface-hover);
+  color: var(--ink);
   border: 0;
 }
 
-.segmented-item[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--ink);
+.segmented-item[aria-pressed='true'],
+.segmented-item[aria-checked='true'] {
+  background: var(--ink);
+  color: var(--page);
   border: 0;
-  box-shadow: var(--shadow-1);
   /* A discrete control, so it gets a timed transition. */
   transition:
     background var(--d-coder) var(--ease-decisive),
     color var(--d-coder) var(--ease-decisive);
 }
 
-.segmented-item[aria-pressed='true'][data-coder='huffman'] {
-  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--huffman);
+.coder-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
 }
-.segmented-item[aria-pressed='true'][data-coder='arithmetic'] {
-  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--arithmetic);
+
+.segmented-item[data-coder='huffman'] .coder-dot {
+  background: var(--huffman);
 }
-.segmented-item[aria-pressed='true'][data-coder='lz77'] {
-  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--lz77);
+.segmented-item[data-coder='arithmetic'] .coder-dot {
+  background: var(--arithmetic);
 }
-.segmented-item[aria-pressed='true'][data-coder='compare'] {
-  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--ink);
+.segmented-item[data-coder='lz77'] .coder-dot {
+  background: var(--lz77);
+}
+
+/* On the ink fill, the dot keeps its colour but gets a ring of the page so it
+ * does not sink into a dark coder colour on the dark ground. */
+.segmented-item[aria-pressed='true'] .coder-dot {
+  box-shadow: 0 0 0 1.5px var(--page);
+}
+
+.segmented-order .segmented-item {
+  min-width: 40px;
+  padding: 5px 8px;
+  font-family: var(--font-data);
+  font-size: var(--t-label);
 }
 
 /* ---- The adaptive switch ------------------------------------------------ */
 
 /*
- * A switch rather than a checkbox, and it carries its consequence.
- *
- * Adaptive coding is the reason the model cost collapses to zero and it is
- * half the answer to why LZ77 wins. Labelling the control "Adaptive" and
- * leaving a reader to discover that from the staircase is hiding the most
- * useful sentence in the app inside a chart.
+ * A switch rather than a checkbox, and it carries its consequence. Adaptive
+ * coding is the reason the model cost collapses and it is half the answer to
+ * why LZ77 wins; labelling it "Adaptive" and leaving a reader to discover that
+ * from the staircase would hide the most useful sentence in the app.
  */
 .switch {
   display: flex;
   align-items: center;
   gap: var(--s-1);
+  min-height: 36px;
   cursor: pointer;
   user-select: none;
 }
@@ -259,29 +247,26 @@
 
 .switch-track {
   flex: 0 0 auto;
-  width: 32px;
-  height: 18px;
-  border-radius: 9px;
-  background: var(--sunk);
-  border: 1px solid var(--rule-strong);
-  padding: 2px;
+  width: 34px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--rule-strong);
+  padding: 3px;
   display: flex;
   transition: background var(--d-fast) var(--ease-standard);
 }
 
 .switch-grip {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--ink-faint);
-  transition:
-    transform var(--d-fast) var(--ease-decisive),
-    background var(--d-fast) var(--ease-standard);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--d-fast) var(--ease-decisive);
 }
 
 .switch input:checked + .switch-track {
   background: var(--ink);
-  border-color: var(--ink);
 }
 
 .switch input:checked + .switch-track .switch-grip {
@@ -299,98 +284,52 @@
   flex-direction: column;
   font-family: var(--font-ui);
   font-size: var(--t-data);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-strong);
   color: var(--ink);
   line-height: 1.25;
+  white-space: nowrap;
 }
 
 .switch-consequence {
-  font-size: var(--t-micro);
-  font-weight: var(--weight-text);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
   color: var(--ink-faint);
-  letter-spacing: 0;
-  text-transform: none;
 }
 
 /* ---- Responsive --------------------------------------------------------- */
 
-@media (max-width: 1180px) {
+/* The size bar takes its own row before anything gets squeezed. */
+@media (max-width: 1100px) {
   .rail {
+    grid-template-columns: auto minmax(0, 1fr);
     padding-left: var(--s-3);
     padding-right: var(--s-3);
-    gap: var(--s-3);
   }
-}
-
-@media (max-width: 980px) {
   .rail-controls {
-    justify-content: flex-start;
-    flex: 1 1 100%;
-  }
-}
-
-/* Layout-only wrapper: invisible to the flex row it sits in, until the
- * narrow breakpoint gives it a job. */
-.rail-controls-pair {
-  display: contents;
-}
-
-/*
- * The order slider and the adaptive switch sit side by side rather than
- * stacked. They are the two controls a phone reader needs least urgently —
- * the reading and the coder are the demonstration — and stacked they cost
- * about a hundred and ten pixels of the one screen that has to make the case.
- *
- * Side by side, not hidden: dropping a control on a small screen is how an app
- * ends up with a phone version that cannot do what the page promises.
- */
-@media (max-width: 720px) {
-  .rail-controls {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--s-2);
-  }
-  .rail-control-coder {
     grid-column: 1 / -1;
-  }
-  .rail-controls-pair {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: var(--s-2);
-    align-items: start;
-  }
-  .rail-control-order {
-    max-width: none;
+    justify-content: flex-start;
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 720px) {
   .rail {
+    grid-template-columns: minmax(0, 1fr);
     padding: var(--s-2);
-    gap: var(--s-2);
+    gap: 12px;
   }
-  .rail-facts {
-    gap: var(--s-2);
-    padding-left: var(--s-2);
-  }
-  /* Two words of label per fact rather than one long line running off the
-   * edge of the screen. */
-  .rail-facts dt {
-    white-space: normal;
-  }
-  .rail-facts > div {
-    min-width: 0;
-  }
-  /* The ratio is the fact that survives the squeeze: it is the only one that
-   * does not need another number to be read against. */
-  .rail-facts > div:nth-child(2) {
-    display: none;
+  .rail-controls {
+    gap: 12px var(--s-2);
   }
   .rail-control-order {
     flex: 1 1 100%;
-    max-width: none;
   }
-  .segmented-item {
-    padding: 5px 8px;
+  .rail-control-order .segmented {
+    display: flex;
+  }
+  .rail-control-order .segmented-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
   }
 }

@@ -1,0 +1,98 @@
+/*
+ * The one thing in the app that floats, so it is the one thing with a
+ * shadow. It sits over the foot of the specimen's scroll fade.
+ */
+.lens {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+  min-height: 4.25rem;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-float);
+}
+
+.lens-empty {
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
+  color: var(--ink-faint);
+}
+
+.lens-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lens-key {
+  flex: 0 0 auto;
+  min-width: 28px;
+  padding: 1px 7px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+  background: var(--surface-hover);
+  font-family: var(--font-data);
+  font-size: var(--t-data);
+  text-align: center;
+  color: var(--ink);
+  white-space: pre;
+}
+
+.lens-context {
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lens-word {
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  color: var(--ink-faint);
+}
+
+.lens-math {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-label);
+  color: var(--ink-mid);
+}
+
+.lens-cost {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: var(--t-figure);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-figure);
+  line-height: 1;
+}
+
+.lens-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface-hover);
+  overflow: hidden;
+}
+
+.lens-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+@media (max-width: 560px) {
+  .lens-row {
+    flex-wrap: wrap;
+  }
+  .lens-math {
+    order: 5;
+    flex-basis: 100%;
+  }
+}

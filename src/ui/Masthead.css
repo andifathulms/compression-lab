@@ -1,31 +1,22 @@
 /**
- * The masthead: the claim, and the chrome that is not a measurement.
+ * The brand row: who this is, and the chrome that is not a measurement.
  */
 
-/*
- * Two columns: who this is on the left, the chrome on the right.
- *
- * It was one wrapping flex row with the name and the lead sharing a baseline.
- * Once the lead grew into a real sentence at reading size, the two of them
- * came to more than half the width, the tools wrapped onto a second row, and
- * the masthead went from 95px to 174px — most of it empty. Stacking the name
- * over the lead gives the tools their own column and puts the whole thing
- * back under 120px.
- */
 .masthead {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: var(--s-2) var(--s-4);
-  padding: var(--s-3) var(--s-4) var(--s-2);
-  max-width: var(--max-width);
-  background: var(--sunk);
+  display: flex;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  flex-wrap: wrap;
+  padding: 10px var(--s-4);
+  /* Paper, like the specimen: the brand row is not apparatus. */
+  background: var(--page);
 }
 
 .masthead-identity {
   display: flex;
   flex-direction: column;
-  gap: var(--s-0);
+  gap: 1px;
+  flex: 1 1 18rem;
   min-width: 0;
 }
 
@@ -33,7 +24,9 @@
   display: flex;
   align-items: center;
   gap: var(--s-1);
-  font-size: var(--t-text);
+  font-family: var(--font-text);
+  font-size: 1.125rem;
+  line-height: 1.2;
   color: var(--ink);
   /* Two words, and they are the app's name; they do not break across lines. */
   white-space: nowrap;
@@ -48,32 +41,65 @@
 }
 
 /*
- * What the app does, in the prose voice, on the same baseline as the name. It
- * is set in the reading size rather than the prose size: it is the one line a
- * first-time visitor is guaranteed to read, and at prose size beside a
- * nineteen-pixel wordmark it read as a subtitle to be skipped.
+ * What the app does, in one sentence, indented to sit under the name rather
+ * than under the mark. Label size: it is read once, then it is furniture.
  */
 .masthead-lead {
-  font-family: var(--font-text);
-  font-size: var(--t-text);
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
   line-height: 1.35;
-  color: var(--ink);
+  color: var(--ink-faint);
+  padding-left: 28px;
   max-width: 34rem;
   text-wrap: pretty;
 }
 
 .masthead-tools {
   display: flex;
-  align-items: flex-end;
-  gap: var(--s-2);
+  align-items: center;
+  gap: var(--s-1) 12px;
   flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.masthead-divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 2px;
+  background: var(--rule-strong);
 }
 
 .field {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  align-items: center;
+  gap: var(--s-1);
   position: relative;
+}
+
+.field-sample select {
+  min-height: 36px;
+  border-color: var(--rule-strong);
+  border-radius: var(--r-3);
+  padding-left: 12px;
+  max-width: 15rem;
+}
+
+/* An icon and a word, the same height as the selects and segments beside it. */
+.tool-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  border-color: var(--rule-strong);
+  border-radius: var(--r-3);
+  color: var(--ink);
+}
+
+.tool-button .glyph {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.6;
 }
 
 /*
@@ -81,6 +107,11 @@
  * offer, and it disappears the moment it is taken.
  */
 .restore {
+  min-height: 36px;
+  border-radius: var(--r-3);
+  border-style: dashed;
+  border-color: var(--ink-faint);
+  color: var(--ink);
   white-space: nowrap;
 }
 
@@ -109,7 +140,7 @@
   border: 0;
   border-radius: var(--r-2);
   background: transparent;
-  padding: var(--s-1) var(--s-1);
+  padding: var(--s-1);
   white-space: normal;
 }
 
@@ -120,35 +151,40 @@
 
 .share-option-title {
   font-size: var(--t-data);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-strong);
   color: var(--ink);
 }
 
 /* The reason is on the control, not in a tooltip. One of these two actions
  * puts someone's private writing in the address bar and it has to say so. */
 .share-option-note {
-  font-family: var(--font-text);
-  font-size: var(--t-micro);
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
   line-height: 1.45;
   color: var(--ink-mid);
 }
 
 /* ---- Theme -------------------------------------------------------------- */
 
-.segmented-quiet {
-  background: transparent;
+/* Three conventional marks; the words are read out but not drawn. */
+.segmented-quiet .segmented-item {
+  min-width: 34px;
+  padding: 5px 8px;
 }
 
-.segmented-quiet .segmented-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 9px;
+.segmented-quiet .segmented-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .glyph {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
@@ -157,21 +193,16 @@
 
 .segmented-quiet .segmented-item[aria-pressed='true'] .glyph {
   /* The chosen ground fills its own mark, so the state reads at a glance
-   * without relying on the tinted background alone. */
+   * without relying on the fill behind it alone. */
   fill: currentColor;
-  stroke: currentColor;
-}
-
-.segmented-quiet .segmented-item[aria-pressed='true'][data-coder] {
-  box-shadow: var(--shadow-1);
 }
 
 .masthead-status {
   flex: 1 1 100%;
-  min-height: 1.2em;
   font-family: var(--font-ui);
-  font-size: var(--t-micro);
+  font-size: var(--t-label);
   color: var(--ink-mid);
+  text-align: right;
 }
 
 .masthead-status:empty {
@@ -187,65 +218,59 @@
   }
 }
 
-@media (max-width: 860px) {
-  /* One column: the tools go under the identity rather than beside it. */
-  .masthead {
-    grid-template-columns: minmax(0, 1fr);
+/* Below this the tools need the room. The same sentence opens the staircase
+ * chapter, so a narrower screen does not lose it. */
+@media (max-width: 1499px) {
+  .masthead-lead {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .masthead-tools {
+    justify-content: flex-start;
+    width: 100%;
   }
 }
 
 @media (max-width: 720px) {
-  /*
-   * The tools collapse to one row of controls with no stacked labels.
-   *
-   * On a phone the masthead was 301px — a wordmark, a lead, and then three
-   * labelled fields stacked down the screen — and the specimen's first line
-   * of actual text landed at y=1126 on an 844px viewport. The entire first
-   * screen was chrome, so a phone visitor saw a settings form and never
-   * learned there was anything to look at.
-   *
-   * The labels go because each control already says what it is: the select
-   * shows the sample's name, the button says "Copy link", and the ground
-   * control is three conventional marks.
-   */
+  .masthead {
+    padding: 10px var(--s-2);
+    gap: var(--s-1);
+  }
+  .masthead-identity {
+    flex-basis: auto;
+  }
   .masthead-tools {
-    width: 100%;
-    align-items: center;
     gap: var(--s-1);
   }
-  .masthead-tools .label {
-    /* Still read out; just not taking a line each. */
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  .masthead-divider,
+  .tool-text {
+    display: none;
   }
-  .field {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--s-1);
-  }
-  .field select {
+  .field-sample select {
     max-width: 11rem;
+  }
+  .coder-switch {
+    order: 10;
+    flex: 1 1 100%;
+  }
+  .coder-switch .label {
+    display: none;
+  }
+  .coder-switch .segmented {
+    display: flex;
+    flex: 1 1 auto;
+  }
+  .coder-switch .segmented-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
   }
   .share-menu {
     right: auto;
     left: 0;
     width: min(20rem, calc(100vw - var(--s-4)));
-  }
-  /* On a narrow screen the ground control keeps its marks and drops its
-   * words. There are three of them and they are conventional. */
-  .segmented-quiet .segmented-text {
-    display: none;
-  }
-}
-
-@media (max-width: 560px) {
-  .masthead {
-    padding: var(--s-2);
   }
 }
