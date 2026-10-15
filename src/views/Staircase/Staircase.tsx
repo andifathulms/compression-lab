@@ -7,6 +7,12 @@
  * entropy is defined at integer orders, and drawing a curve between them would
  * assert a continuity that does not exist.
  *
+ * Over the steps, each order is a stacked bar: the code stream an ideal coder
+ * pays, and on top of it the model description, hatched. The total is the top
+ * of the bar, so "total = code + model" is something the eye sees rather than
+ * something a caption asserts, and the minimum is simply the shortest bar.
+ * These used to be two lines, and the sum lived only in the prose.
+ *
  * Every line is labelled with the model it belongs to. There is no unlabelled
  * entropy line here, because the whole point is that entropy is a property of
  * a text *under a model* — and LZ77, which brings no model, routinely lands
@@ -31,9 +37,9 @@ interface Props {
   onOrder: (order: Order) => void;
 }
 
-const WIDTH = 620;
-const HEIGHT = 320;
-const PAD = { top: 20, right: 128, bottom: 38, left: 50 };
+const WIDTH = 640;
+const HEIGHT = 330;
+const PAD = { top: 30, right: 112, bottom: 40, left: 44 };
 
 export function Staircase({
   analysis,
@@ -100,10 +106,6 @@ export function Staircase({
     return parts.join(' ');
   };
 
-  /** Model cost and total are defined at integer orders too, so: points and
-   * straight segments between them, at the centre of each step. */
-  const linePath = (pick: (o: Order) => number): string =>
-    ORDERS.map((o) => `${o === 0 ? 'M' : 'L'} ${centre(o)} ${y(pick(o))}`).join(' ');
 
   const best = analysis.optimalOrder;
   const current = pickResult(coder, huffman, arithmetic, lz77);
@@ -159,24 +161,10 @@ export function Staircase({
       [
         {
           id: 'H',
-          label: 'H',
+          label: 'H, entropy',
           colour: 'var(--ink-mid)',
           at: y(rows[5].entropyBits),
           from: WIDTH - PAD.right,
-        },
-        {
-          id: 'model',
-          label: 'model',
-          colour: 'var(--model-cost)',
-          at: y(rows[5].modelBits),
-          from: centre(5),
-        },
-        {
-          id: 'total',
-          label: 'total',
-          colour: 'var(--ink)',
-          at: y(rows[5].totalBits),
-          from: centre(5),
         },
         ...points.map((p) => ({
           id: p.key,
@@ -233,12 +221,42 @@ export function Staircase({
           </p>
 
           <div className="stair-plot">
+          <div className="stair-legend" aria-hidden="true">
+            <span>
+              <i className="stair-swatch stair-swatch-code" />
+              Code stream, ideal coder
+            </span>
+            <span>
+              <i className="stair-swatch stair-swatch-model" />
+              Model description
+            </span>
+            <span>
+              <i className="stair-swatch stair-swatch-entropy" />
+              H, conditional entropy
+            </span>
+            <span>
+              <i className="stair-swatch stair-swatch-original" />
+              Uncompressed
+            </span>
+          </div>
           <svg
             className="stair-svg"
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             role="img"
-            aria-label={`Conditional entropy, model cost and total, orders 0 to 5. Lowest total at order ${best}.`}
+            aria-label={`Conditional entropy, and the total split into code stream and model description, orders 0 to 5. Lowest total at order ${best}.`}
           >
+            <defs>
+              <pattern
+                id="stair-hatch"
+                width="5"
+                height="5"
+                patternUnits="userSpaceOnUse"
+                patternTransform="rotate(45)"
+              >
+                <rect width="5" height="5" className="stair-hatch-ground" />
+                <line x1="0" y1="0" x2="0" y2="5" className="stair-hatch-line" />
+              </pattern>
+            </defs>
             {ticks.map((v) => (
               <g key={v}>
                 <line
@@ -255,8 +273,7 @@ export function Staircase({
               </g>
             ))}
 
-            {/* The order in view. A marker, not a highlight: the slider is a
-                continuous control and this follows it on the same frame. */}
+            {/* The order in view, as a raised column behind its bar. */}
             <rect
               x={x(order)}
               y={PAD.top}
@@ -266,8 +283,8 @@ export function Staircase({
             />
 
             {/* The chart is the control. Clicking a column picks that order,
-                which is the gesture a reader tries first; the H0 to H5 buttons
-                below are the same thing on the keyboard path. */}
+                which is the gesture a reader tries first; the H0 to H5 group in
+                the readout bar is the same thing on the keyboard path. */}
             {ORDERS.map((o) => (
               <rect
                 key={`hit${o}`}
@@ -282,38 +299,64 @@ export function Staircase({
               </rect>
             ))}
 
-            <path d={stepPath((o) => rows[o].entropyBits)} className="stair-entropy" />
-            <path d={linePath((o) => rows[o].modelBits)} className="stair-model" />
-            <path d={linePath((o) => rows[o].totalBits)} className="stair-total" />
+            {/*
+              * The bars. Code stream, then the model description stacked on
+              * it, hatched because it is overhead rather than output. Where
+              * the axis is fitted to the steps a bar can run off the top, and
+              * it says so with an arrow and its value rather than vanishing.
+              */}
+            {ORDERS.map((o) => {
+              const r = rows[o];
+              const bw = stepW * 0.5;
+              const bx = centre(o) - bw / 2;
+              const codeTop = y(r.codeBits);
+              const totalTop = y(r.totalBits);
+              const off = r.totalBits > maxBits;
+              const on = o === order;
+              return (
+                <g key={`bar${o}`} className={on ? 'stair-bar stair-bar-on' : 'stair-bar'}>
+                  <rect
+                    x={bx}
+                    y={codeTop}
+                    width={bw}
+                    height={Math.max(0, y(0) - codeTop)}
+                    className="stair-bar-code"
+                  />
+                  <rect
+                    x={bx}
+                    y={totalTop}
+                    width={bw}
+                    height={Math.max(0, codeTop - totalTop)}
+                    className="stair-bar-model"
+                  />
+                  {off ? (
+                    <>
+                      <path
+                        d={`M ${centre(o) - 6} ${PAD.top + 4} L ${centre(o)} ${PAD.top - 3} L ${
+                          centre(o) + 6
+                        } ${PAD.top + 4}`}
+                        className="stair-bar-off"
+                      />
+                      <text x={centre(o)} y={PAD.top - 9} className="stair-bar-value stair-bar-value-off" textAnchor="middle">
+                        {r.totalBits.toFixed(1)}
+                      </text>
+                    </>
+                  ) : (
+                    <text x={centre(o)} y={totalTop - 6} className="stair-bar-value" textAnchor="middle">
+                      {r.totalBits.toFixed(2)}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
 
-            {ORDERS.map((o) => (
-              <circle
-                key={`m${o}`}
-                cx={centre(o)}
-                cy={y(rows[o].modelBits)}
-                r={2.5}
-                fill="var(--model-cost)"
-              />
-            ))}
-            {ORDERS.map((o) => (
-              <circle
-                key={`t${o}`}
-                cx={centre(o)}
-                cy={y(rows[o].totalBits)}
-                r={o === best ? 5 : 2.5}
-                fill={o === best ? 'var(--ink)' : 'var(--ink-mid)'}
-              />
-            ))}
+            <path d={stepPath((o) => rows[o].entropyBits)} className="stair-entropy" />
 
             {/*
               * What the text costs uncompressed, in the same units as
-              * everything else on the plot.
-              *
-              * Without it the reader has to hold "8 bits per character" in
-              * their head to know which orders actually compress. With it,
-              * "below the line is smaller than what you started with" is the
-              * first thing the eye can do with the chart, and the order-5
-              * total being five times above it stops being an abstract number.
+              * everything else on the plot. With it, "below the line is
+              * smaller than what you started with" is the first thing the eye
+              * can do with the chart.
               */}
             {Number.isFinite(originalRate) && originalRate <= maxBits ? (
               <g>
@@ -324,40 +367,40 @@ export function Staircase({
                   y2={y(originalRate)}
                   className="stair-original"
                 />
-                {/* Right-aligned at the end of its own rule. Anchored left it
-                    sat on top of the "lowest total" annotation, which lands
-                    near the middle whenever the minimum is at a low order —
-                    which is most of the time. */}
                 <text
-                  x={WIDTH - PAD.right - 4}
-                  y={y(originalRate) - 4}
+                  x={PAD.left + 4}
+                  y={y(originalRate) - 5}
                   className="stair-original-label"
-                  textAnchor="end"
+                  textAnchor="start"
                 >
                   uncompressed, {originalRate.toFixed(1)}
                 </text>
               </g>
             ) : null}
 
-            {/* The minimum, annotated. When a longer text moves it right, the
-                annotation moves with it, and that movement is the thesis. */}
-            <line
-              x1={centre(best)}
-              x2={centre(best)}
-              y1={y(rows[best].totalBits)}
-              y2={PAD.top + plotH}
-              stroke="var(--ink)"
-              strokeWidth={1}
-              strokeDasharray="2 3"
-            />
-            <text
-              x={centre(best)}
-              y={y(rows[best].totalBits) - 10}
-              className="stair-annotation"
-              textAnchor="middle"
-            >
-              lowest total {rows[best].totalBits.toFixed(2)}
-            </text>
+            {/* The minimum, called out over its bar. When a longer text moves
+                it right, the callout moves with it, and that movement is the
+                thesis. */}
+            {rows[best].totalBits <= maxBits ? (
+              <g className="stair-min">
+                <line
+                  x1={centre(best)}
+                  x2={centre(best)}
+                  y1={y(rows[best].totalBits) - 18}
+                  y2={y(rows[best].totalBits) - 30}
+                />
+                <rect
+                  x={centre(best) - 40}
+                  y={y(rows[best].totalBits) - 50}
+                  width={80}
+                  height={20}
+                  rx={10}
+                />
+                <text x={centre(best)} y={y(rows[best].totalBits) - 36.5} textAnchor="middle">
+                  lowest total
+                </text>
+              </g>
+            ) : null}
 
             {points.map((p) => (
               <g key={p.key}>
@@ -417,7 +460,7 @@ export function Staircase({
                 className={o === order ? 'stair-axis stair-axis-on' : 'stair-axis'}
                 textAnchor="middle"
               >
-                {o}
+                H{o}
               </text>
             ))}
             <text x={centre(2.5)} y={HEIGHT - 1} className="stair-axis" textAnchor="middle">
@@ -427,23 +470,6 @@ export function Staircase({
           </div>
 
           <div className="stair-tools">
-          <div className="stair-orders segmented" role="group" aria-label="Model order">
-            {ORDERS.map((o) => (
-              <button
-                key={o}
-                type="button"
-                className="segmented-item"
-                aria-pressed={o === order}
-                onClick={() => onOrder(o)}
-                title={`H${o} — conditional on ${o} previous ${
-                  o === 1 ? 'character' : 'characters'
-                }`}
-              >
-                H{o}
-              </button>
-            ))}
-          </div>
-
           <div className="segmented" role="group" aria-label="Vertical axis">
             <button
               type="button"
@@ -468,8 +494,8 @@ export function Staircase({
 
           {clipped ? (
             <p className="assumption">
-              The axis is fitted to the entropy steps, so the model and total lines run off the
-              top of the plot rather than being drawn. At order 5 the total is{' '}
+              The axis is fitted to the entropy steps, so the taller bars run off the top of the
+              plot and are marked with an arrow and their value. At order 5 the total is{' '}
               {rows[5].totalBits.toFixed(1)} bits per symbol.
             </p>
           ) : null}
@@ -493,7 +519,7 @@ export function Staircase({
             </div>
           </dl>
 
-          <div className="stair-table scroll-box">
+          <div className="stair-table">
           <table>
             <caption className="visually-hidden">
               Conditional entropy, model description, code stream and total, by
@@ -515,9 +541,24 @@ export function Staircase({
                   <th scope="row">H{r.order}</th>
                   <td>{r.entropyBits.toFixed(3)}</td>
                   <td>{r.contexts.toLocaleString()}</td>
-                  <td>{r.modelBits.toFixed(3)}</td>
+                  <td>
+                    <span
+                      className="stair-spark stair-spark-model"
+                      style={{ width: `${sparkWidth(r.modelBits, rows)}px` }}
+                      aria-hidden="true"
+                    />
+                    {r.modelBits.toFixed(3)}
+                  </td>
                   <td>{r.codeBits.toFixed(3)}</td>
-                  <td>{r.totalBits.toFixed(3)}</td>
+                  <td>
+                    <span
+                      className="stair-spark"
+                      style={{ width: `${sparkWidth(r.totalBits, rows)}px` }}
+                      aria-hidden="true"
+                    />
+                    {r.totalBits.toFixed(3)}
+                    {r.order === best ? <span className="stair-lowest"> lowest</span> : null}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -567,9 +608,9 @@ export function Staircase({
           <p className="assumption">
             H{order} is the entropy of this text conditional on the {order} previous{' '}
             {order === 1 ? 'character' : 'characters'}, measured over this text with unsmoothed
-            counts. The model line is the serialised description in bytes, measured, not
-            estimated. The total is that description plus the code stream an ideal coder would
-            produce against the same model. LZ77 is drawn as a rule across every order because
+            counts. The hatched part of each bar is the serialised description in bytes,
+            measured, not estimated. The whole bar is that description plus the code stream an
+            ideal coder would produce against the same model. LZ77 is drawn as a rule across every order because
             it has no model order: its model is the text it has already emitted, and it
             transmits none of it.
           </p>
@@ -599,4 +640,10 @@ function pickResult(
     );
   }
   return huffman;
+}
+
+/** A table cell's inline bar, scaled to the largest total in the table. */
+function sparkWidth(bits: number, rows: TextAnalysis['rows']): number {
+  const max = Math.max(1e-9, ...rows.map((r) => r.totalBits));
+  return 3 + (Math.max(0, bits) / max) * 52;
 }

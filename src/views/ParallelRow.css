@@ -1,0 +1,70 @@
+.dumbbell {
+  max-width: 52rem;
+  margin: var(--s-2) 0;
+  padding: 10px 12px 4px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--surface);
+}
+
+.dumbbell svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dumbbell-pending {
+  background: var(--surface);
+}
+
+.dumbbell-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.dumbbell-tick,
+.dumbbell-key text {
+  font-family: var(--font-data);
+  font-size: 11px;
+  fill: var(--ink-faint);
+}
+
+.dumbbell-name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink-mid);
+}
+
+.dumbbell-row-on .dumbbell-name {
+  fill: var(--ink);
+}
+
+.dumbbell-h2 {
+  fill: var(--surface);
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+}
+
+.dumbbell-h0 {
+  fill: var(--ink);
+}
+
+.dumbbell-lz {
+  fill: var(--lz77);
+}
+
+/* The margin. It is the finding, so it is the widest mark on the chart. */
+.dumbbell-bar {
+  stroke: var(--lz77);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+
+.dumbbell-margin {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--lz77);
+}

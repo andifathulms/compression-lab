@@ -8,14 +8,17 @@
  * prediction by a wider margin on the Indonesian and Finnish texts than on the
  * English one.
  *
- * The margin is the figure that carries the claim, so it is the column the row
- * is sorted on and the only one given emphasis. This is a sample chooser plus
- * a row, deliberately: any more and it becomes a research apparatus.
+ * The margin is the figure that carries the claim, so it is drawn as the mark:
+ * a dumbbell from LZ77 to the order-0 entropy, one row per language, with the
+ * order-2 step beside it for scale. The table stays under it for anyone who
+ * wants the exact values. This is a sample chooser plus a chart, deliberately:
+ * any more and it becomes a research apparatus.
  */
 
 import { useEffect, useState } from 'react';
 import { analyseText, runLz77, type Lz77Options } from '../engine/index.ts';
 import { PARALLEL_SAMPLES } from '../samples/index.ts';
+import './ParallelRow.css';
 
 interface Props {
   lz77: Lz77Options;
@@ -104,6 +107,7 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
         translations. Character-level entropy and LZ77 measure different kinds of redundancy, and
         the gap between them is not the same in every language.
       </p>
+      <Dumbbell rows={rows} currentSampleId={currentSampleId} />
       {/* The only table in the app that was not in a scroll box. Six columns of
           tabular figures do not fit a 320px viewport, so without one the
           document itself scrolled sideways — 417px of content in a 320px
@@ -167,5 +171,82 @@ export function ParallelRow({ lz77, currentSampleId, onChoose }: Props): JSX.Ele
         the app is not going to pretend otherwise.
       </p>
     </section>
+  );
+}
+
+const W = 640;
+const ROW = 40;
+const PAD = { top: 34, right: 84, bottom: 34, left: 104 };
+
+/**
+ * One row per language: order-2 entropy as a hollow mark, then a bar from the
+ * LZ77 rate to the order-0 entropy. The length of that bar is the margin, the
+ * figure the claim rests on, so it is the thing drawn biggest.
+ */
+function Dumbbell({
+  rows,
+  currentSampleId,
+}: {
+  rows: Row[] | null;
+  currentSampleId: string | null;
+}): JSX.Element {
+  const n = PARALLEL_SAMPLES.length;
+  const height = PAD.top + n * ROW + PAD.bottom;
+  if (rows === null) {
+    return <div className="dumbbell dumbbell-pending" style={{ aspectRatio: `${W} / ${height}` }} />;
+  }
+  const lo = Math.floor(Math.min(...rows.map((r) => r.h2)) * 2) / 2 - 0.25;
+  const hi = Math.ceil(Math.max(...rows.map((r) => r.h0)) * 2) / 2 + 0.25;
+  const x = (v: number): number => PAD.left + ((v - lo) / (hi - lo)) * (W - PAD.left - PAD.right);
+  const ticks: number[] = [];
+  for (let v = Math.ceil(lo * 2) / 2; v <= hi; v += 0.5) ticks.push(v);
+  return (
+    <div className="dumbbell">
+      <svg
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`Order-0 entropy against the LZ77 rate for four translations. ${rows
+          .map((r) => `${r.language}: LZ77 is ${r.margin.toFixed(3)} bits per symbol below H0`)
+          .join('; ')}.`}
+      >
+        <g className="dumbbell-key">
+          <circle cx={PAD.left} cy={14} r={4.5} className="dumbbell-h2" />
+          <text x={PAD.left + 10} y={18}>H2</text>
+          <circle cx={PAD.left + 70} cy={14} r={5.5} className="dumbbell-lz" />
+          <text x={PAD.left + 80} y={18}>LZ77 total</text>
+          <circle cx={PAD.left + 182} cy={14} r={5.5} className="dumbbell-h0" />
+          <text x={PAD.left + 192} y={18}>H0</text>
+        </g>
+        {ticks.map((v) => (
+          <g key={v}>
+            <line x1={x(v)} x2={x(v)} y1={PAD.top - 6} y2={height - PAD.bottom} className="dumbbell-grid" />
+            <text x={x(v)} y={height - PAD.bottom + 16} className="dumbbell-tick" textAnchor="middle">
+              {v.toFixed(1)}
+            </text>
+          </g>
+        ))}
+        {rows.map((r, i) => {
+          const cy = PAD.top + i * ROW + ROW / 2;
+          const on = r.id === currentSampleId;
+          return (
+            <g key={r.id} className={on ? 'dumbbell-row dumbbell-row-on' : 'dumbbell-row'}>
+              <text x={PAD.left - 14} y={cy + 4} className="dumbbell-name" textAnchor="end">
+                {r.language}
+              </text>
+              <circle cx={x(r.h2)} cy={cy} r={4.5} className="dumbbell-h2" />
+              <line x1={x(r.lz)} x2={x(r.h0)} y1={cy} y2={cy} className="dumbbell-bar" />
+              <circle cx={x(r.lz)} cy={cy} r={6} className="dumbbell-lz" />
+              <circle cx={x(r.h0)} cy={cy} r={6} className="dumbbell-h0" />
+              <text x={x(r.h0) + 12} y={cy + 4} className="dumbbell-margin">
+                −{r.margin.toFixed(3)}
+              </text>
+            </g>
+          );
+        })}
+        <text x={(PAD.left + W - PAD.right) / 2} y={height - 4} className="dumbbell-tick" textAnchor="middle">
+          bits per symbol
+        </text>
+      </svg>
+    </div>
   );
 }

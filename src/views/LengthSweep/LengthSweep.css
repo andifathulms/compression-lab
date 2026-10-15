@@ -94,6 +94,5 @@
 
 .sweep-table {
   margin: var(--s-2) 0 0;
-  max-height: 14rem;
   max-width: 30rem;
 }

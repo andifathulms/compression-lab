@@ -12,6 +12,7 @@
 import { useMemo } from 'react';
 import type { WasteEntry } from '../../engine/index.ts';
 import { display } from '../BitLedger/BitLedger.tsx';
+import { ShowAll, useRowLimit } from '../../ui/RowLimit.tsx';
 import './WastePlot.css';
 
 interface Props {
@@ -39,6 +40,7 @@ export function WastePlot({
     () => entries.filter((e) => e.frequency > 0).slice(0, MAX_SYMBOLS),
     [entries],
   );
+  const limit = useRowLimit(shown.length);
 
   if (shown.length === 0) {
     return <p className="label">Nothing to plot yet.</p>;
@@ -104,7 +106,7 @@ export function WastePlot({
         </span>
       </p>
 
-      <div className="waste-table scroll-box">
+      <div className="waste-table table-frame">
       <table>
         <caption className="visually-hidden">
           Ideal cost and assigned code length for every symbol that occurs
@@ -119,7 +121,7 @@ export function WastePlot({
           </tr>
         </thead>
         <tbody>
-          {shown.map((e) => (
+          {shown.slice(0, limit.shown).map((e) => (
             <tr key={e.symbol} aria-current={e.symbol === selected ? 'true' : undefined}>
               <th scope="row">
                 <button
@@ -139,6 +141,7 @@ export function WastePlot({
           ))}
         </tbody>
       </table>
+      <ShowAll total={shown.length} open={limit.open} onToggle={limit.toggle} noun="symbols" />
       </div>
     </div>
   );

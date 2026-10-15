@@ -3,11 +3,29 @@
 }
 
 .ht-frame {
-  max-width: 44rem;
+  max-width: 52rem;
   border: 1px solid var(--rule);
-  border-radius: var(--r-2);
+  border-radius: var(--r-3);
   background: var(--surface);
+  padding: 6px 8px;
   overflow: hidden;
+}
+
+/* The code-length columns: faint, dotted, numbered across the top. */
+.ht-column {
+  stroke: var(--rule);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.ht-depth {
+  font-family: var(--font-data);
+  font-size: var(--t-plot);
+  fill: var(--ink-faint);
+}
+
+.ht-expand {
+  margin-top: var(--s-1);
 }
 
 .ht-svg {
@@ -17,8 +35,9 @@
 }
 
 .ht-edge {
+  fill: none;
   stroke: var(--rule-strong);
-  stroke-width: 1;
+  stroke-width: 1.4;
 }
 
 .ht-bit {
@@ -26,6 +45,13 @@
   font-size: var(--t-plot-tick);
   fill: var(--ink-faint);
   text-anchor: middle;
+}
+
+.ht-node.ht-node-fold {
+  fill: var(--surface);
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 2;
 }
 
 .ht-node {
@@ -58,8 +84,23 @@
 
 .ht-leaf {
   font-family: var(--font-data);
-  font-size: var(--t-plot-tick);
-  fill: var(--ink-mid);
+  font-size: 11px;
+  fill: var(--ink);
+}
+
+.ht-leaf-symbol {
+  font-weight: 600;
+}
+
+.ht-leaf-code {
+  fill: var(--huffman);
+  font-size: 10px;
+}
+
+.ht-leaf-fold {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  fill: var(--ink-faint);
 }
 
 .ht-queue {
@@ -97,7 +138,6 @@
 
 .ht-table {
   max-width: 34rem;
-  max-height: 15rem;
   margin-top: var(--s-2);
 }
 
@@ -112,9 +152,8 @@
   }
 }
 
-/* Same treatment as the staircase. The tree is laid out against a 560-unit
- * geometry with 8 and 9 unit labels on it, so below this width it scrolls
- * inside its frame rather than rendering its code digits at five pixels. */
+/* Below this width the tree scrolls inside its frame rather than rendering
+ * its code digits at five pixels. */
 @media (max-width: 620px) {
   .ht-frame {
     overflow-x: auto;

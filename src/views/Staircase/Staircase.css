@@ -1,11 +1,8 @@
 /**
- * The staircase. The app's centre, and the only instrument that is always on
- * screen.
+ * The staircase. The app's centre, and the chapter it opens on.
  *
  * It sits in a framed plot on the raised surface rather than loose on the
- * bench, because it is pinned and everything else scrolls underneath it: the
- * frame is what stops a panel sliding past from looking like part of the
- * chart.
+ * steel, so the plot reads as one instrument with its own key.
  */
 
 
@@ -36,10 +33,61 @@
 
 .stair-plot {
   border: 1px solid var(--rule);
-  border-radius: var(--r-2);
+  border-radius: var(--r-3);
   background: var(--surface);
-  padding: var(--s-1) var(--s-1) 0;
-  max-width: 44rem;
+  padding: 14px 14px 4px;
+  max-width: 52rem;
+}
+
+.stair-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--s-2);
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
+  color: var(--ink-mid);
+  margin-bottom: 4px;
+}
+
+.stair-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.stair-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.stair-swatch-code {
+  background: color-mix(in srgb, var(--ink-mid) 55%, transparent);
+}
+
+.stair-swatch-model {
+  background-color: var(--model-cost-tint);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--model-cost) 0 1.5px,
+    transparent 1.5px 4px
+  );
+  box-shadow: inset 0 0 0 1px var(--model-cost);
+}
+
+.stair-swatch-entropy {
+  height: 0;
+  border-top: 2.25px solid var(--ink);
+  border-radius: 0;
+}
+
+.stair-swatch-original {
+  height: 0;
+  border-top: 2px dotted var(--ink-faint);
+  border-radius: 0;
 }
 
 .stair-svg {
@@ -67,27 +115,97 @@
   fill: color-mix(in srgb, var(--ink) 4%, transparent);
 }
 
-/* The entropy steps are ink-mid, not a coder colour. They are not a coder's
+/* The entropy steps are ink, not a coder colour. They are not a coder's
  * achievement; they are the standard being compared against. */
 .stair-entropy {
   fill: none;
-  stroke: var(--ink-mid);
-  stroke-width: 2;
+  stroke: var(--ink);
+  stroke-width: 2.25;
   stroke-linejoin: round;
+  pointer-events: none;
 }
 
-.stair-model {
+/*
+ * The bars. The code stream is a neutral solid — it is what an ideal coder
+ * pays, not any one coder's result, so it does not borrow a coder's colour.
+ * The selected order is drawn at full strength and the rest step back.
+ */
+.stair-bar {
+  pointer-events: none;
+}
+
+.stair-bar-code {
+  fill: var(--ink-mid);
+  fill-opacity: 0.28;
+  transition: fill-opacity var(--d-coder) var(--ease-standard);
+}
+
+.stair-bar-on .stair-bar-code {
+  fill-opacity: 0.62;
+}
+
+.stair-bar-model {
+  fill: url(#stair-hatch);
+  stroke: var(--model-cost);
+  stroke-width: 1;
+  opacity: 0.7;
+  transition: opacity var(--d-coder) var(--ease-standard);
+}
+
+.stair-bar-on .stair-bar-model {
+  opacity: 1;
+}
+
+.stair-hatch-ground {
+  fill: var(--model-cost-tint);
+}
+
+.stair-hatch-line {
+  stroke: var(--model-cost);
+  stroke-width: 2;
+}
+
+.stair-bar-value {
+  font-family: var(--font-data);
+  font-size: var(--t-plot);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink-mid);
+}
+
+.stair-bar-on .stair-bar-value {
+  fill: var(--ink);
+  font-weight: 700;
+}
+
+.stair-bar-value-off {
+  fill: var(--model-cost);
+  font-weight: 600;
+}
+
+.stair-bar-off {
   fill: none;
   stroke: var(--model-cost);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 3;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.stair-total {
-  fill: none;
+/* The minimum's callout: an ink chip with a short leader to its bar. */
+.stair-min line {
   stroke: var(--ink);
-  stroke-width: 2;
-  stroke-linejoin: round;
+  stroke-width: 1;
+}
+
+.stair-min rect {
+  fill: var(--ink);
+}
+
+.stair-min text {
+  font-family: var(--font-ui);
+  font-size: var(--t-plot);
+  font-weight: 600;
+  fill: var(--surface);
 }
 
 /* A coder's point sits on a gridline as often as not, so it carries a ring of
@@ -131,20 +249,6 @@
   margin: var(--s-2) 0;
 }
 
-.stair-orders {
-  margin: 0;
-}
-
-.stair-orders .segmented-item {
-  min-width: 2.6rem;
-  text-align: center;
-  justify-content: center;
-}
-
-.stair-orders .segmented-item[aria-pressed='true'] {
-  box-shadow: var(--shadow-1), inset 0 -2px 0 var(--ink);
-}
-
 /* The split, as figures rather than as a sentence of numbers separated by
  * middots. Four quantities in a row read as four quantities; the same four in
  * a line of prose read as one long string. */
@@ -176,7 +280,51 @@
 
 .stair-table {
   margin: var(--s-2) 0;
-  max-height: 15rem;
+  max-width: 52rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.stair-table th,
+.stair-table td {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.stair-table thead th {
+  background: var(--surface-hover);
+}
+
+.stair-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+/* Inline bars in the table, on the same scale down the column. */
+.stair-spark {
+  display: inline-block;
+  height: 6px;
+  margin-right: 8px;
+  vertical-align: middle;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ink-mid) 45%, transparent);
+}
+
+.stair-spark-model {
+  background-color: var(--model-cost-tint);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--model-cost) 0 1.5px,
+    transparent 1.5px 4px
+  );
+}
+
+.stair-lowest {
+  font-family: var(--font-ui);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  color: var(--ink-faint);
 }
 
 /* ---- Narrow ------------------------------------------------------------- */

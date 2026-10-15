@@ -582,7 +582,7 @@ th:not(:first-child) > .row-button {
  * deliberate rather than looking like a rendering accident. */
 .scroll-box {
   border: 1px solid var(--rule);
-  border-radius: var(--r-2);
+  border-radius: var(--r-3);
   background: var(--surface);
   overflow: auto;
   overscroll-behavior: contain;
@@ -603,6 +603,43 @@ th:not(:first-child) > .row-button {
   top: 0;
   z-index: 1;
   background: var(--surface);
+}
+
+/* A framed table that shows its first rows and a row that opens the rest. */
+.table-frame {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.table-frame th,
+.table-frame td {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.table-frame thead th {
+  background: var(--surface-hover);
+}
+
+.show-all {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink-mid);
+  font-size: var(--t-label);
+  font-weight: var(--weight-strong);
+}
+
+.show-all:hover:not(:disabled) {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: var(--surface-hover);
 }
 
 /* Thin scrollbars, in the theme's own ink. A default macOS overlay bar is

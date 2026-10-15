@@ -9,11 +9,19 @@
  * The tree drawn is the one the trace recorded, and the codes listed are the
  * canonical ones the encoder actually wrote. Those can differ in shape where
  * weights tie; the codes are what the stream contains, so the codes win.
+ *
+ * It grows left to right. Depth is a column, so every leaf lines up under the
+ * code length it gets and the reader can count bits by column. It used to grow
+ * downward with all fifty-three leaves of a prose alphabet in one row, which
+ * put the labels at about six pixels. A finished tree with more rows than fit
+ * folds its deepest subtrees into "+N more" nodes — the rare symbols, which is
+ * what is deep in a Huffman tree — and opens them on request.
  */
 
 import { useCallback, useMemo, useState } from 'react';
 import type { HuffmanNode, HuffmanTrace } from '../../engine/index.ts';
 import { display } from '../BitLedger/BitLedger.tsx';
+import { ShowAll, useRowLimit } from '../../ui/RowLimit.tsx';
 import './HuffmanTree.css';
 
 interface Props {
@@ -22,54 +30,126 @@ interface Props {
   onSelect: (symbol: string | null) => void;
 }
 
-const WIDTH = 560;
-const LEVEL = 34;
+const WIDTH = 640;
+/** Room on the right of the deepest column for a symbol and its code. */
+const LABEL_ROOM = 118;
+const TOP = 28;
+/** The most rows a folded tree is allowed before it folds deeper. */
+const MAX_ROWS = 18;
 
 interface Placed {
   node: HuffmanNode;
+  /** Depth, which is the column. */
   x: number;
+  /** Row, in leaf order; internal nodes sit at the mean of their children. */
   y: number;
   parent: Placed | null;
   bit: '0' | '1' | null;
+  /** Symbols hidden under this node, when it is a fold. */
+  folded: number;
+  /** The symbols under a fold, so a selection inside one can light it. */
+  hidden: Set<string> | null;
 }
 
-/** Leaves in visiting order, internal nodes above the midpoint of their children. */
-function layout(root: HuffmanNode | null): { placed: Placed[]; depth: number } {
-  if (root === null) return { placed: [], depth: 0 };
+function isLeaf(node: HuffmanNode): boolean {
+  return node.left === null || node.right === null;
+}
+
+function symbolsUnder(node: HuffmanNode, into: Set<string> = new Set()): Set<string> {
+  if (isLeaf(node)) {
+    if (node.symbol !== null) into.add(node.symbol);
+    return into;
+  }
+  symbolsUnder(node.left!, into);
+  symbolsUnder(node.right!, into);
+  return into;
+}
+
+/** Rows the tree takes if every internal node at `fold` is folded. */
+function rowsAt(node: HuffmanNode, level: number, fold: number | null): number {
+  if (isLeaf(node)) return 1;
+  if (fold !== null && level >= fold) return 1;
+  return rowsAt(node.left!, level + 1, fold) + rowsAt(node.right!, level + 1, fold);
+}
+
+function maxDepth(node: HuffmanNode, level = 0): number {
+  if (isLeaf(node)) return level;
+  return Math.max(maxDepth(node.left!, level + 1), maxDepth(node.right!, level + 1));
+}
+
+/** The deepest fold that still fits, or null when the whole tree fits. */
+function chooseFold(root: HuffmanNode): number | null {
+  if (rowsAt(root, 0, null) <= MAX_ROWS) return null;
+  for (let fold = maxDepth(root) - 1; fold >= 1; fold--) {
+    if (rowsAt(root, 0, fold) <= MAX_ROWS) return fold;
+  }
+  return 1;
+}
+
+function layout(
+  root: HuffmanNode | null,
+  fold: number | null,
+): { placed: Placed[]; depth: number; rows: number } {
+  if (root === null) return { placed: [], depth: 0, rows: 0 };
   const placed: Placed[] = [];
-  let leafIndex = 0;
+  let row = 0;
   let depth = 0;
 
-  const walk = (node: HuffmanNode, level: number, parent: Placed | null, bit: '0' | '1' | null): Placed => {
+  const walk = (
+    node: HuffmanNode,
+    level: number,
+    parent: Placed | null,
+    bit: '0' | '1' | null,
+  ): Placed => {
     depth = Math.max(depth, level);
-    if (node.left === null || node.right === null) {
-      const entry: Placed = { node, x: leafIndex++, y: level, parent, bit };
+    const folding = !isLeaf(node) && fold !== null && level >= fold;
+    if (isLeaf(node) || folding) {
+      const hidden = folding ? symbolsUnder(node) : null;
+      const entry: Placed = {
+        node,
+        x: level,
+        y: row++,
+        parent,
+        bit,
+        folded: hidden?.size ?? 0,
+        hidden,
+      };
       placed.push(entry);
       return entry;
     }
-    const entry: Placed = { node, x: 0, y: level, parent, bit };
+    const entry: Placed = { node, x: level, y: 0, parent, bit, folded: 0, hidden: null };
     placed.push(entry);
-    const left = walk(node.left, level + 1, entry, '0');
-    const right = walk(node.right, level + 1, entry, '1');
-    entry.x = (left.x + right.x) / 2;
+    const left = walk(node.left!, level + 1, entry, '0');
+    const right = walk(node.right!, level + 1, entry, '1');
+    entry.y = (left.y + right.y) / 2;
     return entry;
   };
 
   walk(root, 0, null, null);
-  return { placed, depth };
+  return { placed, depth, rows: row };
 }
 
 export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
   const [step, setStep] = useState(trace.merges.length);
-  const { placed, depth } = useMemo(() => layout(trace.root), [trace.root]);
-
-  const leaves = placed.filter((p) => p.node.symbol !== null).length;
-  const height = (depth + 1) * LEVEL + 20;
-  const spacing = leaves > 1 ? (WIDTH - 40) / (leaves - 1) : 0;
-  const px = (p: Placed): number => 20 + p.x * spacing;
-  const py = (p: Placed): number => 16 + p.y * LEVEL;
-
+  const [expanded, setExpanded] = useState(false);
   const atStep = Math.min(step, trace.merges.length);
+  const complete = atStep >= trace.merges.length;
+
+  // Folding is for reading the finished tree. While it is being built merge
+  // by merge, every node is drawn so the build stays watchable.
+  const fold = useMemo(
+    () => (trace.root === null || expanded || !complete ? null : chooseFold(trace.root)),
+    [trace.root, expanded, complete],
+  );
+  const { placed, depth, rows } = useMemo(() => layout(trace.root, fold), [trace.root, fold]);
+  const totalLeaves = trace.codes.size;
+
+  const rowH = rows > MAX_ROWS ? 15 : 19;
+  const height = TOP + Math.max(1, rows) * rowH + 8;
+  const colW = depth > 0 ? (WIDTH - 24 - LABEL_ROOM) / depth : 0;
+  const px = (p: Placed): number => 16 + p.x * colW;
+  const py = (p: Placed): number => TOP + p.y * rowH + rowH / 2;
+
   const queue = atStep === 0 ? initialQueue(trace) : trace.merges[atStep - 1].queue;
   const merge = atStep === 0 ? null : trace.merges[atStep - 1];
 
@@ -99,6 +179,8 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
     [trace],
   );
 
+  const limit = useRowLimit(codes.length);
+
   const toggle = useCallback(
     (symbol: string) => onSelect(selected === symbol ? null : symbol),
     [onSelect, selected],
@@ -117,70 +199,88 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         className="ht-svg"
         viewBox={`0 0 ${WIDTH} ${height}`}
         role="img"
-        aria-label={`Huffman tree over ${leaves} symbols, ${trace.merges.length} merges. Every symbol and its code is in the table below.`}
+        aria-label={`Huffman tree over ${totalLeaves} symbols, ${trace.merges.length} merges, drawn left to right with one column per code length. Every symbol and its code is in the table below.`}
       >
+        {/* One column per code length, so bits can be counted across. */}
+        {Array.from({ length: depth }, (_, d) => d + 1).map((d) => (
+          <g key={`col${d}`}>
+            <line
+              x1={16 + d * colW}
+              x2={16 + d * colW}
+              y1={TOP - 8}
+              y2={height - 4}
+              className="ht-column"
+            />
+            <text x={16 + d * colW} y={14} className="ht-depth" textAnchor="middle">
+              {d === 1 ? '1 bit' : `${d}`}
+            </text>
+          </g>
+        ))}
+
         {placed.map((p) => {
           if (p.parent === null) return null;
           if (visible !== null && !visible.has(p.node.id)) return null;
+          const x1 = px(p.parent);
+          const y1 = py(p.parent);
+          const x2 = px(p);
+          const y2 = py(p);
+          const mx = (x1 + x2) / 2;
           return (
             <g key={`e${p.node.id}`}>
-              <line
-                x1={px(p.parent)}
-                y1={py(p.parent) + 5}
-                x2={px(p)}
-                y2={py(p) - 5}
-                className="ht-edge"
-              />
-              <text
-                x={(px(p.parent) + px(p)) / 2 + (p.bit === '0' ? -6 : 6)}
-                y={(py(p.parent) + py(p)) / 2}
-                className="ht-bit"
-              >
-                {p.bit}
-              </text>
+              <path d={`M ${x1} ${y1} C ${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`} className="ht-edge" />
+              {/* Where two siblings sit a row apart there is no room for the
+                  bit between them, and the column already says how deep. */}
+              {Math.abs(y2 - y1) >= 12 ? (
+                <text x={mx} y={(y1 + y2) / 2 - 3} className="ht-bit">
+                  {p.bit}
+                </text>
+              ) : null}
             </g>
           );
         })}
         {placed.map((p) => {
           if (visible !== null && !visible.has(p.node.id)) return null;
-          const isLeaf = p.node.symbol !== null;
-          const isSelected = isLeaf && p.node.symbol === selected;
+          const leaf = p.node.symbol !== null && p.folded === 0;
+          const isFold = p.folded > 0;
+          const isSelected =
+            (leaf && p.node.symbol === selected) ||
+            (isFold && selected !== null && p.hidden !== null && p.hidden.has(selected));
           const inMerge =
             merge !== null && (merge.left.id === p.node.id || merge.right.id === p.node.id);
+          const code = leaf ? trace.codes.get(p.node.symbol!) : undefined;
           return (
             <g key={`n${p.node.id}`}>
               <circle
                 cx={px(p)}
                 cy={py(p)}
-                r={isLeaf ? 5 : 3}
+                r={leaf || isFold ? 4.5 : 2.75}
                 className={[
                   'ht-node',
+                  isFold ? 'ht-node-fold' : '',
                   isSelected ? 'ht-node-on' : inMerge ? 'ht-node-merge' : '',
-                  isLeaf ? 'ht-leaf-hit' : '',
+                  leaf || isFold ? 'ht-leaf-hit' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
                 /*
-                 * A pointer affordance, and only that.
-                 *
-                 * These leaves used to carry tabIndex, role="button" and a
-                 * label each. On this text that was fifty-three of the page's
-                 * hundred and ninety-seven tab stops — a keyboard user pressed
-                 * Tab fifty-three times through twelve-by-twelve-pixel targets
-                 * to get past the tree, and every one of them selected a symbol
-                 * that the code table directly below already selects with a
-                 * real button.
-                 *
-                 * Twelve pixels also fails the twenty-four-pixel minimum, and
-                 * growing them would mean inventing a hit radius unrelated to
-                 * what the drawing needs. The table is the keyboard path the
-                 * PRD asks every instrument to have; the tree is the picture.
+                 * A pointer affordance, and only that. The code table below
+                 * selects every symbol with a real button, and the "show all"
+                 * button opens the folds; a tab stop per leaf was fifty-three
+                 * stops through twelve-pixel targets.
                  */
-                onClick={isLeaf ? () => toggle(p.node.symbol!) : undefined}
+                onClick={
+                  leaf ? () => toggle(p.node.symbol!) : isFold ? () => setExpanded(true) : undefined
+                }
               />
-              {isLeaf ? (
-                <text x={px(p)} y={py(p) + 16} className="ht-leaf" textAnchor="middle">
-                  {display(p.node.symbol!)}
+              {leaf ? (
+                <text x={px(p) + 9} y={py(p) + 4} className="ht-leaf">
+                  <tspan className="ht-leaf-symbol">{display(p.node.symbol!)}</tspan>
+                  {code !== undefined ? <tspan className="ht-leaf-code" dx={7}>{code}</tspan> : null}
+                </text>
+              ) : null}
+              {isFold ? (
+                <text x={px(p) + 9} y={py(p) + 4} className="ht-leaf ht-leaf-fold">
+                  +{p.folded} more
                 </text>
               ) : null}
             </g>
@@ -188,6 +288,12 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         })}
       </svg>
       </div>
+
+      {complete && (fold !== null || expanded) ? (
+        <button type="button" className="ht-expand" onClick={() => setExpanded((e) => !e)}>
+          {expanded ? 'Fold the rare symbols' : `Show all ${totalLeaves} symbols`}
+        </button>
+      ) : null}
 
       {/* No aria-label. It sat on a bare div with no role, where every screen
           reader drops it — so it named nothing while looking as though it did.
@@ -233,7 +339,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
         </span>
       </div>
 
-      <div className="ht-table scroll-box">
+      <div className="ht-table table-frame">
       <table>
         <caption className="visually-hidden">
           Every symbol, its smoothed weight and its canonical code
@@ -247,7 +353,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
           </tr>
         </thead>
         <tbody>
-          {codes.map((row) => (
+          {codes.slice(0, limit.shown).map((row) => (
             <tr key={row.symbol} aria-current={row.symbol === selected ? 'true' : undefined}>
               <th scope="row">
                 <button
@@ -266,6 +372,7 @@ export function HuffmanTree({ trace, selected, onSelect }: Props): JSX.Element {
           ))}
         </tbody>
       </table>
+      <ShowAll total={codes.length} open={limit.open} onToggle={limit.toggle} noun="symbols" />
       </div>
     </div>
   );

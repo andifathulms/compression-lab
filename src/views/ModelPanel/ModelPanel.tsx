@@ -24,6 +24,7 @@ import { useMemo, useState } from 'react';
 import type { Order, TextAnalysis } from '../../engine/index.ts';
 import { modelReport, serialiseModel } from '../../engine/index.ts';
 import { bytes, count } from '../../ui/format.ts';
+import { ShowAll, useRowLimit } from '../../ui/RowLimit.tsx';
 import './ModelPanel.css';
 
 interface Props {
@@ -48,6 +49,7 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
    * hundred-and-twenty-six millisecond frame.
    */
   const { layout, breakdown, totalBytes } = useMemo(() => modelReport(model), [model]);
+  const limit = useRowLimit(breakdown.rows.length);
 
   // The bytes are behind a disclosure, so they are serialised when it opens
   // rather than on every order change for a panel nobody has expanded.
@@ -145,7 +147,7 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
             )}
           </p>
 
-          <div className="model-table scroll-box">
+          <div className="model-table table-frame">
             <table>
               <caption className="visually-hidden">
                 The most expensive contexts in the model description, with what each costs
@@ -159,7 +161,7 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
                 </tr>
               </thead>
               <tbody>
-                {breakdown.rows.map((row) => (
+                {breakdown.rows.slice(0, limit.shown).map((row) => (
                   <tr key={row.context}>
                     <th scope="row" className="model-context">
                       {order === 0 ? '(none)' : JSON.stringify(row.context)}
@@ -171,6 +173,12 @@ export function ModelPanel({ analysis, order }: Props): JSX.Element {
                 ))}
               </tbody>
             </table>
+            <ShowAll
+              total={breakdown.rows.length}
+              open={limit.open}
+              onToggle={limit.toggle}
+              noun="contexts"
+            />
           </div>
         </>
       )}

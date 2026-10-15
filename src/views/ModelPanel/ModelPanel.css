@@ -119,7 +119,6 @@
 
 .model-table {
   margin: var(--s-2) 0 0;
-  max-height: 15rem;
   max-width: 34rem;
 }
 
