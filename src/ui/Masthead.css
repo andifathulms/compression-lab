@@ -224,6 +224,29 @@
   .masthead-lead {
     display: none;
   }
+  .masthead-identity {
+    flex: 1 0 auto;
+  }
+  .field-sample select {
+    max-width: 12.5rem;
+  }
+}
+
+/* The segments name the coders; the word above them can go first. It stays
+ * as the group's accessible name. */
+@media (max-width: 1279px) {
+  .coder-switch .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .field-sample select {
+    max-width: 11rem;
+  }
 }
 
 @media (max-width: 980px) {
@@ -249,7 +272,15 @@
     display: none;
   }
   .field-sample select {
-    max-width: 11rem;
+    max-width: 9.5rem;
+  }
+  .tool-button {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+  .segmented-quiet .segmented-item {
+    min-width: 30px;
+    padding: 5px 6px;
   }
   .coder-switch {
     order: 10;

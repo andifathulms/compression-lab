@@ -12,6 +12,17 @@
   margin: 0 calc(-1 * var(--s-4));
 }
 
+.chapter-bar {
+  display: flex;
+}
+
+/* Desktop has the specimen beside it, so these are phone-only. */
+.chapter-text,
+.chapter-icon,
+.chapter-short {
+  display: none;
+}
+
 .chapter-tabs {
   display: flex;
   gap: 2px;
@@ -106,5 +117,94 @@
     padding-left: var(--s-2);
     padding-right: var(--s-2);
     margin: 0 calc(-1 * var(--s-2));
+  }
+}
+
+/* The header stops being pinned below this width, so the tabs pin to the top. */
+@media (max-width: 980px) {
+  .chapters {
+    top: 0;
+  }
+}
+
+/*
+ * The phone: the tabs leave the top of the apparatus and become a bar fixed
+ * to the bottom of the screen, thumb-reachable from anywhere in the page.
+ */
+@media (max-width: 720px) {
+  .chapters {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    margin: 0;
+    padding: 4px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface);
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 0;
+    box-shadow: var(--shadow-float);
+  }
+  .chapter-summary,
+  .chapter-key,
+  .chapter-label {
+    display: none;
+  }
+  .chapter-bar,
+  .chapter-tabs {
+    flex: 1 1 auto;
+    overflow: visible;
+  }
+  .chapter-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .chapter-text,
+  .chapter-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 48px;
+    min-width: 0;
+    padding: 5px 2px 4px;
+    border: 0;
+    border-radius: var(--r-2);
+    background: transparent;
+    color: var(--ink-faint);
+    font-family: var(--font-ui);
+    font-size: 10.5px;
+    font-stretch: 88%;
+    font-weight: var(--weight-strong);
+  }
+  .chapter-text {
+    flex: 0 0 15%;
+  }
+  .chapter-short {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chapter-icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .chapter-tab[aria-selected='true'] {
+    color: var(--ink);
+    background: var(--surface-hover);
+  }
+  .chapter-tab[aria-selected='true']::after {
+    left: 30%;
+    right: 30%;
+    top: 0;
+    bottom: auto;
   }
 }

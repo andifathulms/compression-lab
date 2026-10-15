@@ -124,6 +124,30 @@ describe('the app in a browser', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/was not truncated/i);
   }, 120_000);
 
+  it('opens the chapter named in the URL fragment, and keeps it when settings change', async () => {
+    window.history.replaceState(null, '', '/#coders');
+    render(<App />);
+    expect(screen.getByRole('tab', { name: /the coders/i }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('heading', { name: /huffman coding/i })).toBeTruthy();
+
+    fireEvent.click(within(document.getElementById('order')!).getByRole('radio', { name: 'H2' }));
+    expect(window.location.search).toContain('order=2');
+    expect(window.location.hash).toBe('#coders');
+  });
+
+  it('jumps between chapters on the number keys, but not while typing', async () => {
+    render(<App />);
+    const user = userEvent.setup({ delay: null });
+    await user.keyboard('4');
+    expect(screen.getByRole('tab', { name: /the coders/i }).getAttribute('aria-selected')).toBe('true');
+    expect(window.location.hash).toBe('#coders');
+
+    const surface = screen.getByLabelText(/the text being measured/i) as HTMLTextAreaElement;
+    surface.focus();
+    await user.keyboard('2');
+    expect(screen.getByRole('tab', { name: /the coders/i }).getAttribute('aria-selected')).toBe('true');
+  }, 120_000);
+
   it('keeps typed text out of the URL', async () => {
     render(<App />);
     const user = userEvent.setup({ delay: null });

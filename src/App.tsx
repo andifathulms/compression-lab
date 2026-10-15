@@ -219,9 +219,10 @@ export function App(): JSX.Element {
   const [chapter, setChapter] = useChapter();
 
   /*
-   * Changing chapter keeps the reader's place on the page: if they had
-   * scrolled down into a long chapter, the next one starts at its top rather
-   * than somewhere in its middle.
+   * Changing chapter brings its top into view: if the reader had scrolled
+   * down into a long chapter, the next one starts at its top rather than
+   * somewhere in its middle, and on a phone — where the chapters sit under the
+   * text — a tap in the bottom bar actually shows the chapter it picked.
    */
   const apparatusRef = useRef<HTMLElement>(null);
   const goChapter = useCallback(
@@ -230,10 +231,16 @@ export function App(): JSX.Element {
       const el = apparatusRef.current;
       if (el === null) return;
       const top = el.getBoundingClientRect().top;
-      if (top < 0) window.scrollTo({ top: window.scrollY + top, behavior: 'auto' });
+      if (top < 0 || top > window.innerHeight * 0.6) {
+        window.scrollTo({ top: window.scrollY + top, behavior: 'auto' });
+      }
     },
     [setChapter],
   );
+
+  const goText = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
 
   const [huffmanSymbol, setHuffmanSymbol] = useState<string | null>(null);
   const [windowRanges, setWindowRanges] = useState<{
@@ -372,7 +379,7 @@ export function App(): JSX.Element {
           aria-label="The instruments"
           ref={apparatusRef}
         >
-          <ChapterNav chapter={chapter} onChapter={goChapter} />
+          <ChapterNav chapter={chapter} onChapter={goChapter} onText={goText} />
 
           <div
             className="chapter"
@@ -395,7 +402,53 @@ export function App(): JSX.Element {
                   arithmetic={arithmetic.result}
                   lz77={lz77.result}
                   onOrder={(order) => set('order', order)}
-                />
+                >
+                  {/*
+                    * A first-time visitor's reason to touch something, each tied
+                    * to a finding this chapter or the next one shows. They are
+                    * ordinary controls with a sentence on them; nothing here
+                    * does what the readout bar cannot.
+                    */}
+                  <div className="try" role="group" aria-label="Try this">
+                    <span className="label" aria-hidden="true">
+                      Try this
+                    </span>
+                    {state.order !== 3 ? (
+                      <button type="button" className="try-chip" onClick={() => set('order', 3)}>
+                        Raise the order to 3
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="try-chip"
+                        onClick={() => set('order', analysis.optimalOrder)}
+                      >
+                        Back to the cheapest order
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="try-chip"
+                      onClick={() => set('adaptive', !state.adaptive)}
+                    >
+                      {state.adaptive ? 'Send the model again' : 'Make the model adaptive'}
+                    </button>
+                    <button
+                      type="button"
+                      className="try-chip"
+                      onClick={() => goChapter('languages')}
+                    >
+                      Compare four languages
+                    </button>
+                    <button
+                      type="button"
+                      className="try-chip try-chip-quiet"
+                      onClick={() => goChapter('counting')}
+                    >
+                      New to this? Start with how bits are counted
+                    </button>
+                  </div>
+                </Staircase>
                 <p className="assumption">
                   <strong>Assumption: add-one smoothing.</strong> Probabilities use
                   add-constant smoothing, alpha = {ALPHA}, over the {analysis.alphabet.length}{' '}

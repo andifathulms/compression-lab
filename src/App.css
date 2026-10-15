@@ -136,6 +136,47 @@
   }
 }
 
+/* ---- Try this ----------------------------------------------------------- */
+
+.try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1);
+  margin: var(--s-2) 0 var(--s-1);
+}
+
+.try .label {
+  margin-right: 2px;
+}
+
+/* Dashed until touched: an invitation, not a setting. */
+.try-chip {
+  min-height: 32px;
+  padding: 5px 13px;
+  border: 1px dashed var(--rule-strong);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--ink-mid);
+  font-size: var(--t-label);
+  font-weight: var(--weight-medium);
+}
+
+.try-chip:hover:not(:disabled) {
+  border-style: solid;
+  border-color: var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.try-chip-quiet {
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+}
+
 /* The first panel in a chapter sits under the tab row, which is its rule. */
 .chapter > .panel:first-child,
 .chapter > :first-child .panel:first-child {
@@ -262,8 +303,12 @@
   .app-head {
     position: static;
   }
-  .chapters {
-    top: 0;
+}
+
+/* Room under everything for the phone's bottom bar. */
+@media (max-width: 720px) {
+  .app {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 }
 

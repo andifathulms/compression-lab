@@ -26,6 +26,8 @@ export interface Chapter {
   id: ChapterId;
   /** The tab's words. Short, because five of them share one row. */
   label: string;
+  /** One word, for the phone's bottom bar. */
+  short: string;
   /** One line under the tab row saying what the chapter is for. */
   summary: string;
 }
@@ -34,27 +36,32 @@ export const CHAPTERS: readonly Chapter[] = [
   {
     id: 'counting',
     label: 'Counting bits',
+    short: 'Bits',
     summary: 'One character, worked all the way through. Every figure on the page is a sum of this.',
   },
   {
     id: 'staircase',
     label: 'The staircase',
+    short: 'Staircase',
     // The app's own lead. It is the chapter that answers it.
     summary: APP_PAGE.lead,
   },
   {
     id: 'model',
     label: 'Model cost',
+    short: 'Model',
     summary: 'What the model description is made of, how its minimum moves, and what adaptive saves.',
   },
   {
     id: 'coders',
     label: 'The coders',
+    short: 'Coders',
     summary: 'What Huffman, arithmetic coding and LZ77 actually achieve on this text.',
   },
   {
     id: 'languages',
     label: 'Languages',
+    short: 'Languages',
     summary: 'One document in four languages, and the two kinds of redundancy it carries.',
   },
 ];

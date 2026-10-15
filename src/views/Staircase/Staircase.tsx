@@ -20,7 +20,7 @@
  * floor.
  */
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { CoderResult, Order, TextAnalysis } from '../../engine/index.ts';
 import { ORDERS } from '../../engine/index.ts';
 import type { CoderChoice } from '../../state/appState.ts';
@@ -35,6 +35,8 @@ interface Props {
   arithmetic: CoderResult;
   lz77: CoderResult;
   onOrder: (order: Order) => void;
+  /** Prompts for a first-time reader, drawn under the thesis. */
+  children?: ReactNode;
 }
 
 const WIDTH = 640;
@@ -49,6 +51,7 @@ export function Staircase({
   arithmetic,
   lz77,
   onOrder,
+  children,
 }: Props): JSX.Element {
   const rows = analysis.rows;
   const empty = analysis.symbolCount === 0;
@@ -208,6 +211,7 @@ export function Staircase({
         the model itself has to be sent, and it grows much faster. The two together have a
         minimum, and that is the cheapest this text can honestly be made.
       </p>
+      {children}
 
       {empty ? (
         <p className="label">Nothing to measure yet.</p>

@@ -320,11 +320,35 @@
   .rail-controls {
     gap: 12px var(--s-2);
   }
+  /*
+   * The order and the model switch share one row. Their labels are still
+   * read out — the radio group and the switch are named by them — but the
+   * buttons say H0 to H5 and the switch says Static or Adaptive, so drawing
+   * the labels as well cost a line each of the one screen that has to show
+   * the text.
+   */
+  .rail-controls {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .rail-control > .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   .rail-control-order {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+    min-width: 0;
   }
   .rail-control-order .segmented {
     display: flex;
+  }
+  .switch-consequence {
+    display: none;
   }
   .rail-control-order .segmented-item {
     flex: 1 1 0;
