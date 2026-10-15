@@ -207,11 +207,12 @@ Do not attach listeners per character. One listener on the container, hit-tested
 Hand-rolled, one rAF loop. The house rule carries over from the previous two apps and is
 now settled:
 
-**Continuous control → direct mapping, zero easing.** The model order slider, the window
-size slider, and the interval scrubber follow the pointer exactly.
+**Continuous control → direct mapping, zero easing.** The window size slider and the
+interval scrubber follow the pointer exactly.
 
-**Discrete control → timed transition.** Switching coder, switching sample, toggling
-adaptive, toggling lazy matching.
+**Discrete control → timed transition.** Switching coder, switching sample, switching
+chapter, choosing a model order (six H0–H5 buttons, not a slider; see DESIGN.md §6.1),
+toggling adaptive, toggling lazy matching.
 
 The interval zoom is the one autonomous animation (PRD §5.6) and it is user-started.
 `prefers-reduced-motion: reduce` turns it into a stepper.

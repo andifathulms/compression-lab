@@ -55,7 +55,7 @@ charting library.
 
 A reader opens a URL and lands directly in the instrument, which is already loaded with a
 sample text. They type or paste into the text surface and every figure recomputes as they
-type. They move the model order slider, switch coder, toggle the model between static and
+type. They pick a model order, switch coder, toggle the model between static and
 adaptive, and read the consequences off the staircase and the instrument panels.
 
 People paste their own writing into it. That fact drives real product decisions: nothing is

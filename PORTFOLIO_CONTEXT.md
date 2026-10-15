@@ -45,7 +45,7 @@ used as a pair-programming assistant (commits carry a `Co-Authored-By` trailer).
 - The test suite, the CI/deploy pipeline, the product and design documents.
 
 **Used as-is:** React 18 + React DOM, Vite, TypeScript, Vitest, ESLint, Testing Library,
-and two open-licensed typefaces (Literata, JetBrains Mono) subsetted and vendored locally.
+and three open-licensed typefaces (Literata, Instrument Sans, JetBrains Mono) subsetted and vendored locally.
 Sample texts are public-domain sources (a literary passage; the official UDHR translations
 in English, Indonesian, German and Finnish).
 
@@ -104,7 +104,7 @@ From `package.json` — two runtime dependencies, both React.
 | Styling | Plain CSS with custom properties. No Tailwind, no UI kit, no CSS-in-JS |
 | Charts | None. All SVG hand-written |
 | Animation | One hand-rolled `requestAnimationFrame` loop (interval zoom only) |
-| Fonts | Literata + JetBrains Mono, variable woff2, subsetted, vendored |
+| Fonts | Literata + Instrument Sans + JetBrains Mono, variable woff2, subsetted, vendored |
 | CI/CD | GitHub Actions — typecheck → lint → test → build, then Pages deploy |
 
 Bundle, from the current `dist/`: **94 KB gzipped JS, 7 KB gzipped CSS**, samples included —

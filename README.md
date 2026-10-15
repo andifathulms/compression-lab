@@ -72,7 +72,7 @@ src/
 │  └─ trace.ts       what the views render
 ├─ views/        one directory per instrument
 ├─ state/        app state, URL serialisation, the analysis hook
-├─ ui/           masthead, instrument rail, theme, the surprisal ramp
+├─ ui/           brand row, readout bar, chapter tabs, lens, byte bar, theme, the surprisal ramp
 ├─ styles/       tokens and base
 └─ samples/      bundled texts, plain .txt, imported with ?raw
 public/          the mark: favicon, installed icons, the manifest, the card
@@ -185,9 +185,10 @@ itself**; the run prints p50, p90 and the maximum either way.
 <details>
 <summary><b>The faces are bundled</b></summary>
 
-Literata for prose and JetBrains Mono for every figure, both as variable woff2
-subsetted to Latin and Latin Extended, which is what the corpus needs —
-English, German, Finnish, Indonesian. Five files, about 200 kB, in
+Literata for prose, Instrument Sans for the interface and JetBrains Mono for
+every figure, all as variable woff2 subsetted to Latin and Latin Extended,
+which is what the corpus needs — English, German, Finnish, Indonesian. Seven
+files, about 275 kB, in
 `src/styles/fonts/`, declared in `src/styles/fonts.css`. Nothing is fetched
 over the network; the fallback stack in `tokens.css` carries the first paint.
 
@@ -199,7 +200,7 @@ JetBrains Mono has the tabular figures and the open apertures the slot was for.
 <details>
 <summary><b>Two grounds</b></summary>
 
-Paper and bench, chosen by the reader — the control is in the masthead, the
+Warm paper and cool steel, chosen by the reader — the control is in the brand row, the
 choice is stored locally and is deliberately not in the URL, and "system" keeps
 following the operating system after load. The surprisal ramp is defined once
 per ground: on paper it runs toward ink, on the bench toward a warm near-white.

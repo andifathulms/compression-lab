@@ -26,10 +26,11 @@ than any legend, and it makes the surprisal ramp the one place in this family of
 a continuous colour scale is correct rather than lazy.
 
 **Paper and instrument.** The thing being measured and the thing doing the measuring are
-different materials. The specimen sits on paper: a serif face, a real reading measure,
-generous margins. The apparatus sits on a recessed machined ground: a monospaced face,
-dense figures, hairline rules and framed plots. The seam between the two columns is a real
-edge, and it is the app's subject drawn rather than described.
+different materials. The specimen sits on warm paper: a serif face, a real reading measure,
+generous margins. The apparatus sits on cool steel: an interface face for its labels, a
+monospaced face for its figures, hairline rules and framed plots. The seam between the two
+columns is a real edge — a change of temperature as well as of value — and it is the app's
+subject drawn rather than described.
 
 ---
 
@@ -47,9 +48,11 @@ characters. The instrument column is right-aligned on its numerals and left-alig
 labels, in one monospaced grid.
 
 **Hierarchy.** There is exactly one hero figure on the page: the current coder's rate, in
-the rail. Everything else steps down from it. On the instrument side the size hierarchy is
-carried entirely by the figures — every panel heading is the same size — because eight
-panels with eight heading sizes read as eight competing arguments.
+the readout bar. Everything else steps down from it. Headings have two levels and no more:
+the chapter, named by its tab, and the panel inside it, in the argument voice. Below that
+the size hierarchy is carried by the figures. It used to be one level — every heading the
+same 11px uppercase mono — and eight panels read as one flat list rather than an argument
+with parts.
 
 ---
 
@@ -63,15 +66,21 @@ changes direction rather than being flipped.
 
 | Token | Paper | Bench | Use |
 |---|---|---|---|
-| `--page` | `#FBFAF7` | `#131415` | The specimen. Warm off-white, or the lighter of the two dark grounds. |
-| `--sunk` | `#F1EFE8` | `#0B0C0D` | The bench: the recessed ground the apparatus sits on. |
-| `--surface` | `#FFFFFF` | `#1B1D1F` | A raised control, a framed plot, a scrolling table. |
-| `--surface-hover` | `#F6F4EE` | `#23262A` | The same, under a pointer. |
-| `--ink` | `#191817` | `#ECE9E2` | Text, the total line, the selected state. |
-| `--ink-mid` | `#57544E` | `#A09B91` | Prose that qualifies a figure. The entropy line. |
-| `--ink-faint` | `#6F6B62` | `#89857E` | Labels, axis numerals, disabled controls. |
-| `--rule` | `#E3DFD5` | `#292C2F` | Hairlines between panels. |
-| `--rule-strong` | `#C9C3B5` | `#3D4145` | Slider tracks, table header rules, menu borders. |
+| `--page` | `#FCFBF8` | `#141922` | The specimen and the brand row. Warm off-white, or the lighter of the two dark grounds. |
+| `--sunk` | `#EDF0F3` | `#0C0F14` | Steel: the ground the apparatus and the readout bar sit on. |
+| `--surface` | `#FFFFFF` | `#1A202A` | A raised control, a framed plot, a framed table, the lens. |
+| `--surface-hover` | `#F4F6F8` | `#212834` | The same, under a pointer; table headers. |
+| `--ink` | `#12161C` | `#E7EBF0` | Text, the entropy steps, the selected state. |
+| `--ink-mid` | `#47505D` | `#AAB3BF` | Prose that qualifies a figure. The code stream bars. |
+| `--ink-faint` | `#5C6573` | `#8C96A5` | Labels, axis numerals, disabled controls. |
+| `--rule` | `#DFE3E8` | `#262E3A` | Hairlines between panels. |
+| `--rule-strong` | `#C3CAD3` | `#3A4452` | Control borders, table header rules, the column seam. |
+
+The two light grounds used to be `#FBFAF7` and `#F1EFE8`, two beiges about 1.07:1 apart,
+and the seam this section calls the subject barely showed. Ink was brown-black. Warm cream
+with a serif is also the look a lot of generated pages now default to, which is a poor
+place for a portfolio piece to land by accident. The paper stayed warm; the bench moved to
+a cool blue-grey steel and the ink to a blue-black that belongs to it.
 
 On paper the specimen is *lighter* than the bench; on the bench it is *lighter* than the
 bench too. The specimen is always the raised material. That is the one invariant the two
@@ -85,11 +94,11 @@ looks like.
 
 | Bits | Paper | Bench |
 |---|---|---|
-| 0 | `#FBFAF7` | `#131415` |
-| 2 | `#D6D0C2` | `#33383C` |
-| 4 | `#948C7A` | `#676C6F` |
-| 6 | `#4C483F` | `#A8A79E` |
-| 8 | `#191817` | `#F7EEDC` |
+| 0 | `#FCFBF8` | `#141922` |
+| 2 | `#D6D4CF` | `#353C47` |
+| 4 | `#9B988F` | `#6C7380` |
+| 6 | `#50535B` | `#AEB3BA` |
+| 8 | `#12161C` | `#FFF1D6` |
 
 Both start at the ground and end at full presence. The paper ramp ends in ink. The bench
 ramp ends in a warm near-white — the only place in the app where warmth means intensity —
@@ -102,16 +111,19 @@ the specimen and in the tables.
 
 ### 2.3 The three coders
 
-Each coder has one colour. It appears on that coder's segment in the control, its line and
-point on the staircase, the code-stream bar in its size split, and the marks its instrument
-makes in the specimen. Nowhere else. There is no legend, because the control, the plot and
-the instrument already agree.
+Each coder has one colour. It appears on that coder's dot in the control, its point or rule
+on the staircase, the code-stream fill in its byte bar, its name under the hero figure, the
+cost bar in the lens, and the marks its instrument makes in the specimen. Nowhere else. The
+ideal code stream on the staircase is not any coder's result, so its bars are neutral.
 
 | Coder | Paper | Bench | Why |
 |---|---|---|---|
-| Huffman | `#A65615` | `#E5A05C` | Warm, discrete, stepped. |
-| Arithmetic | `#10697C` | `#52C3D8` | Cool, continuous, flowing. |
-| LZ77 | `#67449E` | `#B598EF` | Neither; it is about memory, not probability. |
+| Huffman | `#B4470B` | `#FF9A55` | Warm, discrete, stepped. |
+| Arithmetic | `#0A6E82` | `#4CCFE6` | Cool, continuous, flowing. |
+| LZ77 | `#6A3FCB` | `#B59CFF` | Neither; it is about memory, not probability. |
+
+All three are more saturated than they were and balanced to a similar lightness, so no
+coder reads as the important one.
 
 Each also has a tint (`--huffman-tint` and so on) for fills that sit under text.
 
@@ -119,8 +131,8 @@ Each also has a tint (`--huffman-tint` and so on) for fills that sit under text.
 
 | Token | Paper | Bench | Use |
 |---|---|---|---|
-| `--model-cost` | `#80691C` | `#D8B95D` | The model description, everywhere it appears. |
-| `--match` | `#2B7950` | `#58C48D` | An LZ77 match, marked in both places at once. |
+| `--model-cost` | `#8A6400` | `#E3BE57` | The model description, everywhere it appears. |
+| `--match` | `#1E7A45` | `#57D394` | An LZ77 match, marked in both places at once. |
 
 The model description is the only quantity in the app drawn as a **hatch** rather than a
 solid fill. It is overhead, not output, and a solid block beside the code stream would read
@@ -129,8 +141,9 @@ theme.
 
 ### 2.5 Contrast
 
-Every colour used for text clears 4.5:1 against the **worst** of the three grounds it can
-appear on — the bench on paper, the raised surface on the bench. That is checked
+Every colour used for text clears 4.5:1 against the **worst** of the four grounds it can
+appear on — the steel on paper, the hover surface on the bench — and each coder colour and
+the model-cost gold clear it on their own tint too. That is checked
 arithmetically rather than eyeballed, because a muted palette drifts into the low threes
 without anyone noticing: `--ink-faint`, `--huffman`, `--model-cost` and `--match` were all
 between 2.9 and 4.4 before they were measured, and every one of them is used for text at
@@ -150,21 +163,27 @@ number always means which series it belongs to, never whether the number is larg
 
 ## 3. Typography
 
-Two voices, assigned strictly. Both are self-hosted variable faces subsetted to Latin and
+Three voices, each with one job. All are self-hosted variable faces subsetted to Latin and
 Latin Extended, bundled with the app; nothing is fetched at runtime.
 
-**Literata** is the prose voice: the specimen, the notes, the argument, the claim in the
-masthead. A screen-reading face with a large x-height, which is what lets a character
+**Literata** is the argument: the specimen, the notes, the thesis, chapter and panel
+headings. A screen-reading face with a large x-height, which is what lets a character
 survive being tinted most of the way toward the ground colour.
 
-**JetBrains Mono** is the instrument voice: every number, label, axis, control, table cell
-and panel heading, with tabular figures throughout. The staircase animates its numbers and
+**Instrument Sans** is the interface: every label, control, tab, legend, table header and
+assumption note, in sentence case. It carries a width axis as well as weight, so the dense
+readout bar can use a narrower cut without a second family.
+
+**JetBrains Mono** is the measurement, and only that: every number, unit, code, table cell
+and axis tick, with tabular figures throughout. The staircase animates its numbers and
 proportional figures would jitter.
 
-Nothing measured is set in the prose face. Nothing prose-like is set in the instrument
-face. The one deliberate crossing is the sliding-window strip, where the text is set in the
-instrument voice — because there it is not being read, it is being indexed, and a
-monospaced grid is what makes a distance of nine legible as nine.
+There used to be two voices, and the mono face did two jobs: it set every number, and also
+every label, heading and long note, at 11px uppercase. That is why the instrument side read
+as one dense block, and why the assumption notes — the sentences this app's credibility
+rests on — were the hardest text on the page to read. Nothing measured is set in the
+argument or interface faces. The one deliberate crossing is still the sliding-window strip,
+set in mono because there the text is being indexed rather than read.
 
 ### 3.1 Scale
 
@@ -177,8 +196,13 @@ One ratio, 1.2, from a 16px base. Six steps, plus a clamped display.
 | `--t-figure` | 23.04px | 16 × 1.2² | A panel's leading figure. |
 | `--t-text` | 19.2px | 16 × 1.2 | The specimen, and the app name. |
 | `--t-body` | 16px | base | Prose notes. |
-| `--t-data` | 13.33px | 16 ÷ 1.2 | Table cells, controls, readouts, assumptions. |
-| `--t-micro` | 11.11px | 16 ÷ 1.2² | Panel headings, field labels, axis numerals. |
+| `--t-data` | 13.33px | 16 ÷ 1.2 | Table cells, controls, readouts. |
+| `--t-note` | 14px | — | Assumption notes, in the interface voice. |
+| `--t-label` | 12.5px | — | Labels, legends, table headers, in the interface voice. |
+| `--t-micro` | 11.11px | 16 ÷ 1.2² | Axis numerals, chips. |
+
+The two off-ratio steps are for the interface face in sentence case, which needs a little
+more size than the uppercase mono it replaced, not less.
 
 Plot glyphs are on their own two-step ratio — `--t-plot` (10) and `--t-plot-tick` (8.33) —
 because those are viewBox units that scale with the chart rather than pixels on the page.
@@ -191,14 +215,14 @@ scale, it is a list.
 **Prose sits at 16px, and the specimen at 19.2px.** They were 15 and 17. Both are read
 rather than scanned, and 15px is below the floor for that.
 
-Tracking is a token too: display numerals are tightened (`-0.02em`) or a five-digit figure
-reads as a serial number; micro labels are opened out (`0.08em`–`0.11em`) or uppercase mono
-at 11px sets solid.
+Tracking is a token too: display numerals are tightened (`-0.035em`) and panel figures a
+little less (`-0.02em`), or a five-digit figure reads as a serial number. The label tokens
+are zero now that labels are sentence case. They were referenced everywhere and never
+defined, so the opened-out uppercase this section used to specify never actually rendered.
 
 ### 3.2 Prohibitions
 
-Sentence case throughout, except the tracked uppercase micro-labels, which are a machine
-convention and not a heading. No word in a heading accented in colour or weight — colour
+Sentence case throughout, labels included. No word in a heading accented in colour or weight — colour
 already means cost. Emphasis is on language, never on a number: the italic on
 *surprisal* where the term is introduced, and the bold on the thesis sentence at the head of
 the staircase. Every number carries its unit.
@@ -207,105 +231,135 @@ the staircase. Every number carries its unit.
 
 ## 4. Layout
 
-### 4.1 Three bands, then two columns
+### 4.1 One pinned header, then two columns
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│ masthead   name · claim              text · share · ground│  scrolls away
-├───────────────────────────────────────────────────────────┤
-│ rail       8.36 bits/symbol   coder · order · adaptive    │  pinned
-├──────────────────────────┬────────────────────────────────┤
-│ specimen (paper)         │ apparatus (bench)              │
-│  the text, tinted        │  staircase — pinned            │
-│  hover readout           │  coder bay                     │
-│                          │  parallel corpus               │
-└──────────────────────────┴────────────────────────────────┘
+│ brand row  name · lead   sample · coder · link · CSV · ground│  pinned together
+│ readout    4.55 bits/symbol  [byte bar to scale]  H0–H5  model│
+├────────────────────┬──────────────────────────────────────┤
+│ specimen (paper)   │ apparatus (steel)                    │
+│  the text, tinted  │  1 Counting bits  2 The staircase …  │  tabs pinned
+│                    │  ─────────────────────────────────── │
+│  [lens]            │  the chapter in view                 │
+└────────────────────┴──────────────────────────────────────┘
 ```
 
-The **masthead** states the claim and holds the chrome that is not a measurement.
+The **brand row** is slim: the name, the lead under it on wide screens, and the chrome that
+is not a measurement — the sample, the coder, the share menu, the CSV download and the
+ground. The masthead it replaced was 127px with the lead at reading size, scrolled past on
+every visit. The lead also opens the staircase chapter, so a narrow screen does not lose it.
 
-The **rail** is pinned and is the app's answer to its own question, together with the only
-three controls that move it. The reading and the controls are one object because the model
-order is the primary control and it belongs next to the number it changes, not at the far
-end of the page from it. Under compare the reading shows the lowest of the three and names
-it; a blank reading or an arbitrary one would both be worse.
+The **readout bar** is the app's answer to its own question: the rate as the hero figure,
+the coder named once under it in its own colour, and the same answer drawn as a byte bar to
+scale against the original, so "43% smaller" is visible before it is read. Then the model
+order and the adaptive switch. Under compare the reading shows the lowest of the three and
+names it.
 
-The rail's height is measured at runtime and published as `--rail-h`, which the two pinned
-columns offset against. It wraps differently at every width, so it cannot be a constant.
+The brand row and the readout bar are pinned together. Pinned apart, the brand row
+scrolled away and the specimen, sized to the viewport under the rail alone, started with
+its lens below the fold. Their height is measured at runtime and published as `--rail-h`.
 
 ### 4.2 The specimen
 
-Its own scroll region, pinned under the rail, at `--measure` (36rem). It fades at its
-scroll edge, because a line of prose sliced in half horizontally reads as a rendering
-fault. The hover readout is a fixed line at the foot of the column, not a tooltip: a
-tooltip that follows the pointer across 200,000 characters is a tooltip permanently in
-front of the character you wanted to look at next.
+Its own scroll region, pinned under the header, at its reading measure plus gutters —
+about 40% of a desktop screen. It was nearer half, which gave a 62-character line more room
+than it can use and the charts less than they need. It fades at its scroll edge, because a
+line of prose sliced in half horizontally reads as a rendering fault.
 
-### 4.3 The apparatus
+The **lens** sits at the foot of the column, over that fade: the symbol, its context, the
+probability with the counts it came from, and the cost with a bar in the coder's colour. It
+is not a tooltip: a tooltip that follows the pointer across 200,000 characters is
+permanently in front of the character you wanted to look at next. It follows the caret as
+well, so it is on the keyboard path. It replaced a one-line readout that showed only the two
+ends of the calculation.
 
-One constant anchor and one interchangeable part. **The anchor is the rail, not the
-staircase.** The staircase scrolls with the rest of the column.
+The two standing caveats — the text is editable and stays in this browser; what this sample
+is — sit above the text in the interface voice at label size, short, because above the text
+they cost lines of it.
 
-That is a change from the original design, and the reason is arithmetic. The staircase is a
-thousand pixels tall — plot, order control, split, table, assumption — and the rail is
-another ninety. Pinned together in a nine-hundred-pixel viewport they are the entire
-screen: the scrollbar runs and nothing moves, and the bottom of the staircase is never
-reachable at all, because a sticky element taller than its own slot never releases.
+### 4.3 The apparatus: five chapters
 
-The rail does the anchor's job in ninety pixels. It carries the reading, the coder and the
-order, it does not change when the instrument below it changes, and it is what makes the
-set of views read as one subject rather than as four unrelated screens.
+The apparatus used to be eight panels in one column of about 7,700px, and the staircase,
+the app's centre, began eleven hundred pixels down under a worked example. It is now five
+chapters in the order the argument runs:
 
-Below it: the staircase, then the coder bay swapping its instrument, then the parallel
-corpus row, then the smoothing note.
+1. **Counting bits** — the worked example and why a probability becomes bits.
+2. **The staircase** — the default chapter. Thesis, prompts, chart, table, H versus code.
+3. **Model cost** — what the description is made of, where the minimum moves, what
+   adaptive costs.
+4. **The coders** — Huffman, arithmetic, LZ77, following the coder chosen in the brand row.
+5. **Languages** — the parallel corpus.
 
-Anything pinned has to leave room for what it describes. The specimen and the rail together
-come to a little over half the viewport, which is the budget.
+The tabs are pinned under the header with a one-line summary of the chapter under them.
+They are a real tablist; keys 1 to 5 jump to a chapter from anywhere that is not a text
+field. The chapter lives in the URL fragment (`#staircase`), outside AppState, because the
+query string describes a measurement and a chapter is where you stand to look at it. A
+shared link carries it.
+
+Only the chapter in view is mounted. That is a performance decision as much as a visual
+one: every keystroke recomputes the analysis, and four hidden chapters re-rendering against
+it were work nobody could see.
 
 ### 4.4 Grid and rhythm
 
 4px base scale, so the dense side has a half step. Panels are separated by a hairline and
-by the ground under them, never by cards. No shadow on a panel. Radius exists only on
+by the ground under them, never by cards. No shadow on a panel: the one shadow in the app is
+on the thing that floats, the lens (and the phone's bottom bar). Radius exists only on
 things a pointer touches — that is how a control announces that it is one — and on framed
-plots and scroll boxes, which are surfaces rather than panels.
+plots and framed tables, which are surfaces rather than panels.
+
+Tables do not sit in fixed-height scroll boxes any more where they are short: a box that
+cut the last row in half read as a rendering fault. They show their first eight rows and a
+full-width "Show all N" row. Only the bit ledger and the LZ77 tokens, which run to thousands
+of rows, keep a scroll box.
 
 ### 4.5 Responsive
 
-Three breakpoints.
-
+- **≤1500px** — the lead leaves the brand row; it still opens the staircase chapter.
+- **≤1280px** — the word "Coder" above its segments is drawn no longer; it stays as the
+  group's name.
 - **≤1180px** — gutters tighten, the specimen narrows toward its measure.
-- **≤980px** — one column. The specimen goes first, because the app opens on a piece of
-  text and it should be the first thing there is. Both pinned columns and the rail go
-  static: two nested sticky scroll regions on a phone is a trap, and a rail that is most of
-  a phone screen tall leaves nothing for the thing it describes.
-- **≤560px** — the rail's controls take a full row each, the ground control keeps its marks
-  and drops its words, and the total-size fact drops out; the ratio survives, because it is
-  the only fact that does not need another number to be read against.
-
----
+- **≤1100px** — the readout's controls take their own row under the figure and byte bar.
+- **≤980px** — one column. The specimen goes first and the header stops being pinned: two
+  nested sticky scroll regions on a phone is a trap.
+- **≤720px** — the chapter tabs become a bar fixed to the bottom of the screen with an icon
+  each and a Text button. A tap scrolls to the chapter it picked. The order buttons and the
+  model switch share one row with their labels kept for assistive technology. On a 390px
+  screen the first tinted line lands at about 690px, from about 830.
 
 ## 5. Instruments
 
 ### 5.1 The staircase
 
-The app's centre. Literal steps: a flat segment per order joined by vertical risers,
-because conditional entropy is defined at integer orders and a smooth curve between them
-would assert a continuity that does not exist. The model description and the total are
-defined at integer orders too, so they are points joined by straight segments at the centre
-of each step.
+The app's centre, and the chapter it opens on. Literal steps: a flat segment per order
+joined by vertical risers, because conditional entropy is defined at integer orders and a
+smooth curve between them would assert a continuity that does not exist.
 
-It sits in a framed plot on the raised surface. It is pinned, and without a frame a panel
-scrolling underneath it looks like part of the chart.
+Over the steps, **each order is a stacked bar**: the code stream an ideal coder pays, as a
+neutral solid, and the model description on top of it, hatched in gold. The total is the top
+of the bar and is printed over it. The minimum is the shortest bar, called out with an ink
+chip. These used to be two lines — model and total — and "total = code + model" lived only
+in the caption. Charts are read shape-first, so the sum is now the shape.
+
+It sits in a framed plot with a four-item key above it. It is the one chart with a key:
+a stacked bar needs one, and everything else stays legend-free.
 
 **The plot is the control.** Clicking a column picks that order, which is the gesture a
-reader tries first. The H0–H5 buttons below are the same thing on the keyboard path.
+reader tries first. The H0–H5 group in the readout bar is the same thing on the keyboard
+path; the chart's own copy of it was removed as a duplicate.
+
+Under the thesis, a "Try this" row gives a first-time visitor a reason to touch something:
+raise the order, make the model adaptive, compare four languages, or start from counting
+bits.
 
 **Two axis settings.** A static order-5 model on a short text costs upwards of fifty bits
 per symbol, and against that the entropy steps — the thing the chart is named after —
 descend across two pixels at the bottom of the plot. *Everything* fits the tallest series
 and is the default, because the model line running away is the lesson. *The steps* fits the
-entropy and the coder rates, and says in words that the model and total lines have run off
-the top: a line that leaves the plot without saying where it went is a lie.
+entropy and the coder rates; a bar that runs off the top is marked with an arrow and its
+value, and the panel says so in words: a mark that leaves the plot without saying where it
+went is a lie.
 
 Ticks come from the range — 1, 2 or 5 times a power of ten, about six of them. The key on
 the right collects each label's wanted height, pushes them apart to a minimum gap, and
@@ -329,6 +383,12 @@ tint underneath it, and the tint is the point.
 
 Framed plot, canonical codes, one merge at a time on a scrubber. The selected leaf takes
 the Huffman colour and marks every occurrence of that symbol in the specimen.
+
+It grows left to right with one column per code length, so the reader counts bits across.
+It used to grow downward with all fifty-three leaves of a prose alphabet in one row, at
+about six pixels a label. A finished tree with more than eighteen rows folds its deepest
+subtrees into "+N more" nodes — the rare symbols, which is what is deep in a Huffman tree —
+and a button opens them. The merge-by-merge build is never folded, so it stays watchable.
 
 ### 5.4 Waste plot
 
@@ -354,6 +414,12 @@ The cost of the symbol under the cursor leads at figure size in the arithmetic c
 is the figure the view exists to show, and stacked with three other lines in the same size
 it was indistinguishable from the step counter.
 
+### 5.6a Four languages
+
+A dumbbell per language, from the LZ77 rate to the order-0 entropy, with the order-2 step
+as a hollow mark for scale. The margin between them is the finding, so it is the widest
+mark on the chart. The exact values stay in the table beneath it.
+
 ### 5.7 Bit ledger
 
 Every symbol, its probability, its cost and the bits it emitted, in the arithmetic colour.
@@ -366,12 +432,17 @@ it is a symbol the coder absorbed without resolving a bit.
 
 ### 6.1 The rule
 
-**Continuous control → direct mapping, zero easing.** The model order slider, the window
-and look-ahead sliders, the interval scrubber. They follow the pointer exactly and
-everything that re-plots from them re-plots on the same frame.
+**Continuous control → direct mapping, zero easing.** The window and look-ahead sliders,
+the interval scrubber, the merge scrubber. They follow the pointer exactly and everything
+that re-plots from them re-plots on the same frame.
 
-**Discrete control → timed transition.** Switching coder, switching sample, toggling
-adaptive, toggling lazy matching, stepping a merge.
+**Discrete control → timed transition.** Switching coder, switching sample, switching
+chapter, choosing a model order, toggling adaptive, toggling lazy matching, stepping a merge.
+
+The model order used to be a slider. It only ever takes six values, the staircase already
+named them H0 to H5, and a slider made the app's primary control a fifteen-pixel grip. It is
+six buttons in a radio group, and being a choice between named states it takes the discrete
+rule.
 
 ### 6.2 Durations
 
@@ -380,7 +451,7 @@ adaptive, toggling lazy matching, stepping a merge.
 | `--d-fast` | 120ms | A control acknowledging a pointer. |
 | `--d-window` | 180ms, linear | The window sliding one byte. |
 | `--d-merge` | 260ms | One Huffman merge. |
-| `--d-coder` | 300ms | Swapping the instrument. |
+| `--d-coder` | 300ms | Swapping the instrument, switching chapter, the byte bar. |
 | `--d-interval` | 420ms | One interval zoom. |
 | `--d-sample` | 500ms | A new text arriving. |
 
@@ -439,7 +510,7 @@ smaller than what you started with* is the first thing the eye can do with it.
 
 **The phone gets a demonstration.** The first line of coloured text was at y=1126 on an
 844px viewport — the whole first screen was chrome, so a phone visitor saw a settings form.
-The masthead's tools collapse to one row of unlabelled controls, the order slider and the
+The masthead's tools collapse to one row of unlabelled controls, the order control and the
 adaptive switch pair into one row rather than stacking, and the two standing caveats move
 under the surface they qualify. First line of text now lands at 769.
 
@@ -546,8 +617,8 @@ in the URL, because one of them puts someone's private writing in the address ba
 - The specimen virtualises above 12,000 characters, and says that browser find will not
   reach past the drawn window.
 - Every selection in the app is on the keyboard path: table rows carry real buttons, the
-  caret drives the hover readout, and the staircase's click-a-column gesture has the H0–H5
-  buttons as its keyboard equivalent.
+  caret drives the lens, the staircase's click-a-column gesture has the H0–H5 radio group
+  as its keyboard equivalent, and the chapters are a tablist with keys 1 to 5.
 - One focus treatment everywhere: a 2px ink ring at 2px offset.
 - A skip link ahead of everything, to the instruments.
 - No network at runtime. Fonts bundled, samples bundled.
@@ -558,7 +629,7 @@ in the URL, because one of them puts someone's private writing in the address ba
 
 The motion rule and the "display and computation are one object" rule carry over from Suara
 ke Kursi and Anatomi QRIS unchanged. What is new here is the two-ground palette and the
-paper/instrument split, and both exist for the same reason the house rules do: the subject
+paper/instrument split — warm against cool since the October 2026 redesign — and both exist for the same reason the house rules do: the subject
 decided them. This app is about the difference between a thing and a measurement of it, so
 the thing and the measurement are made of different materials, and the reader can see the
 join.
