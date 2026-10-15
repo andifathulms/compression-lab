@@ -286,13 +286,14 @@
 
 .split-figures dt {
   color: var(--ink-faint);
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   /* Two lines of room whether the label needs them or not, so the figures
    * underneath sit on one baseline across the row. */
   min-height: 2.4em;
+  font-weight: var(--weight-strong);
 }
 
 .split-figures dd {

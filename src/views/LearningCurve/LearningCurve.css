@@ -101,11 +101,12 @@
 
 .learn-figures dt {
   color: var(--ink-faint);
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   min-height: 2.4em;
+  font-weight: var(--weight-strong);
 }
 
 .learn-figures dd {

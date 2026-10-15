@@ -28,11 +28,12 @@
 }
 
 .model-section-label {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-mid);
+  font-weight: var(--weight-strong);
 }
 
 .model-section-bytes {
@@ -97,19 +98,21 @@
 /* The check, stated rather than assumed. If these two numbers ever disagree
  * the panel is decoration and should say so out loud. */
 .model-reconcile {
-  font-size: var(--t-micro);
+  font-size: var(--t-label);
   color: var(--ink-faint);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   margin-top: var(--s-1);
+  font-family: var(--font-ui);
+  font-weight: var(--weight-strong);
 }
 
 .model-sub {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-mid);
   margin: var(--s-3) 0 var(--s-1);
 }

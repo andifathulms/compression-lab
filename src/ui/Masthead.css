@@ -169,7 +169,7 @@
 .masthead-status {
   flex: 1 1 100%;
   min-height: 1.2em;
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-micro);
   color: var(--ink-mid);
 }

@@ -157,11 +157,12 @@
 }
 
 .stair-split dt {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
+  font-weight: var(--weight-strong);
 }
 
 .stair-split dd {
@@ -247,7 +248,7 @@
 }
 
 .stair-two-pair dt {
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-data);
   font-variant-numeric: tabular-nums;
   color: var(--ink);

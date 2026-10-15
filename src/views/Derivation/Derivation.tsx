@@ -152,7 +152,7 @@ export function Derivation({ analysis, order, position }: Props): JSX.Element | 
 
       <ol className="deriv-steps">
         <li>
-          <span className="deriv-step-label">the character</span>
+          <span className="deriv-step-label">The character</span>
           <span className="deriv-step-body">
             <span className="deriv-symbol">{show(derived.symbol)}</span>
             {order === 0 ? (
@@ -172,7 +172,7 @@ export function Derivation({ analysis, order, position }: Props): JSX.Element | 
         </li>
 
         <li>
-          <span className="deriv-step-label">what the text did</span>
+          <span className="deriv-step-label">What the text did</span>
           <span className="deriv-step-body">
             {order === 0 ? (
               <>
@@ -192,7 +192,7 @@ export function Derivation({ analysis, order, position }: Props): JSX.Element | 
         </li>
 
         <li>
-          <span className="deriv-step-label">the probability</span>
+          <span className="deriv-step-label">The probability</span>
           <span className="deriv-step-body">
             <span className="deriv-sum data">
               p = ({count(derived.seen)} + {ALPHA}) / ({count(derived.total)} + {ALPHA} ×{' '}
@@ -221,7 +221,7 @@ export function Derivation({ analysis, order, position }: Props): JSX.Element | 
         </li>
 
         <li>
-          <span className="deriv-step-label">the cost</span>
+          <span className="deriv-step-label">The cost</span>
           <span className="deriv-step-body">
             <span className="deriv-sum data">
               −log2({derived.smoothed.toFixed(4)}) ={' '}

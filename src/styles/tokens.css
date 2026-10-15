@@ -10,11 +10,12 @@
  * therefore not a hue scale, it is a presence scale, and it is the only
  * continuous colour scale in the app.
  *
- * The second is new: **paper and instrument**. The specimen — the text being
- * measured — sits on paper. The apparatus that measures it sits on a recessed
- * machined surface. The seam between the two is the app's argument made
- * visible, so the two grounds are different tokens and never borrow each
- * other's.
+ * The second is **paper and instrument**. The specimen — the text being
+ * measured — sits on warm paper. The apparatus that measures it sits on cool
+ * steel. The two grounds used to be two beiges a few points apart, and the
+ * seam that is supposed to be the app's argument made visible barely showed.
+ * They now differ in temperature as well as value, so the edge between the
+ * thing measured and the thing measuring reads at a glance.
  *
  * Both survive the change of theme, and the dark theme is not an inversion.
  * On paper the ramp runs from the page toward ink; on the bench it runs from
@@ -27,15 +28,16 @@
 
   /* ---- Ground ------------------------------------------------------- */
   /* Paper: warm off-white, because the left column is a reading surface. */
-  --page: #fbfaf7;
-  /* The instrument ground, recessed under the paper. */
-  --sunk: #f1efe8;
+  --page: #fcfbf8;
+  /* Steel: the instrument ground, cool where the paper is warm. */
+  --sunk: #edf0f3;
   /* A raised control or panel that sits on top of either. */
   --surface: #ffffff;
-  --surface-hover: #f6f4ee;
+  --surface-hover: #f4f6f8;
 
-  --ink: #191817;
-  --ink-mid: #57544e;
+  /* Blue-black rather than brown-black, so the ink belongs to the steel. */
+  --ink: #12161c;
+  --ink-mid: #47505d;
   /*
    * Every one of these is used for text at 10.5 to 13px — field labels, axis
    * numerals, table headings, a coder's name in the rail — so all of them
@@ -43,51 +45,62 @@
    * grounds. Checked, not eyeballed: the earlier values were between 2.9 and
    * 4.4, which is where a muted palette quietly goes when nobody measures it.
    */
-  --ink-faint: #6f6b62;
-  --rule: #e3dfd5;
-  --rule-strong: #c9c3b5;
+  --ink-faint: #5c6573;
+  --rule: #dfe3e8;
+  --rule-strong: #c3cad3;
 
   /* ---- The surprisal ramp, traversed by cost in bits ----------------- */
-  --ramp-0: #fbfaf7;
-  --ramp-2: #d6d0c2;
-  --ramp-4: #948c7a;
-  --ramp-6: #4c483f;
-  --ramp-8: #191817;
+  --ramp-0: #fcfbf8;
+  --ramp-2: #d6d4cf;
+  --ramp-4: #9b988f;
+  --ramp-6: #50535b;
+  --ramp-8: #12161c;
 
   /* ---- The three coders ---------------------------------------------- */
   /* Used for a coder's line, its point, its control and its panel accent.
    * Nowhere else. Each has a tint for fills that must sit under text. */
-  --huffman: #a65615;
-  --huffman-tint: #f4e7d8;
-  --arithmetic: #10697c;
-  --arithmetic-tint: #dcecef;
-  --lz77: #67449e;
-  --lz77-tint: #eae2f6;
+  /* Saturated and balanced to similar lightness, so no coder reads as the
+   * important one. All three clear 4.5:1 on the steel. */
+  --huffman: #b4470b;
+  --huffman-tint: #faece2;
+  --arithmetic: #0a6e82;
+  --arithmetic-tint: #d9edf1;
+  --lz77: #6a3fcb;
+  --lz77-tint: #e9e2f8;
 
   /* ---- Two functional colours ---------------------------------------- */
   /* Model cost is deliberately unlike the coder colours, because it is a
    * different kind of quantity: overhead, not output. It is also the only
    * fill in the app rendered as a hatch rather than a solid, for the same
    * reason. */
-  --model-cost: #80691c;
-  --match: #2b7950;
+  --model-cost: #8a6400;
+  --model-cost-tint: #f3ebd3;
+  --match: #1e7a45;
 
   /* ---- Type ----------------------------------------------------------- */
   /*
-   * Two voices, assigned strictly.
+   * Three voices, each with one job.
    *
-   * Literata is the prose voice: the specimen, the notes, the argument. It is
-   * a screen-reading face with a large x-height, which is what lets a
-   * character survive being tinted most of the way toward the page colour.
+   * Literata is the argument: the specimen, the notes, panel titles, the
+   * thesis. It is a screen-reading face with a large x-height, which is what
+   * lets a character survive being tinted most of the way toward the page.
    *
-   * JetBrains Mono is the instrument voice: every number, label, control,
-   * axis and table cell. Nothing that is a measurement is set in the prose
-   * face, and nothing that is prose is set in the instrument face.
+   * Instrument Sans is the interface: every label, control, tab, legend and
+   * assumption. These used to be set in the mono face at 11px uppercase,
+   * which made the instrument side read as one flat block, and set the
+   * assumptions — the sentences the app's credibility rests on — in the
+   * hardest type on the page to read.
    *
-   * Both are self-hosted variable faces, imported in base.css. Nothing is
-   * fetched over the network.
+   * JetBrains Mono is the measurement, and now only that: numbers, units,
+   * codes, table cells, axis ticks. Nothing measured is set in either of the
+   * other two faces.
+   *
+   * All three are self-hosted variable faces, imported in base.css. Nothing
+   * is fetched over the network.
    */
   --font-text: 'Literata Variable', Literata, Georgia, 'Times New Roman', serif;
+  --font-ui: 'Instrument Sans Variable', 'Instrument Sans', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-data: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo,
     Consolas, monospace;
 
@@ -111,6 +124,10 @@
    * reader is expected to read rather than scan.
    */
   --t-micro: 11.11px;
+  /* A label in the interface voice. Sentence case, so it needs a little more
+   * size than the uppercase mono it replaced, not less. */
+  --t-label: 12.5px;
+  --t-note: 14px;
   --t-data: 13.33px;
   --t-body: 16px;
   --t-text: 19.2px;
@@ -128,6 +145,13 @@
   --weight-text: 400;
   --weight-medium: 500;
   --weight-strong: 600;
+
+  /* Tracking. Display numerals are tightened or a five-digit figure reads as
+   * a serial number. These were referenced throughout and never defined. */
+  --track-label: 0;
+  --track-micro: 0;
+  --track-figure: -0.02em;
+  --track-display: -0.035em;
 
   /* ---- Space ---------------------------------------------------------- */
   /* 4px base, so the dense instrument side has a half-step to work in. */
@@ -161,8 +185,10 @@
   --r-2: 6px;
   --r-3: 10px;
   --ring: 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
-  --shadow-1: 0 1px 2px rgb(25 24 23 / 0.05);
-  --shadow-2: 0 6px 20px -8px rgb(25 24 23 / 0.18), 0 1px 2px rgb(25 24 23 / 0.06);
+  --shadow-1: 0 1px 2px rgb(18 22 28 / 0.06);
+  --shadow-2: 0 6px 20px -8px rgb(18 22 28 / 0.2), 0 1px 2px rgb(18 22 28 / 0.06);
+  /* The one shadow on something that floats: the lens. */
+  --shadow-float: 0 12px 28px -16px rgb(18 22 28 / 0.4), 0 1px 2px rgb(18 22 28 / 0.06);
 
   /* ---- Motion --------------------------------------------------------- */
   /* Continuous controls use none of these: they map to the pointer directly.
@@ -188,36 +214,38 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --page: #131415;
-  --sunk: #0b0c0d;
-  --surface: #1b1d1f;
-  --surface-hover: #23262a;
+  --page: #141922;
+  --sunk: #0c0f14;
+  --surface: #1a202a;
+  --surface-hover: #212834;
 
-  --ink: #ece9e2;
-  --ink-mid: #a09b91;
-  --ink-faint: #89857e;
-  --rule: #292c2f;
-  --rule-strong: #3d4145;
+  --ink: #e7ebf0;
+  --ink-mid: #aab3bf;
+  --ink-faint: #8c96a5;
+  --rule: #262e3a;
+  --rule-strong: #3a4452;
 
-  --ramp-0: #131415;
-  --ramp-2: #33383c;
-  --ramp-4: #676c6f;
-  --ramp-6: #a8a79e;
-  --ramp-8: #f7eedc;
+  --ramp-0: #141922;
+  --ramp-2: #353c47;
+  --ramp-4: #6c7380;
+  --ramp-6: #aeb3ba;
+  --ramp-8: #fff1d6;
 
-  --huffman: #e5a05c;
-  --huffman-tint: #2e2318;
-  --arithmetic: #52c3d8;
-  --arithmetic-tint: #14282d;
-  --lz77: #b598ef;
-  --lz77-tint: #241d33;
+  --huffman: #ff9a55;
+  --huffman-tint: #3a2516;
+  --arithmetic: #4ccfe6;
+  --arithmetic-tint: #12323a;
+  --lz77: #b59cff;
+  --lz77-tint: #2a2347;
 
-  --model-cost: #d8b95d;
-  --match: #58c48d;
+  --model-cost: #e3be57;
+  --model-cost-tint: #352d14;
+  --match: #57d394;
 
   --ring: 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-2: 0 8px 24px -10px rgb(0 0 0 / 0.7), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-float: 0 14px 32px -14px rgb(0 0 0 / 0.75), 0 1px 2px rgb(0 0 0 / 0.4);
 }
 
 @media (prefers-reduced-motion: reduce) {

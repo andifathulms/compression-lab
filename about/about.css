@@ -31,10 +31,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.data,
 .label,
+th {
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.data,
 .unit,
-th,
 td {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
@@ -89,9 +93,10 @@ a:hover {
 .label {
   font-size: var(--t-small);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
+  font-family: var(--font-ui);
 }
 
 .prose {
@@ -111,7 +116,7 @@ a:hover {
  * instrument voice, never collapsed behind a disclosure. */
 .assumption {
   color: var(--ink-mid);
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-small);
   line-height: 1.65;
   max-width: 44rem;
@@ -188,7 +193,7 @@ section h2 {
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-data);
   font-weight: var(--weight-medium);
   line-height: 1.2;
@@ -292,7 +297,7 @@ section h2 {
 
 .hero-figure figcaption {
   margin-top: var(--s-2);
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-small);
   line-height: 1.6;
   color: var(--ink-faint);
@@ -331,9 +336,11 @@ section h2 {
 
 .plot-title {
   font-size: 10.5px;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   fill: var(--ink-faint);
+  font-family: var(--font-ui);
+  font-weight: var(--weight-strong);
 }
 
 .callout {
@@ -453,11 +460,11 @@ section h2 {
 }
 
 .instruments dt {
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-small);
   font-weight: var(--weight-strong);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink);
 }
 
@@ -492,12 +499,13 @@ section h2 {
 }
 
 .corpus thead th {
-  font-size: var(--t-micro);
+  font-size: var(--t-label);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
   border-bottom: 1px solid var(--rule-strong);
+  font-family: var(--font-ui);
 }
 
 .corpus tbody th {
@@ -567,7 +575,7 @@ section h2 {
 }
 
 .foot-note {
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-small);
   color: var(--ink-faint);
 }

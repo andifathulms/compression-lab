@@ -37,16 +37,17 @@
 }
 
 .rail-unit {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
   line-height: 1.25;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
   align-self: flex-end;
   padding-bottom: 2px;
   /* Two lines, and the break is the one in the markup. */
   white-space: nowrap;
+  font-weight: var(--weight-medium);
 }
 
 .rail-facts {
@@ -61,12 +62,13 @@
 }
 
 .rail-facts dt {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
   white-space: nowrap;
+  font-weight: var(--weight-strong);
 }
 
 /* The compare caveat sits under the coder's name rather than replacing the
@@ -295,7 +297,7 @@
 .switch-text {
   display: flex;
   flex-direction: column;
-  font-family: var(--font-data);
+  font-family: var(--font-ui);
   font-size: var(--t-data);
   font-weight: var(--weight-medium);
   color: var(--ink);

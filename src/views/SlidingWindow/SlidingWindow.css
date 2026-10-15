@@ -63,11 +63,12 @@
   gap: var(--s-0);
   flex-wrap: wrap;
   margin: var(--s-2) 0;
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
+  font-weight: var(--weight-strong);
 }
 
 .sw-key {
@@ -101,11 +102,12 @@
 }
 
 .sw-token dt {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ink-faint);
+  font-weight: var(--weight-strong);
 }
 
 .sw-token dd {
